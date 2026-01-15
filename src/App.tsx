@@ -21,9 +21,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/leads" element={<ClientLeads />} />
           {/* Client Portal Routes */}
           <Route path="/client" element={<ClientDashboard />} />
-          <Route path="/client/leads" element={<ClientLeads />} />
+          <Route path="client/leads" element={<ClientLeads />} />
           <Route path="/client/zones" element={<ClientZones />} />
           <Route path="/client/settings" element={<ClientSettings />} />
           <Route path="/client/profile" element={<ClientProfile />} />
