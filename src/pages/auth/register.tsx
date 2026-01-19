@@ -1,212 +1,221 @@
 import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { ArrowRight, MapPin, TrendingUp, Mail, Shield, Clock, Zap } from 'lucide-react';
 
 const Register: React.FC = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const { register } = useAuth();
-  const navigate = useNavigate();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
     });
-    // On efface l'erreur dès que l'utilisateur tape quelque chose
-    if (error) setError('');
-  };
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+    const { register } = useAuth();
+    const navigate = useNavigate();
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
-      setLoading(false);
-      return;
-    }
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
+        // On efface l'erreur dès que l'utilisateur tape quelque chose
+        if (error) setError('');
+    };
 
-    if (formData.password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères');
-      setLoading(false);
-      return;
-    }
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
 
-    const result = await register({
-      email: formData.email,
-      password: formData.password,
-      name: formData.name || undefined,
-    });
+        if (formData.password !== formData.confirmPassword) {
+            setError('Les mots de passe ne correspondent pas');
+            setLoading(false);
+            return;
+        }
 
-    if (result.success) {
-      navigate('/dashboard');
-    } else {
-      setError(result.error || 'Erreur d\'inscription');
-    }
+        if (formData.password.length < 6) {
+            setError('Le mot de passe doit contenir au moins 6 caractères');
+            setLoading(false);
+            return;
+        }
 
-    setLoading(false);
-  };
+        const result = await register({
+            email: formData.email,
+            password: formData.password,
+            name: formData.name || undefined,
+        });
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      {/* Effets de fond décoratifs */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl"></div>
-      </div>
+        if (result.success) {
+            navigate('/dashboard');
+        } else {
+            setError(result.error || 'Erreur d\'inscription');
+        }
 
-      <div className="relative max-w-md w-full space-y-8 bg-gray-800/50 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-gray-700/50">
-        
-        {/* En-tête du formulaire */}
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-white">
-            Créer un compte
-          </h2>
-          <p className="mt-2 text-sm text-gray-400">
-            Rejoignez-nous dès aujourd'hui
-          </p>
-        </div>
+        setLoading(false);
+    };
 
-        {/* Message d'erreur */}
-        {error && (
-          <div className="bg-red-500/10 border-l-4 border-red-500 p-4 rounded-md">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                {/* Icône d'erreur SVG */}
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-red-400">{error}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
-            
-            {/* Champ Nom */}
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
-                Nom complet (optionnel)
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                autoComplete="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-3 py-2 bg-gray-900/50 border border-gray-600 placeholder-gray-500 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition duration-150 ease-in-out"
-                placeholder="Jean Dupont"
-              />
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+            {/* Effets de fond décoratifs */}
+            <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl"></div>
             </div>
 
-            {/* Champ Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
-                Adresse email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-3 py-2 bg-gray-900/50 border border-gray-600 placeholder-gray-500 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition duration-150 ease-in-out"
-                placeholder="exemple@email.com"
-              />
-            </div>
+            <div className="relative max-w-md w-full space-y-8 bg-gray-800/50 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-gray-700/50">
 
-            {/* Champ Mot de passe */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
-                Mot de passe
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                minLength={6}
-                value={formData.password}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-3 py-2 bg-gray-900/50 border border-gray-600 placeholder-gray-500 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition duration-150 ease-in-out"
-                placeholder="••••••••"
-              />
-            </div>
+                {/* En-tête du formulaire */}
+                <div className="text-center">
+                    <div className="flex items-center space-x-2 mb-6 justify-center">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                            <MapPin className="text-white" size={24} />
+                        </div>
+                        <h1 className="text-2xl font-bold text-white shadow-sm">ImmoScout</h1>
+                    </div>
+                    <p className="mt-2 text-sm text-gray-400">
+                        Rejoignez-nous dès aujourd'hui
+                    </p>
+                </div>
 
-            {/* Champ Confirmation Mot de passe */}
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-1">
-                Confirmer le mot de passe
-              </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                required
-                minLength={6}
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-3 py-2 bg-gray-900/50 border border-gray-600 placeholder-gray-500 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition duration-150 ease-in-out"
-                placeholder="••••••••"
-              />
-            </div>
-          </div>
+                {/* Message d'erreur */}
+                {error && (
+                    <div className="bg-red-500/10 border-l-4 border-red-500 p-4 rounded-md">
+                        <div className="flex">
+                            <div className="flex-shrink-0">
+                                {/* Icône d'erreur SVG */}
+                                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="ml-3">
+                                <p className="text-sm text-red-400">{error}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
-          {/* Bouton de soumission */}
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white 
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    <div className="rounded-md shadow-sm space-y-4">
+
+                        {/* Champ Nom */}
+                        <div>
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
+                                Nom complet (optionnel)
+                            </label>
+                            <input
+                                id="name"
+                                name="name"
+                                type="text"
+                                autoComplete="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                className="appearance-none relative block w-full px-3 py-2 bg-gray-900/50 border border-gray-600 placeholder-gray-500 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition duration-150 ease-in-out"
+                                placeholder="Jean Dupont"
+                            />
+                        </div>
+
+                        {/* Champ Email */}
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+                                Adresse email
+                            </label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                autoComplete="email"
+                                required
+                                value={formData.email}
+                                onChange={handleChange}
+                                className="appearance-none relative block w-full px-3 py-2 bg-gray-900/50 border border-gray-600 placeholder-gray-500 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition duration-150 ease-in-out"
+                                placeholder="exemple@email.com"
+                            />
+                        </div>
+
+                        {/* Champ Mot de passe */}
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+                                Mot de passe
+                            </label>
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                autoComplete="new-password"
+                                required
+                                minLength={6}
+                                value={formData.password}
+                                onChange={handleChange}
+                                className="appearance-none relative block w-full px-3 py-2 bg-gray-900/50 border border-gray-600 placeholder-gray-500 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition duration-150 ease-in-out"
+                                placeholder="••••••••"
+                            />
+                        </div>
+
+                        {/* Champ Confirmation Mot de passe */}
+                        <div>
+                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-1">
+                                Confirmer le mot de passe
+                            </label>
+                            <input
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                type="password"
+                                autoComplete="new-password"
+                                required
+                                minLength={6}
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                className="appearance-none relative block w-full px-3 py-2 bg-gray-900/50 border border-gray-600 placeholder-gray-500 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition duration-150 ease-in-out"
+                                placeholder="••••••••"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Bouton de soumission */}
+                    <div>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white 
                 ${loading ? 'bg-indigo-400 cursor-not-allowed' : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-lg shadow-indigo-500/30'}
                 transition duration-150 ease-in-out`}
-            >
-              {loading ? (
-                <span className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Inscription en cours...
-                </span>
-              ) : (
-                'S\'inscrire'
-              )}
-            </button>
-          </div>
-        </form>
+                        >
+                            {loading ? (
+                                <span className="flex items-center">
+                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Inscription en cours...
+                                </span>
+                            ) : (
+                                'S\'inscrire'
+                            )}
+                        </button>
+                    </div>
+                </form>
 
-        {/* Lien vers Login */}
-        <div className="text-center mt-4">
-          <p className="text-sm text-gray-400">
-            Déjà un compte ?{' '}
-            <Link to="/login" className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors duration-200">
-              Se connecter
-            </Link>
-          </p>
+                {/* Lien vers Login */}
+                <div className="text-center mt-4">
+                    <p className="text-sm text-gray-400">
+                        Déjà un compte ?{' '}
+                        <Link to="/login" className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors duration-200">
+                            Se connecter
+                        </Link>
+                    </p>
+                    <p className="mt-4 text-start text-gray-400">
+                        <Link to="/" className="text-gray-500 hover:text-blue-300 hover:underline">
+                            Retour à l'accueil
+                        </Link>
+                    </p>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Register;

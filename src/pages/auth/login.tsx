@@ -2,6 +2,7 @@
 import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { ArrowRight, MapPin, TrendingUp, Mail, Shield, Clock, Zap } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -37,9 +38,16 @@ const Login: React.FC = () => {
       </div>
 
       <div className="relative bg-gray-800/50 backdrop-blur-xl shadow-2xl rounded-xl w-full max-w-md p-8 border border-gray-700/50">
-        <h2 className="text-2xl font-bold text-center text-white mb-6">
+        {/* <h2 className="text-2xl font-bold text-center text-white mb-6">
           Connexion
-        </h2>
+        </h2> */}
+        <div className="flex items-center space-x-2 mb-6 justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+            <MapPin className="text-white" size={24} />
+          </div>
+          <h1 className="text-2xl font-bold text-white shadow-sm">ImmoScout</h1>
+        </div>
+
         {error && (
           <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-2 rounded mb-4 text-center">
             {error}
@@ -80,15 +88,21 @@ const Login: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-700 hover:to-blue-600 transition-colors disabled:opacity-50 shadow-lg shadow-blue-500/30"
+            className="mt-4 w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-700 hover:to-blue-600 transition-colors disabled:opacity-50 shadow-lg shadow-blue-500/30"
           >
             {loading ? 'Connexion...' : 'Se connecter'}
           </button>
+
         </form>
         <p className="mt-4 text-center text-gray-400">
           Pas encore de compte ?{' '}
           <Link to="/register" className="text-blue-400 hover:text-blue-300 hover:underline">
             S'inscrire
+          </Link>
+        </p>
+        <p className="mt-4 text-start text-gray-400">
+          <Link to="/" className="text-gray-500 hover:text-blue-300 hover:underline">
+            Retour à l'accueil
           </Link>
         </p>
       </div>

@@ -12,37 +12,40 @@ const LandingPage: React.FC = () => {
         <div className="absolute bottom-0 right-1/3 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Header */}
-      <header className="relative z-10 px-4 py-6">
-        <nav className="max-w-7xl mx-auto flex items-center justify-between">
+      {/* Header Fixed */}
+      <header className="fixed top-0 left-0 w-full z-50 px-4 py-6 transition-all duration-300">
+        {/* Fond dégradé pour la lisibilité */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent pointer-events-none" />
+
+        <nav className="relative max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
               <MapPin className="text-white" size={24} />
             </div>
-            <span className="text-2xl font-bold text-white">ImmoScout</span>
+            <span className="text-2xl font-bold text-white shadow-sm">ImmoScout</span>
           </div>
           <div className="flex items-center space-x-4">
-            <Link to='/login' className="text-gray-300 hover:text-white transition-colors px-4 py-2">
+            <Link to='/login' className="text-gray-300 hover:text-white transition-colors px-4 py-2 font-medium">
               Connexion
             </Link>
-            <Link to='/register' className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-blue-600 transition-all shadow-lg shadow-blue-500/30">
+            <Link to='/register' className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-blue-600 transition-all shadow-lg shadow-blue-500/30 font-medium">
               Commencer
             </Link>
           </div>
         </nav>
       </header>
-
+      
       {/* Hero Section */}
-      <section className="relative z-10 px-4 py-20 text-center">
+      <section className="relative z-10 px-4 py-32 text-center"> {/* J'ai augmenté py-20 à py-32 pour compenser le menu fixe */}
         <div className="max-w-4xl mx-auto">
           <div className="inline-block mb-4 px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-full">
             <span className="text-blue-400 text-sm font-medium">🚀 Automatisation immobilière intelligente</span>
           </div>
-          
+
           <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-6 leading-tight">
             Trouvez les meilleures opportunités <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">en location meublée</span>
           </h1>
-          
+
           <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
             Analysez automatiquement les annonces Leboncoin, calculez leur rentabilité Airbnb et contactez les propriétaires. Gagnez du temps et sécurisez votre zone exclusive.
           </p>
@@ -135,7 +138,7 @@ const LandingPage: React.FC = () => {
               <p className="text-gray-400 mb-8">
                 Achetez une zone géographique en exclusivité. Vous seul recevrez les alertes pour cette zone, sans concurrence sur la plateforme.
               </p>
-              
+
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
                   <div className="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
@@ -146,7 +149,7 @@ const LandingPage: React.FC = () => {
                     <p className="text-gray-400 text-sm">Un seul utilisateur par zone géographique</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start space-x-3">
                   <div className="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                     <Clock className="text-green-400" size={14} />
@@ -156,7 +159,7 @@ const LandingPage: React.FC = () => {
                     <p className="text-gray-400 text-sm">Alertes instantanées dès qu'une annonce correspond</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start space-x-3">
                   <div className="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                     <TrendingUp className="text-green-400" size={14} />
@@ -189,7 +192,7 @@ const LandingPage: React.FC = () => {
               Rejoignez les investisseurs qui ont déjà trouvé leurs meilleures affaires
             </p>
             <button className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-8 py-4 rounded-lg hover:from-blue-700 hover:to-blue-600 transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center mx-auto font-semibold">
-               <Link to='/register'>Créer mon compte gratuitement</Link>
+              <Link to='/register'>Créer mon compte gratuitement</Link>
               <ArrowRight className="ml-2" size={20} />
             </button>
           </div>
