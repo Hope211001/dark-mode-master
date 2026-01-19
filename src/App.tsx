@@ -15,6 +15,7 @@ import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
 import { AuthProvider } from './contexts/AuthContext';
 import Logout from "./components/Logout"; 
+import Dashbord from "./pages/admin/dashbord";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +27,8 @@ const App = () => (
       <Router>
         <AuthProvider>
           <Routes>
-            <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashbord /></ProtectedRoute>} />
+            <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/logout" element={<Logout />} />
