@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/select";
 
 import { Grid3X3, List, Search, Filter } from "lucide-react";
-import { getLeads } from "@/services/lead_service";
+import { leadsService } from "@/services/leads.service";
+
 
 /* 🔹 Statuts autorisés */
 const statusFilters = [
@@ -35,21 +36,21 @@ const ClientLeads = () => {
 
   /* 🔹 Fetch Supabase */
   useEffect(() => {
-    getLeads()
-      .then((data) => {
-        const normalized = data.map((l: any) => ({
-          ...l,
-          status: l.status?.toLowerCase() ?? "unknown",
-        }));
-        setLeads(normalized);
-        setLoading(false);
-        console.log(normalized)
-      })
-      .catch((err) => {
-        console.error("Erreur chargement leads :", err);
-        setLoading(false);
-      });
-  }, []);
+  leadsService.getAll()
+    .then((data) => {
+      const normalized = data.map((l) => ({
+        ...l,
+        status: l.status?.toLowerCase() ?? "unknown",
+      }));
+      setLeads(normalized);
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.error("Erreur chargement leads :", err);
+      setLoading(false);
+    });
+}, []);
+
 
   /* 🔹 Filtres */
   const filteredLeads = leads.filter((l) => {
