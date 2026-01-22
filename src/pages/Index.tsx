@@ -50,7 +50,7 @@ const LandingPage: React.FC = () => {
             <div className="flex items-center space-x-3">
               <Link
                 to='/login'
-                className="bordr border-white-200 text-gray-300 hover:text-white transition-colors px-3 py-2 font-medium text-sm"
+                className="border border-white px-6 rounded-lg text-gray-300 hover:text-gray-100 hover:bg-blue-600 transition-colors px-3 py-2 font-medium text-sm"
               >
                 Connexion
               </Link>
