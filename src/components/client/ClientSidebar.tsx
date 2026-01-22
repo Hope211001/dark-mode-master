@@ -1,9 +1,9 @@
 import { NavLink } from "@/components/NavLink";
-import { 
-  LayoutDashboard, 
-  Users, 
-  MapPin, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Users,
+  MapPin,
+  Settings,
   Bell,
   LogOut,
   User,
@@ -15,45 +15,45 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { 
-    title: "Dashboard", 
-    url: "/client", 
-    icon: LayoutDashboard 
+  {
+    title: "Dashboard",
+    url: "/client",
+    icon: LayoutDashboard
   },
-  { 
-    title: "Mes Leads", 
-    url: "/client/leads", 
+  {
+    title: "Mes Leads",
+    url: "/client/leads",
     icon: Users,
-    badge: 12 
+    badge: 12
   },
-  { 
-    title: "Mes Zones", 
-    url: "/client/zones", 
-    icon: MapPin 
+  {
+    title: "Mes Zones",
+    url: "/client/zones",
+    icon: MapPin
   },
-  { 
-    title: "Recherche", 
-    url: "/client/search", 
-    icon: Search 
+  {
+    title: "Recherche",
+    url: "/client/search",
+    icon: Search
   },
-  { 
-    title: "Messages", 
-    url: "/client/messages", 
+  {
+    title: "Messages",
+    url: "/client/messages",
     icon: Mail,
-    badge: 3 
+    badge: 3
   },
 ];
 
 const settingsItems = [
-  { 
-    title: "Paramètres", 
-    url: "/client/settings", 
-    icon: Settings 
+  {
+    title: "Paramètres",
+    url: "/client/settings",
+    icon: Settings
   },
-  { 
-    title: "Mon Profil", 
-    url: "/client/profile", 
-    icon: User 
+  {
+    title: "Mon Profil",
+    url: "/client/profile",
+    icon: User
   },
 ];
 
@@ -67,10 +67,11 @@ export function ClientSidebar() {
             <MapPin className="h-5 w-5 text-primary-foreground" />
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-semibold text-foreground">PropHunter</span>
+            <span className="text-lg font-semibold text-foreground">ImmoScout</span>
             <span className="text-xs text-muted-foreground">Espace Client</span>
           </div>
         </div>
+
 
         {/* User Info */}
         <div className="border-b border-border p-4">
@@ -94,12 +95,12 @@ export function ClientSidebar() {
 
         {/* Navigation */}
         <nav className="flex-1 space-y-1 p-4">
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <span className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Navigation
             </span>
-          </div>
-          
+          </div> */}
+
           {navItems.map((item) => (
             <NavLink
               key={item.url}
@@ -120,11 +121,11 @@ export function ClientSidebar() {
 
           <div className="my-6 border-t border-border" />
 
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <span className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Compte
             </span>
-          </div>
+          </div> */}
 
           {settingsItems.map((item) => (
             <NavLink
@@ -149,7 +150,7 @@ export function ClientSidebar() {
             <div className="text-sm font-semibold text-foreground">4 zones exclusives</div>
             <div className="text-xs text-muted-foreground mt-1">Renouvellement: 15 Feb 2025</div>
           </div>
-          
+
           <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10">
             <LogOut className="h-4 w-4 mr-2" />
             Déconnexion

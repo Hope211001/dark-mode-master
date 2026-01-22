@@ -8,7 +8,7 @@ interface AuthContextType {
   loading: boolean;
   isAuthenticated: boolean;
   register: (data: RegisterData) => Promise<{ success: boolean; error?: string }>;
-  login: (data: LoginData) => Promise<{ success: boolean; error?: string }>;
+  login: (data: LoginData) => Promise<{ success: boolean; user?: User; error?: string }>;
   logout: () => void;
 }
 
@@ -30,25 +30,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Vérifier le token au chargement
+  // src/contexts/AuthContext.tsx
   useEffect(() => {
     const verifyToken = async () => {
       const token = authService.getToken();
-      
       if (token) {
         try {
-          await authService.verifyToken();
           const profileResponse = await authService.getProfile();
+
+          // 🔍 AJOUTE CE LOG ICI :
+          console.log("CONTEXT REFRESH - User data from API:", profileResponse.user);
+
           setUser(profileResponse.user);
         } catch (error) {
-          console.error('Token invalide:', error);
+          console.error('Token invalide ou erreur API:', error);
           authService.removeToken();
+          setUser(null);
         }
       }
-      
       setLoading(false);
     };
-
     verifyToken();
   }, []);
 
@@ -74,7 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await authService.login(data);
       authService.saveToken(response.token);
       setUser(response.user);
-      return { success: true };
+      return { success: true, user: response.user };
     } catch (error) {
       const axiosError = error as AxiosError<{ error: string }>;
       return {
@@ -83,6 +84,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       };
     }
   };
+
+
 
   // Déconnexion
   const logout = () => {
