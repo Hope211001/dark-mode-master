@@ -16,7 +16,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { icon: <Home className="w-5 h-5" />, label: "Dashboard", href: "/", active: true },
   { icon: <TrendingUp className="w-5 h-5" />, label: "Leads", href: "/leads", badge: 12 },
-  { icon: <Map className="w-5 h-5" />, label: "Zones", href: "/zones" },
+  { icon: <Map className="w-5 h-5" />, label: "Zones", href: "/admin/zones" },
   { icon: <Mail className="w-5 h-5" />, label: "Messages", href: "/messages" },
   { icon: <Filter className="w-5 h-5" />, label: "Filtres", href: "/filters" },
 ];

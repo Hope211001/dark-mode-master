@@ -17,9 +17,11 @@ import ClientLeads from "./pages/client/ClientLeads";
 import ClientZones from "./pages/client/ClientZones";
 import ClientSettings from "./pages/client/ClientSettings";
 import ClientProfile from "./pages/client/ClientProfile";
+import BuyZone from "./pages/client/BuyZone";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/dashbord";
+import ZonesManagement from "./pages/admin/zones/zone.liste";
 
 // Auth
 import ProtectedRoute from './components/ProtectedRoute';
@@ -50,6 +52,14 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/admin/zones" 
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <ZonesManagement />
+                </ProtectedRoute>
+              } 
+            />
 
             {/* PORTAIL CLIENT - Protégé (Role: client) */}
             <Route path="/client">
@@ -76,6 +86,12 @@ const App = () => (
               <Route path="profile" element={
                 <ProtectedRoute allowedRoles={['client']}>
                   <ClientProfile />
+                </ProtectedRoute>
+              } />
+
+              <Route path="buy-zone" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                  <BuyZone />
                 </ProtectedRoute>
               } />
             </Route>
