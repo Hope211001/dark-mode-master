@@ -98,6 +98,8 @@ export function Sidebar() {
             <p className="text-sm font-medium text-foreground truncate">Jean Dupont</p>
             <p className="text-xs text-muted-foreground truncate">Zone: Lyon</p>
           </div>
+          <Link>
+          </Link>
           <button className="p-2 rounded-lg hover:bg-sidebar-accent text-muted-foreground hover:text-foreground transition-colors">
             <LogOut className="w-4 h-4" />
           </button>
