@@ -1,20 +1,18 @@
-import { MapPin, Users, TrendingUp, Eye, Settings, Lock, Unlock } from "lucide-react";
+import { MapPin, TrendingUp, Eye, Settings, Lock, Hash } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 interface ZoneCardProps {
   id: string;
-  name: string;
-  city: string;
-  leadsCount: number;
-  leadsThisMonth: number;
-  isExclusive: boolean;
-  competitorCount: number;
-  averageScore: number;
-  status: "active" | "paused" | "expired";
+  nom: string;          // Vient de Supabase
+  codes_postaux: string[]; // Vient de Supabase
+  leadsCount?: number;     // Optionnel (sera rempli par n8n plus tard)
+  leadsThisMonth?: number; // Optionnel
+  averageScore?: number;   // Optionnel
+  status?: "active" | "paused" | "expired";
 }
 
 const statusConfig = {
@@ -25,49 +23,40 @@ const statusConfig = {
 
 export function ZoneCard({
   id,
-  name,
-  city,
-  leadsCount,
-  leadsThisMonth,
-  isExclusive,
-  competitorCount,
-  averageScore,
-  status,
+  nom,
+  codes_postaux = [],
+  leadsCount = 0,
+  leadsThisMonth = 0,
+  averageScore = 0,
+  status = "active",
 }: ZoneCardProps) {
   return (
-    <Card className="glass-card transition-all duration-300 hover:border-primary/30 group">
+    <Card className="glass-card transition-all duration-300 hover:border-primary/30 group shadow-lg">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className={cn(
-              "flex h-10 w-10 items-center justify-center rounded-lg",
-              isExclusive ? "bg-primary/20" : "bg-secondary"
-            )}>
-              <MapPin className={cn(
-                "h-5 w-5",
-                isExclusive ? "text-primary" : "text-muted-foreground"
-              )} />
+            {/* Icône de localisation stylisée */}
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20">
+              <MapPin className="h-5 w-5 text-primary" />
             </div>
             <div>
               <CardTitle className="text-base group-hover:text-primary transition-colors">
-                {name}
+                {nom}
               </CardTitle>
-              <p className="text-sm text-muted-foreground">{city}</p>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Hash className="h-3 w-3" />
+                <span>{codes_postaux.length} codes postaux</span>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            {isExclusive ? (
-              <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30">
-                <Lock className="h-3 w-3 mr-1" />
-                Exclusive
-              </Badge>
-            ) : (
-              <Badge variant="outline" className="text-muted-foreground">
-                <Unlock className="h-3 w-3 mr-1" />
-                Partagée
-              </Badge>
-            )}
-            <Badge variant="outline" className={cn("border", statusConfig[status].className)}>
+          
+          <div className="flex flex-col items-end gap-2">
+            {/* Badge d'exclusivité (Modèle Concession du PDF) */}
+            <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30 text-[10px]">
+              <Lock className="h-3 w-3 mr-1" />
+              CONCESSION
+            </Badge>
+            <Badge variant="outline" className={cn("border text-[10px]", statusConfig[status].className)}>
               {statusConfig[status].label}
             </Badge>
           </div>
@@ -75,52 +64,52 @@ export function ZoneCard({
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-center p-3 bg-secondary/50 rounded-lg">
-            <div className="text-2xl font-bold text-foreground mono">{leadsCount}</div>
-            <div className="text-xs text-muted-foreground">Total leads</div>
+        {/* Liste courte des codes postaux possédés */}
+        <div className="flex flex-wrap gap-1 mb-2">
+          {codes_postaux.slice(0, 4).map((cp) => (
+            <span key={cp} className="text-[10px] bg-secondary px-2 py-0.5 rounded border border-border">
+              {cp}
+            </span>
+          ))}
+          {codes_postaux.length > 4 && (
+            <span className="text-[10px] text-muted-foreground">+{codes_postaux.length - 4}</span>
+          )}
+        </div>
+
+        {/* Stats Grid (Données n8n) */}
+        <div className="grid grid-cols-3 gap-2">
+          <div className="text-center p-2 bg-secondary/30 rounded-lg border border-border/50">
+            <div className="text-lg font-bold text-foreground mono">{leadsCount}</div>
+            <div className="text-[10px] text-muted-foreground uppercase">Total</div>
           </div>
-          <div className="text-center p-3 bg-secondary/50 rounded-lg">
-            <div className="text-2xl font-bold text-primary mono">+{leadsThisMonth}</div>
-            <div className="text-xs text-muted-foreground">Ce mois</div>
+          <div className="text-center p-2 bg-secondary/30 rounded-lg border border-border/50">
+            <div className="text-lg font-bold text-primary mono">+{leadsThisMonth}</div>
+            <div className="text-[10px] text-muted-foreground uppercase">Mois</div>
           </div>
-          <div className="text-center p-3 bg-secondary/50 rounded-lg">
-            <div className="text-2xl font-bold text-foreground mono">{averageScore}%</div>
-            <div className="text-xs text-muted-foreground">Score moyen</div>
+          <div className="text-center p-2 bg-secondary/30 rounded-lg border border-border/50">
+            <div className="text-lg font-bold text-foreground mono">{averageScore || '--'}%</div>
+            <div className="text-[10px] text-muted-foreground uppercase">Score</div>
           </div>
         </div>
 
-        {/* Competition indicator */}
-        {!isExclusive && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground flex items-center gap-1">
-                <Users className="h-4 w-4" />
-                Concurrence
-              </span>
-              <span className="text-foreground font-medium">{competitorCount} utilisateurs</span>
-            </div>
-            <Progress value={Math.min(competitorCount * 20, 100)} className="h-2" />
-          </div>
-        )}
-
-        {/* Performance */}
-        <div className="flex items-center justify-between p-3 bg-gradient-to-r from-success/10 to-transparent rounded-lg">
+        {/* Performance (Comparaison temporelle) */}
+        <div className="flex items-center justify-between p-2.5 bg-gradient-to-r from-success/10 to-transparent rounded-lg border border-success/10">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-success" />
-            <span className="text-sm text-muted-foreground">Performance</span>
+            <span className="text-xs text-muted-foreground font-medium">Flux de leads</span>
           </div>
-          <span className="text-success font-medium text-sm">+23% vs mois dernier</span>
+          <span className="text-success font-bold text-xs">+12%</span>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-2 pt-2 border-t border-border">
-          <Button size="sm" variant="default" className="flex-1">
-            <Eye className="h-4 w-4 mr-2" />
-            Voir les leads
-          </Button>
-          <Button size="sm" variant="outline">
+        {/* Actions principales */}
+        <div className="flex items-center gap-2 pt-2 border-t border-border/50">
+          <Link to={`/client/leads?zone=${id}`} className="flex-1">
+            <Button size="sm" variant="default" className="w-full h-9 font-bold bg-primary hover:bg-primary/90">
+              <Eye className="h-4 w-4 mr-2" />
+              Flux Leads
+            </Button>
+          </Link>
+          <Button size="sm" variant="outline" className="h-9 w-9 p-0">
             <Settings className="h-4 w-4" />
           </Button>
         </div>

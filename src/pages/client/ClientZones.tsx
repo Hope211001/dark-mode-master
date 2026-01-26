@@ -1,187 +1,236 @@
+import { useEffect, useState } from "react";
 import { ClientSidebar } from "@/components/client/ClientSidebar";
 import { ClientHeader } from "@/components/client/ClientHeader";
 import { ZoneCard } from "@/components/client/ZoneCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, MapPin, Lock, Users, TrendingUp } from "lucide-react";
-
-const mockZones = [
-  {
-    id: "1",
-    name: "Lyon 6ème - Foch",
-    city: "Lyon",
-    leadsCount: 23,
-    leadsThisMonth: 8,
-    isExclusive: true,
-    competitorCount: 0,
-    averageScore: 82,
-    status: "active" as const,
-  },
-  {
-    id: "2",
-    name: "Lyon 2ème - Bellecour",
-    city: "Lyon",
-    leadsCount: 31,
-    leadsThisMonth: 12,
-    isExclusive: true,
-    competitorCount: 0,
-    averageScore: 88,
-    status: "active" as const,
-  },
-  {
-    id: "3",
-    name: "Villeurbanne Centre",
-    city: "Villeurbanne",
-    leadsCount: 15,
-    leadsThisMonth: 4,
-    isExclusive: false,
-    competitorCount: 3,
-    averageScore: 75,
-    status: "active" as const,
-  },
-  {
-    id: "4",
-    name: "Lyon 7ème - Jean Macé",
-    city: "Lyon",
-    leadsCount: 18,
-    leadsThisMonth: 6,
-    isExclusive: false,
-    competitorCount: 2,
-    averageScore: 79,
-    status: "active" as const,
-  },
-];
+import { Plus, MapPin, Lock, Users, TrendingUp, Loader2, Globe } from "lucide-react";
+import { Link } from "react-router-dom";
+import { zoneService, Zone } from "@/services/zones.services";
+import { useToast } from "@/components/ui/use-toast";
 
 const ClientZones = () => {
-  const exclusiveZones = mockZones.filter(z => z.isExclusive);
-  const sharedZones = mockZones.filter(z => !z.isExclusive);
+  const [zones, setZones] = useState<Zone[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  // Chargement des données réelles au montage
+  useEffect(() => {
+    fetchMyZones();
+  }, []);
+
+  const fetchMyZones = async () => {
+    try {
+      setLoading(true);
+      // Appel à la route router.get('/my/owned', ...)
+      const data = await zoneService.getMyZones();
+      setZones(data);
+    } catch (error) {
+      toast({
+        title: "Erreur de connexion",
+        description: "Impossible de récupérer vos concessions. Vérifiez votre connexion.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * LOGIQUE DU MODÈLE BUSINESS (PDF) :
+   * Une zone possédée est par défaut une "Concession Exclusive".
+   */
+  const exclusiveZones = zones.filter(z => z.statut_market === 'VENDU');
+  // Les zones "partagées" pourraient être des zones d'essai ou multi-utilisateurs si votre modèle évolue
+  const sharedZones = zones.filter(z => z.statut_market === 'PARTAGE');
 
   return (
     <div className="min-h-screen bg-background">
       <ClientSidebar />
-      
+
       <main className="ml-64">
-        <ClientHeader 
-          title="Mes Zones" 
-          subtitle="Gérez vos zones de prospection exclusives et partagées"
+        <ClientHeader
+          title="Mes Zones"
+          subtitle="Gérez vos concessions exclusives et suivez le flux de leads n8n"
         />
-        
+
         <div className="p-6 space-y-6">
-          {/* Stats Overview */}
+          {/* Stats Overview avec données réelles */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="glass-card">
+            <Card className="glass-card border-primary/10">
               <CardContent className="p-4 flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                   <MapPin className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground mono">{mockZones.length}</p>
-                  <p className="text-sm text-muted-foreground">Zones totales</p>
+                  <p className="text-2xl font-bold text-foreground mono">
+                    {loading ? ".." : zones.length}
+                  </p>
+                  <p className="text-xs text-muted-foreground uppercase font-semibold">Total Zones</p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="glass-card">
+            <Card className="glass-card border-success/10">
               <CardContent className="p-4 flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/20">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/10">
                   <Lock className="h-6 w-6 text-success" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground mono">{exclusiveZones.length}</p>
-                  <p className="text-sm text-muted-foreground">Exclusives</p>
+                  <p className="text-2xl font-bold text-foreground mono">
+                    {loading ? ".." : exclusiveZones.length}
+                  </p>
+                  <p className="text-xs text-muted-foreground uppercase font-semibold">Exclusives</p>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="glass-card">
               <CardContent className="p-4 flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/50">
                   <Users className="h-6 w-6 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground mono">{sharedZones.length}</p>
-                  <p className="text-sm text-muted-foreground">Partagées</p>
+                  <p className="text-2xl font-bold text-foreground mono">
+                    {loading ? ".." : sharedZones.length}
+                  </p>
+                  <p className="text-xs text-muted-foreground uppercase font-semibold">Partagées</p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="glass-card">
+            <Card className="glass-card border-blue-500/10">
               <CardContent className="p-4 flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20">
-                  <TrendingUp className="h-6 w-6 text-primary" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10">
+                  <TrendingUp className="h-6 w-6 text-blue-500" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground mono">
-                    {mockZones.reduce((acc, z) => acc + z.leadsThisMonth, 0)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Leads ce mois</p>
+                  <p className="text-2xl font-bold text-foreground mono">0</p>
+                  <p className="text-xs text-muted-foreground uppercase font-semibold">Leads (24h)</p>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Map Placeholder */}
-          <Card className="glass-card">
-            <CardHeader className="pb-3">
+          {/* Map Placeholder amélioré */}
+          <Card className="glass-card border-primary/10 overflow-hidden">
+            <CardHeader className="pb-3 bg-secondary/30">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Carte des zones</CardTitle>
-                <Button variant="default" size="sm" className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Ajouter une zone
-                </Button>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-primary" />
+                  Couverture Géographique
+                </CardTitle>
+                <Link to="/client/marketplace">
+                  <Button variant="default" size="sm" className="gap-2 shadow-lg shadow-primary/20">
+                    <Plus className="h-4 w-4" />
+                    Acheter une zone
+                  </Button>
+                </Link>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="h-64 bg-secondary/50 rounded-xl border border-border flex items-center justify-center">
+            <CardContent className="p-0">
+              <div className="h-48 bg-secondary/10 flex items-center justify-center border-t border-border/50">
                 <div className="text-center">
-                  <MapPin className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
-                  <p className="text-muted-foreground">Carte interactive des zones</p>
-                  <p className="text-sm text-muted-foreground/70">Intégration Mapbox/Leaflet à venir</p>
+                  <MapPin className="h-10 w-10 text-primary/20 mx-auto mb-2" />
+                  <p className="text-muted-foreground font-medium">Carte de vos concessions</p>
+                  <div className="flex gap-2 justify-center mt-2">
+                    {zones.slice(0, 3).map(z => (
+                      <Badge key={z.id} variant="outline" className="text-[10px] bg-background/50">
+                        {z.nom}
+                      </Badge>
+                    ))}
+                    {zones.length > 3 && <span className="text-[10px] text-muted-foreground">+{zones.length - 3} de plus</span>}
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Exclusive Zones */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20">
-                <Lock className="h-4 w-4 text-primary" />
-              </div>
-              <h2 className="text-lg font-semibold text-foreground">Zones exclusives</h2>
-              <Badge className="bg-primary/20 text-primary">{exclusiveZones.length}</Badge>
+          {/* Affichage des zones */}
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <Loader2 className="h-10 w-10 animate-spin text-primary" />
+              <p className="text-muted-foreground animate-pulse font-medium">Synchronisation avec n8n...</p>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {exclusiveZones.map((zone) => (
-                <ZoneCard key={zone.id} {...zone} />
-              ))}
-            </div>
-          </div>
+          ) : (
+            <>
+              {/* Exclusive Zones Section */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20">
+                    <Lock className="h-4 w-4 text-primary" />
+                  </div>
+                  <h2 className="text-lg font-bold text-foreground uppercase tracking-tight">Mes Concessions Exclusives</h2>
+                  <Badge className="bg-primary text-white border-none">{exclusiveZones.length}</Badge>
+                </div>
 
-          {/* Shared Zones */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary">
-                <Users className="h-4 w-4 text-muted-foreground" />
+                {exclusiveZones.length === 0 ? (
+                  <Card className="p-12 text-center border-2 border-dashed border-border bg-transparent">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center">
+                        <MapPin className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold">Aucune zone active</h3>
+                        <p className="text-muted-foreground text-sm max-w-sm mx-auto">
+                          Vous n'avez pas encore de concession exclusive. Visitez la marketplace pour réserver votre première ville.
+                        </p>
+                      </div>
+                      <Link to="/client/marketplace">
+                        <Button variant="outline" className="mt-2">Ouvrir la Marketplace</Button>
+                      </Link>
+                    </div>
+                  </Card>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {exclusiveZones.map((zone) => (
+                      <ZoneCard 
+                        key={zone.id} 
+                        id={zone.id.toString()}
+                        nom={zone.nom} 
+                        codes_postaux={zone.codes_postaux}
+                        leadsCount={0} // À synchroniser avec votre table 'leads' plus tard
+                        leadsThisMonth={0}
+                        status="active"
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
-              <h2 className="text-lg font-semibold text-foreground">Zones partagées</h2>
-              <Badge variant="secondary">{sharedZones.length}</Badge>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {sharedZones.map((zone) => (
-                <ZoneCard key={zone.id} {...zone} />
-              ))}
-            </div>
-          </div>
+
+              {/* Shared Zones Section (Si applicable) */}
+              {sharedZones.length > 0 && (
+                <div className="space-y-4 mt-12 pt-10 border-t border-border/50">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <h2 className="text-lg font-bold text-foreground uppercase tracking-tight">Zones Partagées</h2>
+                    <Badge variant="secondary">{sharedZones.length}</Badge>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {sharedZones.map((zone) => (
+                      <ZoneCard 
+                        key={zone.id} 
+                        id={zone.id.toString()}
+                        nom={zone.nom} 
+                        codes_postaux={zone.codes_postaux}
+                        status="active"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </main>
 
-      {/* Background Glow Effects */}
-      <div className="fixed top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="fixed bottom-0 left-64 w-96 h-96 bg-success/5 rounded-full blur-3xl pointer-events-none" />
+      {/* Background Glow Effects pour le style "Glass" */}
+      <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="fixed bottom-0 left-64 w-[400px] h-[400px] bg-success/5 rounded-full blur-[100px] pointer-events-none -z-10" />
     </div>
   );
 };
