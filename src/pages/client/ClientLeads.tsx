@@ -1,190 +1,179 @@
 import { useEffect, useState } from "react";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { Header } from "@/components/dashboard/Header";
+import { ClientSidebar } from "@/components/client/ClientSidebar";
+import { ClientHeader } from "@/components/client/ClientHeader";
+import { LeadCard } from "@/components/client/LeadCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, Filter, SlidersHorizontal, Grid3X3, List, Download, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { leadsService, Lead } from "@/services/leads.service";
+import { useToast } from "@/components/ui/use-toast";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-import { Grid3X3, List, Search, Filter } from "lucide-react";
-import { leadsService } from "@/services/leads.service";
-
-
-/* 🔹 Statuts autorisés */
 const statusFilters = [
   { value: "all", label: "Tous les statuts" },
-  { value: "new", label: "Nouveau" },
-  { value: "contacted", label: "Contacté" },
-  { value: "responded", label: "Répondu" },
-  { value: "negotiating", label: "Négociation" },
-  { value: "converted", label: "Converti" },
-  { value: "lost", label: "Perdu" },
+  { value: "NOUVEAU", label: "Nouveaux" },
+  { value: "CONTACTE", label: "Contactés" },
+  { value: "REPONDU", label: "Répondus" },
+  { value: "NEGOCIATION", label: "En négociation" },
 ];
 
 const ClientLeads = () => {
-  const [leads, setLeads] = useState<any[]>([]);
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [search, setSearch] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  /* 🔹 Fetch Supabase */
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
+  const { toast } = useToast();
+
   useEffect(() => {
-  leadsService.getAll()
-    .then((data) => {
-      const normalized = data.map((l) => ({
-        ...l,
-        status: l.status?.toLowerCase() ?? "unknown",
-      }));
-      setLeads(normalized);
+    fetchLeads();
+  }, [currentPage]);
+
+  const fetchLeads = async () => {
+    try {
+      setLoading(true);
+      const res = await leadsService.getMyLeads(currentPage, 12);
+      setLeads(res.data);
+      setTotalPages(res.totalPages);
+      setTotalCount(res.totalCount);
+    } catch (error) {
+      toast({ title: "Erreur", description: "Impossible de charger vos leads", variant: "destructive" });
+    } finally {
       setLoading(false);
-    })
-    .catch((err) => {
-      console.error("Erreur chargement leads :", err);
-      setLoading(false);
-    });
-}, []);
+    }
+  };
 
-
-  /* 🔹 Filtres */
-  const filteredLeads = leads.filter((l) => {
-    const matchStatus =
-      statusFilter === "all" || l.status === statusFilter;
-
-    const matchSearch =
-      !search ||
-      l.title?.toLowerCase().includes(search.toLowerCase()) ||
-      l.location?.toLowerCase().includes(search.toLowerCase());
-
-    return matchStatus && matchSearch;
+  // Filtrage local (pour la recherche et le statut)
+  const filteredLeads = leads.filter(lead => {
+    const matchesSearch = lead.titre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.ville?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" || lead.statut_prospection === statusFilter;
+    return matchesSearch && matchesStatus;
   });
 
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar />
+      <ClientSidebar />
 
       <main className="ml-64">
-        <Header />
+        <ClientHeader
+          title="Mes Leads"
+          subtitle="Gérez et suivez tous vos leads immobiliers issus de n8n"
+        />
 
         <div className="p-6 space-y-6">
-          {/* 🔍 Filtres */}
-          <div className="flex flex-wrap gap-4 p-4 bg-card rounded-xl border">
-            <div className="relative flex-1 min-w-64">
+          {/* Filters Bar */}
+          <div className="flex flex-wrap items-center gap-4 p-4 bg-card rounded-xl border border-border shadow-sm">
+            <div className="relative flex-1 min-w-[300px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Rechercher (titre, lieu...)"
-                className="pl-10"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Rechercher une ville, un titre..."
+                className="pl-10 bg-secondary/30"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-48">
+              <SelectTrigger className="w-48 bg-secondary/30">
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {statusFilters.map((f) => (
-                  <SelectItem key={f.value} value={f.value}>
-                    {f.label}
-                  </SelectItem>
+                  <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            {/* 🔳 Vue */}
-            <div className="flex gap-1 bg-secondary rounded-lg p-1">
-              <Button
-                size="sm"
-                variant={viewMode === "grid" ? "default" : "ghost"}
-                onClick={() => setViewMode("grid")}
-              >
+            <div className="flex items-center gap-1 bg-secondary/50 rounded-lg p-1">
+              <Button variant={viewMode === "grid" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("grid")} className="h-8 w-10 p-0">
                 <Grid3X3 className="h-4 w-4" />
               </Button>
-              <Button
-                size="sm"
-                variant={viewMode === "list" ? "default" : "ghost"}
-                onClick={() => setViewMode("list")}
-              >
+              <Button variant={viewMode === "list" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("list")} className="h-8 w-10 p-0">
                 <List className="h-4 w-4" />
               </Button>
             </div>
+
+            <Button variant="outline" className="gap-2">
+              <Download className="h-4 w-4" /> Exporter
+            </Button>
           </div>
 
-          {/* 📊 Stats */}
-          <div className="text-sm text-muted-foreground">
-            <strong className="text-foreground">
-              {filteredLeads.length}
-            </strong>{" "}
-            leads trouvés
-          </div>
+          {/* Stats Summary */}
+          {!loading && (
+            <div className="flex items-center gap-4 text-sm">
+              <span className="text-muted-foreground">
+                <span className="text-foreground font-bold">{totalCount}</span> leads au total
+              </span>
+              <Badge className="bg-primary/10 text-primary border-none">
+                Page {currentPage} / {totalPages}
+              </Badge>
+            </div>
+          )}
 
-          {/* 📦 Contenu */}
+          {/* Leads Content */}
           {loading ? (
-            <p>Chargement...</p>
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+              <p className="text-muted-foreground">Chargement de vos opportunités n8n...</p>
+            </div>
           ) : filteredLeads.length === 0 ? (
-            <p>Aucun lead</p>
-          ) : viewMode === "list" ? (
-            /* 🧾 LISTE */
-            <div className="space-y-2">
-              {filteredLeads.map((lead) => (
-                <div
-                  key={lead.id}
-                  className="flex justify-between items-center p-4 border rounded-lg bg-card"
-                >
-                  <div>
-                    <p className="font-semibold mb-3">{lead.titre}</p>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Ville : {lead.ville}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Date détection :{" "}
-                      {new Date(lead.date_detection).toLocaleString("fr-FR")}
-                    </p>
-
-                  </div>
-
-                  <div className="text-right">
-                    <p className="font-bold">{lead.prix} €</p>
-                    <p className="text-xs text-muted-foreground">
-                      Statut : {lead.status}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            <div className="text-center py-20 border-2 border-dashed rounded-2xl">
+              <p className="text-muted-foreground">Aucun lead trouvé.</p>
             </div>
           ) : (
-            /* 🔲 GRID */
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className={viewMode === "grid"
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+              : "space-y-3"
+            }>
               {filteredLeads.map((lead) => (
-                <div
+                <LeadCard
                   key={lead.id}
-                  className="p-4 border rounded-xl bg-card space-y-2"
-                >
-                  <p className="font-semibold">{lead.title}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {lead.location}
-                  </p>
-                  <p className="text-sm">
-                    {lead.surface} m² • {lead.prix} €
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    date detection : {lead.date_detection}
-                    Statut : {lead.status}
-                  </p>
-                </div>
+                  id={lead.id}
+                  titre={lead.titre}                  // Changé: title -> titre
+                  ville={lead.ville}                  // Changé: location -> ville
+                  surface={lead.surface}
+                  prix={lead.prix}                    // Changé: loyer -> prix
+                  score={lead.score}                  // Le composant gère déjà le x10 en interne
+                  statut_prospection={lead.statut_prospection} // Changé: status -> statut_prospection
+                  date_detection={lead.date_detection} // Changé: createdAt -> date_detection
+                  url={lead.url}                      // Ajouté: Indispensable pour le bouton LBC
+                  // potentiel_revenu={lead.potentiel_revenu} // Optionnel: Si n8n a déjà calculé le score
+                />
               ))}
             </div>
           )}
+
+          {/* Pagination Controls */}
+          <div className="flex justify-center items-center gap-4 pt-6">
+            <Button
+              variant="outline"
+              disabled={currentPage === 1 || loading}
+              onClick={() => setCurrentPage(prev => prev - 1)}
+            >
+              <ChevronLeft className="h-4 w-4 mr-2" /> Précédent
+            </Button>
+            <span className="text-sm font-medium">Page {currentPage}</span>
+            <Button
+              variant="outline"
+              disabled={currentPage === totalPages || loading}
+              onClick={() => setCurrentPage(prev => prev + 1)}
+            >
+              Suivant <ChevronRight className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
         </div>
       </main>
+
+      <div className="fixed top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none -z-10" />
     </div>
   );
 };
