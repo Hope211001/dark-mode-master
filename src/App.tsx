@@ -30,6 +30,8 @@ import { AuthProvider } from './contexts/AuthContext';
 //public
 import AboutPage from "./pages/home/about";
 import Tarifs from "./pages/home/tarifs ";
+import MapExplorer from "./components/Map/MapExplorer";
+import ClientSearchZone from "./pages/client/ClientSearchZone";
 
 const queryClient = new QueryClient();
 
@@ -98,6 +100,12 @@ const App = () => (
               <Route path="buy-zone" element={
                 <ProtectedRoute allowedRoles={['client']}>
                   <BuyZone />
+                </ProtectedRoute>
+              } />
+
+              <Route path="mapexploter" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                  <ClientSearchZone />
                 </ProtectedRoute>
               } />
             </Route>

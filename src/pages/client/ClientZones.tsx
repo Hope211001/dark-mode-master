@@ -43,7 +43,7 @@ const ClientZones = () => {
    */
   const exclusiveZones = zones.filter(z => z.statut_market === 'VENDU');
   // Les zones "partagées" pourraient être des zones d'essai ou multi-utilisateurs si votre modèle évolue
-  const sharedZones = zones.filter(z => z.statut_market === 'PARTAGE');
+  const sharedZones = zones.filter(z => z.statut_market === 'LIBRE');
 
   return (
     <div className="min-h-screen bg-background">
@@ -121,7 +121,7 @@ const ClientZones = () => {
                   <Globe className="h-5 w-5 text-primary" />
                   Couverture Géographique
                 </CardTitle>
-                <Link to="/client/marketplace">
+                <Link to="/client/buy-zone">
                   <Button variant="default" size="sm" className="gap-2 shadow-lg shadow-primary/20">
                     <Plus className="h-4 w-4" />
                     Acheter une zone

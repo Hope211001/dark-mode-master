@@ -36,9 +36,9 @@ const navItems = [
     icon: MapPin
   },
   {
-    title: "Trouvez zones",
-    url: "/client/buy-zone",
-    icon: Mail,
+    title: "Map",
+    url: "/client/mapexploter",
+    icon: Search,
     badge: 3
   },
 ];
