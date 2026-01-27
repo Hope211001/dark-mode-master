@@ -1,71 +1,29 @@
-import { apiClient } from "./client";
-
-/* =======================
-   TYPES
-======================= */
+import { apiClient } from './client';
 
 export interface Lead {
   id: string;
   titre: string;
   ville: string;
   prix: number;
-  status: string;
+  surface: number;
+  score: number;
+  statut_prospection: string;
   date_detection: string;
+  url: string;
+  potentiel_revenu?: number;
 }
 
-export interface CreateLeadData {
-  titre: string;
-  ville: string;
-  prix: number;
-  status?: string;
-  date_detection?: string;
+// Définition de la forme de la réponse du Backend (avec pagination)
+interface LeadsResponse {
+  data: Lead[];
+  totalCount: number;
+  totalPages: number;
 }
 
-/* =======================
-   SERVICE
-======================= */
-
-class LeadsService {
-  private readonly BASE_PATH = "/leads";
-
-  // 🔹 Récupérer tous les leads
-  async getAll(): Promise<Lead[]> {
-    const { data } = await apiClient.get<Lead[]>(this.BASE_PATH);
-    return data;
+export const leadsService = {
+  // On précise que la fonction renvoie une promesse de type LeadsResponse
+  getMyLeads: async (page = 1, limit = 10): Promise<LeadsResponse> => {
+    const response = await apiClient.get<LeadsResponse>(`/leads/my?page=${page}&limit=${limit}`);
+    return response.data;
   }
-
-  // 🔹 Récupérer un lead par ID
-  async getById(id: string): Promise<Lead> {
-    const { data } = await apiClient.get<Lead>(`${this.BASE_PATH}/${id}`);
-    return data;
-  }
-
-  // 🔹 Créer un lead
-  async create(payload: CreateLeadData): Promise<Lead> {
-    const { data } = await apiClient.post<Lead>(this.BASE_PATH, payload);
-    return data;
-  }
-
-  // 🔹 Mettre à jour un lead
-  async update(
-    id: string,
-    payload: Partial<CreateLeadData>
-  ): Promise<Lead> {
-    const { data } = await apiClient.put<Lead>(
-      `${this.BASE_PATH}/${id}`,
-      payload
-    );
-    return data;
-  }
-
-  // 🔹 Supprimer un lead
-  async delete(id: string): Promise<void> {
-    await apiClient.delete(`${this.BASE_PATH}/${id}`);
-  }
-}
-
-/* =======================
-   EXPORT UNIQUE
-======================= */
-
-export const leadsService = new LeadsService();
+};

@@ -1,4 +1,4 @@
-import { MapPin, Maximize, Euro, Calendar, Mail, ExternalLink, Heart, MoreHorizontal } from "lucide-react";
+import { MapPin, Maximize, Euro, Calendar, Mail, ExternalLink, Heart, MoreHorizontal, TrendingUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,76 +13,85 @@ import {
 
 interface LeadCardProps {
   id: string;
-  title: string;
-  location: string;
-  surface: number;
-  loyer: number;
-  potentielAirbnb: number;
-  score: number;
-  status: "new" | "contacted" | "responded" | "negotiating" | "converted" | "lost";
-  createdAt: string;
-  imageUrl?: string;
+  titre: string;           // Match DB: titre
+  ville: string;           // Match DB: ville
+  surface: number;         // Match DB: surface
+  prix: number;            // Match DB: prix (loyer)
+  potentiel_revenu?: number; // Donnée issue de Beyond Pricing (via n8n)
+  score: number;           // Match DB: score (0 à 10)
+  statut_prospection: string; // Match DB: statut_prospection (ex: 'NOUVEAU')
+  date_detection: string;  // Match DB: date_detection
+  url: string;             // Match DB: url (LBC)
   isFavorite?: boolean;
 }
 
-const statusConfig = {
-  new: { label: "Nouveau", className: "bg-primary/20 text-primary border-primary/30" },
-  contacted: { label: "Contacté", className: "bg-warning/20 text-warning border-warning/30" },
-  responded: { label: "Répondu", className: "bg-success/20 text-success border-success/30" },
-  negotiating: { label: "Négociation", className: "bg-accent/20 text-accent border-accent/30" },
-  converted: { label: "Converti", className: "bg-success/20 text-success border-success/30" },
-  lost: { label: "Perdu", className: "bg-muted text-muted-foreground border-muted" },
+// Mapping des statuts DB (Majuscules) vers labels UI
+const statusConfig: Record<string, { label: string; className: string }> = {
+  NOUVEAU: { label: "Nouveau", className: "bg-primary/20 text-primary border-primary/30" },
+  CONTACTE: { label: "Contacté", className: "bg-warning/20 text-warning border-warning/30" },
+  REPONDU: { label: "Répondu", className: "bg-success/20 text-success border-success/30" },
+  NEGOCIATION: { label: "Négociation", className: "bg-accent/20 text-accent border-accent/30" },
+  CONVERTI: { label: "Converti", className: "bg-success/20 text-success border-success/30" },
+  PERDU: { label: "Perdu", className: "bg-muted text-muted-foreground border-muted" },
 };
 
 function ScoreBadge({ score }: { score: number }) {
-  const colorClass = score >= 85 
+  // Si le score en DB est sur 10, on multiplie par 10 pour le %
+  const displayScore = score <= 10 ? score * 10 : score;
+  
+  const colorClass = displayScore >= 80 
     ? "bg-success/20 text-success border-success/30" 
-    : score >= 70 
+    : displayScore >= 60 
     ? "bg-warning/20 text-warning border-warning/30" 
-    : "bg-muted text-muted-foreground border-muted";
+    : "bg-destructive/10 text-destructive border-destructive/20";
   
   return (
-    <Badge variant="outline" className={cn("font-mono font-bold", colorClass)}>
-      {score}%
+    <Badge variant="outline" className={cn("font-mono font-bold backdrop-blur-md", colorClass)}>
+      {displayScore}%
     </Badge>
   );
 }
 
+
 export function LeadCard({
   id,
-  title,
-  location,
+  titre,
+  ville,
   surface,
-  loyer,
-  potentielAirbnb,
+  prix = 0, 
+  // potentiel_revenu = 0,
   score,
-  status,
-  createdAt,
-  imageUrl,
+  statut_prospection,
+  date_detection,
+  url,
   isFavorite = false,
 }: LeadCardProps) {
-  const rentabilite = ((potentielAirbnb - loyer) / loyer * 100).toFixed(0);
   
+  // Calcul de rentabilité : (Revenu Airbnb - Loyer)
+  // const beneficeEstime = potentiel_revenu > 0 ? potentiel_revenu - prix : 0;
+  
+  // Formatage de la date (ex: "il y a 2 jours" ou date simple)
+  const formattedDate = new Date(date_detection).toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'short',
+  });
+
   return (
-    <Card className="glass-card overflow-hidden transition-all duration-300 hover:border-primary/30 hover:shadow-lg group">
-      {/* Image */}
-      <div className="relative h-40 bg-secondary overflow-hidden">
-        {imageUrl ? (
-          <img src={imageUrl} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-secondary to-muted">
-            <MapPin className="h-12 w-12 text-muted-foreground/30" />
-          </div>
-        )}
+    <Card className="glass-card overflow-hidden transition-all duration-300 hover:border-primary/30 hover:shadow-xl group border-white/10">
+      {/* Header Image / Icon */}
+      <div className="relative h-32 bg-secondary/30 overflow-hidden flex items-center justify-center bg-gradient-to-br from-primary/5 to-transparent">
+        <div className="text-primary/20 group-hover:scale-110 transition-transform duration-500">
+           <TrendingUp size={64} />
+        </div>
         
-        {/* Overlays */}
+        {/* Overlays statuts et score */}
         <div className="absolute top-3 left-3 flex gap-2">
-          <Badge className={cn("border", statusConfig[status].className)}>
-            {statusConfig[status].label}
+          <Badge className={cn("border text-[10px] uppercase font-bold", statusConfig[statut_prospection]?.className || statusConfig.NOUVEAU.className)}>
+            {statusConfig[statut_prospection]?.label || statut_prospection}
           </Badge>
         </div>
         
-        <div className="absolute top-3 right-3 flex gap-2">
+        <div className="absolute top-3 right-3">
           <ScoreBadge score={score} />
         </div>
 
@@ -90,7 +99,7 @@ export function LeadCard({
           variant="ghost" 
           size="icon" 
           className={cn(
-            "absolute bottom-3 right-3 h-8 w-8 bg-background/80 backdrop-blur",
+            "absolute bottom-3 right-3 h-8 w-8 bg-background/50 backdrop-blur hover:bg-background",
             isFavorite && "text-destructive"
           )}
         >
@@ -99,67 +108,74 @@ export function LeadCard({
       </div>
 
       <CardContent className="p-4 space-y-4">
-        {/* Title & Location */}
-        <div>
-          <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-            {title}
+        {/* Titre & Localisation */}
+        <div className="h-12">
+          <h3 className="font-bold text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors text-sm">
+            {titre}
           </h3>
-          <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-            <MapPin className="h-3.5 w-3.5" />
-            <span className="truncate">{location}</span>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+            <MapPin className="h-3 w-3" />
+            <span className="truncate">{ville}</span>
           </div>
         </div>
 
-        {/* Details Grid */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex items-center gap-2 text-sm">
-            <Maximize className="h-4 w-4 text-muted-foreground" />
-            <span className="text-foreground font-medium">{surface} m²</span>
+        {/* Grille de détails techniques */}
+        <div className="grid grid-cols-2 gap-2 border-y border-white/5 py-3">
+          <div className="flex items-center gap-2 text-xs">
+            <Maximize className="h-3.5 w-3.5 text-primary/60" />
+            <span className="text-foreground font-semibold">{surface} m²</span>
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Euro className="h-4 w-4 text-muted-foreground" />
-            <span className="text-foreground font-medium">{loyer.toLocaleString()}€</span>
+          <div className="flex items-center gap-2 text-xs">
+            <Euro className="h-3.5 w-3.5 text-primary/60" />
+            <span className="text-foreground font-semibold">{prix.toLocaleString()}€ <span className="text-[10px] font-normal text-muted-foreground">/hc</span></span>
           </div>
         </div>
 
-        {/* Potential */}
-        <div className="bg-secondary/50 rounded-lg p-3">
+        {/* Indicateur de Rentabilité (Cœur du SaaS) */}
+        {/* <div className="bg-primary/5 rounded-lg p-3 border border-primary/10">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-muted-foreground">Potentiel Airbnb</span>
-            <span className="text-success text-xs font-medium">+{rentabilite}%</span>
+            <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Cashflow estimé</span>
+            {beneficeEstime > 0 && (
+                <Badge className="h-4 bg-success/20 text-success text-[9px] border-none">RENTABLE</Badge>
+            )}
           </div>
-          <div className="text-lg font-bold text-primary mono">
-            {potentielAirbnb.toLocaleString()}€/mois
+          <div className="text-xl font-black text-primary mono">
+            {beneficeEstime > 0 ? `+${beneficeEstime.toLocaleString()}€` : '--'} <span className="text-xs font-normal">/mois</span>
           </div>
+        </div> */}
+
+        {/* Date et Source */}
+        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <Calendar className="h-3 w-3" />
+            <span>Détecté le {formattedDate}</span>
+          </div>
+          <Badge variant="outline" className="text-[9px] py-0 h-4 uppercase">LBC</Badge>
         </div>
 
-        {/* Date */}
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Calendar className="h-3 w-3" />
-          <span>Ajouté {createdAt}</span>
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-2 pt-2 border-t border-border">
-          <Button size="sm" className="flex-1" variant="default">
-            <Mail className="h-4 w-4 mr-2" />
+        {/* Actions de prospection */}
+        <div className="flex items-center gap-2 pt-2">
+          <Button size="sm" className="flex-1 bg-primary hover:bg-primary/90 font-bold text-xs h-9">
+            <Mail className="h-3.5 w-3.5 mr-2" />
             Contacter
           </Button>
-          <Button size="sm" variant="outline">
-            <ExternalLink className="h-4 w-4" />
-          </Button>
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            <Button size="sm" variant="outline" className="h-9 w-9 p-0 border-white/10">
+              <ExternalLink className="h-4 w-4" />
+            </Button>
+          </a>
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="ghost">
+              <Button size="sm" variant="ghost" className="h-9 w-9 p-0">
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>Voir les détails</DropdownMenuItem>
-              <DropdownMenuItem>Ajouter aux favoris</DropdownMenuItem>
-              <DropdownMenuItem>Marquer comme contacté</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">Archiver</DropdownMenuItem>
+            <DropdownMenuContent align="end" className="glass-card">
+              <DropdownMenuItem>Modifier le statut</DropdownMenuItem>
+              <DropdownMenuItem>Voir l'analyse n8n</DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-white/5" />
+              <DropdownMenuItem className="text-destructive">Archiver le lead</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

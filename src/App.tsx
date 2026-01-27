@@ -27,6 +27,10 @@ import ZonesManagement from "./pages/admin/zones/zone.liste";
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 
+//public
+import AboutPage from "./pages/home/about";
+import Tarifs from "./pages/home/tarifs ";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -42,6 +46,8 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/logout" element={<Logout />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/tarifs" element={<Tarifs />} />
 
             {/* PORTAIL ADMIN - Protégé (Role: admin) */}
             <Route 

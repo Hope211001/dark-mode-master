@@ -26,7 +26,7 @@ const navItems = [
   },
   {
     title: "Mes Leads",
-    url: "/client",
+    url: "/client/leads",
     icon: Users,
     badge: 12
   },
@@ -36,8 +36,8 @@ const navItems = [
     icon: MapPin
   },
   {
-    title: "Messages",
-    url: "/client",
+    title: "Trouvez zones",
+    url: "/client/buy-zone",
     icon: Mail,
     badge: 3
   },
@@ -46,12 +46,12 @@ const navItems = [
 const settingsItems = [
   {
     title: "Paramètres",
-    url: "/client",
+    url: "/client/settings",
     icon: Settings
   },
   {
     title: "Mon Profil",
-    url: "/client",
+    url: "/client/profile", 
     icon: UserIcon
   },
 ];
