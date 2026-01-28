@@ -28,18 +28,16 @@ const navItems = [
     title: "Mes Leads",
     url: "/client/leads",
     icon: Users,
-    badge: 12
   },
   {
+    title: "Achat de zones",
+    url: "/client/mapexploter",
+    icon: Search
+  },
+    {
     title: "Mes Zones",
     url: "/client/zones",
     icon: MapPin
-  },
-  {
-    title: "Map",
-    url: "/client/mapexploter",
-    icon: Search,
-    badge: 3
   },
 ];
 

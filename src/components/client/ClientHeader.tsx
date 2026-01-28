@@ -26,13 +26,13 @@ export function ClientHeader({ title, subtitle }: ClientHeaderProps) {
 
       <div className="flex items-center gap-4">
         {/* Search */}
-        <div className="relative hidden md:block">
+        {/* <div className="relative hidden md:block">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Rechercher un lead, une zone..."
             className="w-72 pl-10 bg-secondary/50 border-border focus:bg-secondary"
           />
-        </div>
+        </div> */}
 
         {/* Help */}
         <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">

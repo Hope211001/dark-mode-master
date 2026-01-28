@@ -13,8 +13,7 @@ import {
     Info,
     CheckCircle2,
     AlertCircle,
-    Navigation,
-    RefreshCw
+    Navigation
 } from "lucide-react";
 
 // Import des services
@@ -36,7 +35,6 @@ const ClientSearchZone = () => {
 
     const [loading, setLoading] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
-    const [isRefreshing, setIsRefreshing] = useState(false);
     const { toast } = useToast();
 
 
@@ -56,11 +54,6 @@ const ClientSearchZone = () => {
         }
     };
 
-    // NOUVEAU : Fonction d'actualisation
-    const handleRefresh = () => {
-        window.location.reload();
-    };
-
     // NOUVEAU : Fermer les suggestions si on clique ailleurs
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -72,7 +65,7 @@ const ClientSearchZone = () => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // AMÉLIORÉ : Autocomplete filtré par les zones de la base de données
+    // NOUVEAU : Autocomplete pendant la frappe
     useEffect(() => {
         if (searchTerm.length < 2) {
             setSuggestions([]);
@@ -82,17 +75,10 @@ const ClientSearchZone = () => {
         const timer = setTimeout(async () => {
             try {
                 const res = await fetch(
-                    `https://api-adresse.data.gouv.fr/search/?q=${searchTerm}&type=municipality&limit=20`
+                    `https://api-adresse.data.gouv.fr/search/?q=${searchTerm}&type=municipality&limit=5`
                 );
                 const data = await res.json();
-                
-                // FILTRER uniquement les villes qui correspondent aux codes postaux de nos zones
-                const filteredFeatures = (data.features || []).filter((feature: any) => {
-                    const cp = feature.properties.postcode;
-                    return allZones.some(zone => zone.codes_postaux?.includes(cp));
-                });
-
-                setSuggestions(filteredFeatures);
+                setSuggestions(data.features || []);
                 setShowSuggestions(true);
             } catch (error) {
                 console.error("Erreur autocomplete:", error);
@@ -100,9 +86,9 @@ const ClientSearchZone = () => {
         }, 300);
 
         return () => clearTimeout(timer);
-    }, [searchTerm, allZones]);
+    }, [searchTerm]);
 
-    // AMÉLIORÉ : Sélection d'une suggestion avec vérification et recentrage de la carte
+    // NOUVEAU : Sélection d'une suggestion
     const handleSelectSuggestion = (feature: any) => {
         const [lon, lat] = feature.geometry.coordinates;
         const cp = feature.properties.postcode;
@@ -110,25 +96,18 @@ const ClientSearchZone = () => {
 
         setSearchTerm(cityName);
         setShowSuggestions(false);
+        setSearchPos({ lat, lon });
 
         // Chercher la zone correspondante
         const match = allZones.find(z => z.codes_postaux?.includes(cp));
         if (match) {
-            // Mettre à jour la position de recherche pour recentrer la carte
-            setSearchPos({ lat: match.lat_center, lon: match.lng_center });
-            
-            // Sélectionner la zone
             setSelectedZone(match);
-            
             toast({
                 title: "✅ Zone trouvée",
                 description: `${cityName} - ${match.statut_market}`,
             });
         } else {
-            // Même si pas de zone, on centre sur les coordonnées de la ville
-            setSearchPos({ lat, lon });
             setSelectedZone(null);
-            
             toast({
                 title: "⚠️ Zone non disponible",
                 description: "Ce secteur n'est pas encore ouvert à l'exclusivité.",
@@ -157,16 +136,11 @@ const ClientSearchZone = () => {
                 const match = allZones.find(z => z.codes_postaux?.includes(cp));
                 if (match) {
                     setSelectedZone(match);
-                    toast({
-                        title: "✅ Zone trouvée",
-                        description: `${match.nom} - ${match.statut_market}`,
-                    });
                 } else {
                     setSelectedZone(null);
                     toast({
-                        title: "⚠️ Zone non disponible",
-                        description: "Ce secteur n'est pas disponible dans notre base.",
-                        variant: "destructive"
+                        title: "Zone non disponible",
+                        description: "Ce secteur n'est pas encore ouvert à l'exclusivité."
                     });
                 }
             }
@@ -205,26 +179,12 @@ const ClientSearchZone = () => {
                     {/* COLONNE GAUCHE : Recherche et Actions */}
                     <div className="lg:col-span-1 space-y-6 overflow-y-auto pr-2">
 
-                        {/* NOUVEAU : Bouton d'actualisation */}
-                        <div className="flex justify-end">
-                            <Button 
-                                variant="outline" 
-                                size="sm" 
-                                onClick={handleRefresh}
-                                disabled={isRefreshing}
-                                className="gap-2"
-                            >
-                                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                                {isRefreshing ? 'Actualisation...' : 'Actualiser les zones'}
-                            </Button>
-                        </div>
-
                         {/* Carte Recherche AMÉLIORÉE avec Autocomplete */}
-                        <Card className="glass-card border-white/5 shadow-xl relative">
+                        <Card className="glass-card border-white/5 shadow-xl">
                             <CardHeader>
                                 <CardTitle className="text-sm font-bold flex items-center gap-2">
                                     <Search className="h-4 w-4 text-primary" />
-                                    Rechercher une ville disponible
+                                    Rechercher une ville
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
@@ -256,53 +216,36 @@ const ClientSearchZone = () => {
                                         </Button>
                                     </form>
 
-                                    {/* Liste de suggestions - UNIQUEMENT zones disponibles - Z-INDEX CORRIGÉ */}
+                                    {/* Liste de suggestions */}
                                     {showSuggestions && suggestions.length > 0 && (
-                                        <div className="absolute z-[100] w-full mt-2 bg-background/98 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 max-h-[300px] overflow-y-auto">
-                                            {suggestions.map((feature, index) => {
-                                                const cp = feature.properties.postcode;
-                                                const zone = allZones.find(z => z.codes_postaux?.includes(cp));
-                                                
-                                                return (
-                                                    <button
-                                                        key={index}
-                                                        onClick={() => handleSelectSuggestion(feature)}
-                                                        className="w-full px-4 py-3 text-left hover:bg-primary/10 transition-colors border-b border-white/5 last:border-0 flex items-center gap-3 group"
-                                                    >
-                                                        <MapPin className="h-4 w-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="font-medium text-sm truncate">
-                                                                {feature.properties.label}
-                                                            </div>
-                                                            <div className="text-xs text-muted-foreground flex items-center gap-2">
-                                                                <span>CP: {feature.properties.postcode}</span>
-                                                                {zone && (
-                                                                    <Badge 
-                                                                        variant={zone.statut_market === 'LIBRE' ? 'default' : 'destructive'}
-                                                                        className="text-[9px] px-1.5 py-0"
-                                                                    >
-                                                                        {zone.statut_market === 'LIBRE' ? '🟢 LIBRE' : '🔴 VENDU'}
-                                                                    </Badge>
-                                                                )}
-                                                            </div>
+                                        <div className="absolute z-50 w-full mt-2 bg-background/95 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                            {suggestions.map((feature, index) => (
+                                                <button
+                                                    key={index}
+                                                    onClick={() => handleSelectSuggestion(feature)}
+                                                    className="w-full px-4 py-3 text-left hover:bg-primary/10 transition-colors border-b border-white/5 last:border-0 flex items-center gap-3 group"
+                                                >
+                                                    <MapPin className="h-4 w-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="font-medium text-sm truncate">
+                                                            {feature.properties.label}
                                                         </div>
-                                                    </button>
-                                                );
-                                            })}
+                                                        <div className="text-xs text-muted-foreground">
+                                                            CP: {feature.properties.postcode}
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            ))}
                                         </div>
                                     )}
 
-                                    {/* Message "Aucun résultat" - Z-INDEX CORRIGÉ */}
+                                    {/* Message "Aucun résultat" */}
                                     {showSuggestions && searchTerm.length >= 2 && suggestions.length === 0 && (
-                                        <div className="absolute z-[100] w-full mt-2 bg-background/98 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl p-4 text-center text-sm text-muted-foreground">
-                                            Aucune zone disponible pour cette recherche
+                                        <div className="absolute z-50 w-full mt-2 bg-background/95 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl p-4 text-center text-sm text-muted-foreground">
+                                            Aucune ville trouvée
                                         </div>
                                     )}
                                 </div>
-                                
-                                <p className="text-[10px] text-muted-foreground mt-2 italic">
-                                    💡 Seules les villes avec des zones disponibles apparaissent
-                                </p>
                             </CardContent>
                         </Card>
 

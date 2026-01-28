@@ -18,6 +18,30 @@ interface MapProps {
   onSelectZone?: (id: string) => void;
 }
 
+// --- CSS Injecté pour les Popups et Animations ---
+const customStyles = `
+  .leaflet-popup-content-wrapper {
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border-radius: 12px !important;
+    padding: 0px !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+  }
+  .leaflet-popup-tip {
+    background: #ffffff !important;
+  }
+  .custom-marker-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  @keyframes pulse-soft {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 0.3; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+  }
+`;
+
 function RecenterMap({ lat, lon }: { lat: number; lon: number }) {
   const map = useMap();
   useEffect(() => {
@@ -28,60 +52,50 @@ function RecenterMap({ lat, lon }: { lat: number; lon: number }) {
   return null;
 }
 
-// Créer des icônes personnalisées pour les marqueurs
 const createCustomIcon = (isVendu: boolean) => {
-  const color = isVendu ? '#ef4444' : '#10b981'; // Rouge vif ou Vert vif
-  const shadowColor = isVendu ? 'rgba(239, 68, 68, 0.6)' : 'rgba(16, 185, 129, 0.6)';
+  const color = isVendu ? '#ef4444' : '#22c55e'; 
   
   return L.divIcon({
-    className: 'custom-marker',
+    className: 'custom-marker-container',
     html: `
-      <div style="position: relative;">
+      <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+        <!-- Halo d'animation -->
         <div style="
-          width: 20px;
-          height: 20px;
-          background: ${color};
-          border: 3px solid white;
-          border-radius: 50%;
-          box-shadow: 0 0 20px ${shadowColor}, 0 0 40px ${shadowColor};
-          position: relative;
-          z-index: 1000;
-        "></div>
-        <div style="
-          width: 10px;
-          height: 10px;
-          background: ${color};
-          border-radius: 50%;
           position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          opacity: 0.3;
-          animation: pulse 2s infinite;
+          width: 25px;
+          height: 25px;
+          background: ${color};
+          border-radius: 50%;
+          animation: pulse-soft 2s infinite;
+        "></div>
+        <!-- Point Central -->
+        <div style="
+          width: 12px;
+          height: 12px;
+          background: ${color};
+          border: 2px solid white;
+          border-radius: 50%;
+          z-index: 2;
+          box-shadow: 0 0 10px rgba(0,0,0,0.5);
         "></div>
       </div>
-      <style>
-        @keyframes pulse {
-          0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
-          50% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
-        }
-      </style>
     `,
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
   });
 };
 
 export default function MapExplorer({ zonesData = [], searchPos, onSelectZone }: MapProps) {
   return (
-    <div className="h-full w-full bg-[#0a0e1a]">
+    <div className="h-full w-full bg-[#0a0e1a] overflow-hidden">
+      <style>{customStyles}</style>
+      
       <MapContainer
         center={[46.6033, 1.8883]}
         zoom={6}
         className="h-full w-full"
-        style={{ background: "#0a0e1a" }}
+        zoomControl={false} // Plus propre pour le design
       >
-        {/* Layer Dark Matter - Très sombre pour contraste maximum */}
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           attribution='&copy; CARTO'
@@ -92,30 +106,23 @@ export default function MapExplorer({ zonesData = [], searchPos, onSelectZone }:
         {zonesData.map((zone) => {
           const lat = Number(zone.lat_center);
           const lng = Number(zone.lng_center);
-
           if (isNaN(lat) || isNaN(lng)) return null;
 
           const isVendu = zone.statut_market === 'VENDU';
 
           return (
             <div key={zone.id}>
-              {/* Circle pour la zone de couverture */}
               <Circle
                 center={[lat, lng]}
-                radius={5000}
-                eventHandlers={{
-                  click: () => onSelectZone?.(zone.id.toString()),
-                }}
+                radius={3000} // Réduit légèrement pour plus de clarté
                 pathOptions={{
-                  fillColor: isVendu ? '#ef4444' : '#10b981',
-                  color: isVendu ? '#f87171' : '#34d399',
-                  weight: 2,
-                  fillOpacity: 0.15,
-                  opacity: 0.6,
+                  fillColor: isVendu ? '#ef4444' : '#22c55e',
+                  color: isVendu ? '#ef4444' : '#22c55e',
+                  weight: 1,
+                  fillOpacity: 0.1,
                 }}
               />
               
-              {/* Marker avec point coloré visible */}
               <Marker
                 position={[lat, lng]}
                 icon={createCustomIcon(isVendu)}
@@ -123,25 +130,31 @@ export default function MapExplorer({ zonesData = [], searchPos, onSelectZone }:
                   click: () => onSelectZone?.(zone.id.toString()),
                 }}
               >
-                <Popup>
-                  <div className="min-w-[180px] p-2">
-                    <div className="font-bold text-lg text-slate-900 mb-2 flex items-center gap-2">
-                      <div 
-                        className={`w-3 h-3 rounded-full ${isVendu ? 'bg-red-500' : 'bg-green-500'}`}
-                        style={{
-                          boxShadow: isVendu 
-                            ? '0 0 10px rgba(239, 68, 68, 0.8)' 
-                            : '0 0 10px rgba(16, 185, 129, 0.8)'
-                        }}
-                      />
+                <Popup minWidth={200} closeButton={false}>
+                  <div className="p-3">
+                    <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">
+                      Zone de couverture
+                    </p>
+                    <h3 className="text-lg font-bold text-slate-900 leading-tight mb-2">
                       {zone.nom}
-                    </div>
-                    <div className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
-                      isVendu 
-                        ? 'bg-red-100 text-red-700 border border-red-300' 
-                        : 'bg-green-100 text-green-700 border border-green-300'
-                    }`}>
-                      {isVendu ? '🔴 VENDU' : '🟢 LIBRE'}
+                    </h3>
+                    
+                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
+                      <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-black ${
+                        isVendu 
+                          ? 'bg-red-50 text-red-600 border border-red-100' 
+                          : 'bg-green-50 text-green-600 border border-green-100'
+                      }`}>
+                        <span className={`w-2 h-2 rounded-full ${isVendu ? 'bg-red-500' : 'bg-green-500'}`}></span>
+                        {isVendu ? 'DÉJÀ VENDU' : 'DISPONIBLE'}
+                      </span>
+                      
+                      <button 
+                        onClick={() => onSelectZone?.(zone.id.toString())}
+                        className="text-[11px] font-bold text-blue-600 hover:underline"
+                      >
+                        Détails →
+                      </button>
                     </div>
                   </div>
                 </Popup>
