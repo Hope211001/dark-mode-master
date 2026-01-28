@@ -10,22 +10,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Link } from "react-router-dom";
 
 interface LeadCardProps {
   id: string;
-  titre: string;           // Match DB: titre
-  ville: string;           // Match DB: ville
-  surface: number;         // Match DB: surface
-  prix: number;            // Match DB: prix (loyer)
-  potentiel_revenu?: number; // Donnée issue de Beyond Pricing (via n8n)
-  score: number;           // Match DB: score (0 à 10)
-  statut_prospection: string; // Match DB: statut_prospection (ex: 'NOUVEAU')
-  date_detection: string;  // Match DB: date_detection
-  url: string;             // Match DB: url (LBC)
+  titre: string;           
+  ville: string;           
+  surface: number;         
+  prix: number;            
+  potentiel_revenu?: number; 
+  score: number;           
+  statut_prospection: string; 
+  date_detection: string;  
+  url: string;             
   isFavorite?: boolean;
 }
 
-// Mapping des statuts DB (Majuscules) vers labels UI
+// Mapping des statuts DB vers labels UI
 const statusConfig: Record<string, { label: string; className: string }> = {
   NOUVEAU: { label: "Nouveau", className: "bg-primary/20 text-primary border-primary/30" },
   CONTACTE: { label: "Contacté", className: "bg-warning/20 text-warning border-warning/30" },
@@ -36,7 +37,6 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 };
 
 function ScoreBadge({ score }: { score: number }) {
-  // Si le score en DB est sur 10, on multiplie par 10 pour le %
   const displayScore = score <= 10 ? score * 10 : score;
   
   const colorClass = displayScore >= 80 
@@ -52,14 +52,12 @@ function ScoreBadge({ score }: { score: number }) {
   );
 }
 
-
 export function LeadCard({
   id,
   titre,
   ville,
   surface,
   prix = 0, 
-  // potentiel_revenu = 0,
   score,
   statut_prospection,
   date_detection,
@@ -67,10 +65,6 @@ export function LeadCard({
   isFavorite = false,
 }: LeadCardProps) {
   
-  // Calcul de rentabilité : (Revenu Airbnb - Loyer)
-  // const beneficeEstime = potentiel_revenu > 0 ? potentiel_revenu - prix : 0;
-  
-  // Formatage de la date (ex: "il y a 2 jours" ou date simple)
   const formattedDate = new Date(date_detection).toLocaleDateString('fr-FR', {
     day: 'numeric',
     month: 'short',
@@ -131,19 +125,6 @@ export function LeadCard({
           </div>
         </div>
 
-        {/* Indicateur de Rentabilité (Cœur du SaaS) */}
-        {/* <div className="bg-primary/5 rounded-lg p-3 border border-primary/10">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Cashflow estimé</span>
-            {beneficeEstime > 0 && (
-                <Badge className="h-4 bg-success/20 text-success text-[9px] border-none">RENTABLE</Badge>
-            )}
-          </div>
-          <div className="text-xl font-black text-primary mono">
-            {beneficeEstime > 0 ? `+${beneficeEstime.toLocaleString()}€` : '--'} <span className="text-xs font-normal">/mois</span>
-          </div>
-        </div> */}
-
         {/* Date et Source */}
         <div className="flex items-center justify-between text-[10px] text-muted-foreground">
           <div className="flex items-center gap-1">
@@ -159,11 +140,6 @@ export function LeadCard({
             <Mail className="h-3.5 w-3.5 mr-2" />
             Contacter
           </Button>
-          <a href={url} target="_blank" rel="noopener noreferrer">
-            <Button size="sm" variant="outline" className="h-9 w-9 p-0 border-white/10">
-              <ExternalLink className="h-4 w-4" />
-            </Button>
-          </a>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -172,10 +148,18 @@ export function LeadCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="glass-card">
-              <DropdownMenuItem>Modifier le statut</DropdownMenuItem>
-              <DropdownMenuItem>Voir l'analyse n8n</DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-white/5" />
-              <DropdownMenuItem className="text-destructive">Archiver le lead</DropdownMenuItem>
+                
+                {/* --- CORRECTION ICI --- */}
+                <DropdownMenuItem asChild>
+                    {/* Utilisation des backticks ` ` pour insérer la variable id */}
+                    <Link to={`/client/showLead/${id}`} className="w-full h-full block cursor-pointer">
+                        Voir l'analyse
+                    </Link>
+                </DropdownMenuItem>
+                
+                {/* <DropdownMenuItem>Voir l'analyse n8n</DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-white/5" />
+                <DropdownMenuItem className="text-destructive">Archiver le lead</DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

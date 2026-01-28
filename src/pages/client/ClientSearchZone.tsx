@@ -28,7 +28,6 @@ const ClientSearchZone = () => {
     const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
     const [searchPos, setSearchPos] = useState<{ lat: number; lon: number } | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
-    
     // NOUVEAUX STATES pour l'autocomplete
     const [suggestions, setSuggestions] = useState<any[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -85,7 +84,7 @@ const ClientSearchZone = () => {
                     `https://api-adresse.data.gouv.fr/search/?q=${searchTerm}&type=municipality&limit=20`
                 );
                 const data = await res.json();
-                
+
                 // FILTRER uniquement les villes qui correspondent aux codes postaux de nos zones
                 const filteredFeatures = (data.features || []).filter((feature: any) => {
                     const cp = feature.properties.postcode;
@@ -116,10 +115,10 @@ const ClientSearchZone = () => {
         if (match) {
             // Mettre à jour la position de recherche pour recentrer la carte
             setSearchPos({ lat: match.lat_center, lon: match.lng_center });
-            
+
             // Sélectionner la zone
             setSelectedZone(match);
-            
+
             toast({
                 title: "✅ Zone trouvée",
                 description: `${cityName} - ${match.statut_market}`,
@@ -128,7 +127,7 @@ const ClientSearchZone = () => {
             // Même si pas de zone, on centre sur les coordonnées de la ville
             setSearchPos({ lat, lon });
             setSelectedZone(null);
-            
+
             toast({
                 title: "⚠️ Zone non disponible",
                 description: "Ce secteur n'est pas encore ouvert à l'exclusivité.",
@@ -143,7 +142,7 @@ const ClientSearchZone = () => {
 
         setIsSearching(true);
         setShowSuggestions(false);
-        
+
         try {
             const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${searchTerm}&type=municipality&limit=1`);
             const data = await res.json();
@@ -207,9 +206,9 @@ const ClientSearchZone = () => {
 
                         {/* NOUVEAU : Bouton d'actualisation */}
                         <div className="flex justify-end">
-                            <Button 
-                                variant="outline" 
-                                size="sm" 
+                            <Button
+                                variant="outline"
+                                size="sm"
                                 onClick={handleRefresh}
                                 disabled={isRefreshing}
                                 className="gap-2"
@@ -241,10 +240,7 @@ const ClientSearchZone = () => {
                                             {searchTerm && (
                                                 <button
                                                     type="button"
-                                                    onClick={() => {
-                                                        setSearchTerm("");
-                                                        setSuggestions([]);
-                                                    }}
+                                                    onClick={handleRefresh}
                                                     className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                                 >
                                                     ✕
@@ -262,7 +258,7 @@ const ClientSearchZone = () => {
                                             {suggestions.map((feature, index) => {
                                                 const cp = feature.properties.postcode;
                                                 const zone = allZones.find(z => z.codes_postaux?.includes(cp));
-                                                
+
                                                 return (
                                                     <button
                                                         key={index}
@@ -277,7 +273,7 @@ const ClientSearchZone = () => {
                                                             <div className="text-xs text-muted-foreground flex items-center gap-2">
                                                                 <span>CP: {feature.properties.postcode}</span>
                                                                 {zone && (
-                                                                    <Badge 
+                                                                    <Badge
                                                                         variant={zone.statut_market === 'LIBRE' ? 'default' : 'destructive'}
                                                                         className="text-[9px] px-1.5 py-0"
                                                                     >
@@ -299,7 +295,7 @@ const ClientSearchZone = () => {
                                         </div>
                                     )}
                                 </div>
-                                
+
                                 <p className="text-[10px] text-muted-foreground mt-2 italic">
                                     💡 Seules les villes avec des zones disponibles apparaissent
                                 </p>
@@ -312,15 +308,14 @@ const ClientSearchZone = () => {
                                 <CardHeader className="pb-2">
                                     <div className="flex justify-between items-start">
                                         <CardTitle className="text-2xl font-black">{selectedZone.nom}</CardTitle>
-                                        <Badge 
-                                            variant={selectedZone.statut_market === 'VENDU' ? "destructive" : "default"} 
-                                            className={`font-bold text-xs px-3 py-1.5 flex items-center gap-1.5 shadow-lg ${
-                                                selectedZone.statut_market === 'LIBRE' 
-                                                    ? "bg-green-500 hover:bg-green-600 text-white border-2 border-green-400" 
+                                        <Badge
+                                            variant={selectedZone.statut_market === 'VENDU' ? "destructive" : "default"}
+                                            className={`font-bold text-xs px-3 py-1.5 flex items-center gap-1.5 shadow-lg ${selectedZone.statut_market === 'LIBRE'
+                                                    ? "bg-green-500 hover:bg-green-600 text-white border-2 border-green-400"
                                                     : "bg-red-500 hover:bg-red-600 text-white border-2 border-red-400"
-                                            }`}
+                                                }`}
                                         >
-                                            <div 
+                                            <div
                                                 className="w-2 h-2 rounded-full bg-white animate-pulse"
                                                 style={{
                                                     boxShadow: '0 0 8px rgba(255, 255, 255, 0.8)'

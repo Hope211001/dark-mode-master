@@ -32,6 +32,7 @@ import AboutPage from "./pages/home/about";
 import Tarifs from "./pages/home/tarifs ";
 import MapExplorer from "./components/Map/MapExplorer";
 import ClientSearchZone from "./pages/client/ClientSearchZone";
+import ShowLead from "./pages/client/ShowLead";
 
 const queryClient = new QueryClient();
 
@@ -106,6 +107,12 @@ const App = () => (
               <Route path="mapexploter" element={
                 <ProtectedRoute allowedRoles={['client']}>
                   <ClientSearchZone />
+                </ProtectedRoute>
+              } />
+
+              <Route path="showLead/:id" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                  <ShowLead />
                 </ProtectedRoute>
               } />
             </Route>

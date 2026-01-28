@@ -2,11 +2,14 @@ import { MapContainer, TileLayer, Circle, useMap, Popup, Marker } from 'react-le
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect } from 'react';
+import { stripeService } from "@/services/stripe.service";
+import { useToast } from "@/components/ui/use-toast"; 
 
 // --- Types ---
 interface Zone {
   id: string | number;
   nom: string;
+  price?: number; // Ajouté car utile pour l'achat
   lat_center: number;
   lng_center: number;
   statut_market: 'LIBRE' | 'VENDU';
@@ -18,7 +21,7 @@ interface MapProps {
   onSelectZone?: (id: string) => void;
 }
 
-// --- CSS Injecté pour les Popups et Animations ---
+// --- CSS Injecté ---
 const customStyles = `
   .leaflet-popup-content-wrapper {
     background: #ffffff !important;
@@ -53,31 +56,13 @@ function RecenterMap({ lat, lon }: { lat: number; lon: number }) {
 }
 
 const createCustomIcon = (isVendu: boolean) => {
-  const color = isVendu ? '#ef4444' : '#22c55e'; 
-  
+  const color = isVendu ? '#ef4444' : '#22c55e';
   return L.divIcon({
     className: 'custom-marker-container',
     html: `
       <div style="position: relative; display: flex; align-items: center; justify-content: center;">
-        <!-- Halo d'animation -->
-        <div style="
-          position: absolute;
-          width: 25px;
-          height: 25px;
-          background: ${color};
-          border-radius: 50%;
-          animation: pulse-soft 2s infinite;
-        "></div>
-        <!-- Point Central -->
-        <div style="
-          width: 12px;
-          height: 12px;
-          background: ${color};
-          border: 2px solid white;
-          border-radius: 50%;
-          z-index: 2;
-          box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        "></div>
+        <div style="position: absolute; width: 25px; height: 25px; background: ${color}; border-radius: 50%; animation: pulse-soft 2s infinite;"></div>
+        <div style="width: 12px; height: 12px; background: ${color}; border: 2px solid white; border-radius: 50%; z-index: 2; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>
       </div>
     `,
     iconSize: [30, 30],
@@ -86,15 +71,38 @@ const createCustomIcon = (isVendu: boolean) => {
 };
 
 export default function MapExplorer({ zonesData = [], searchPos, onSelectZone }: MapProps) {
+  // const { toast } = useToast(); // Décommenter si tu as le hook toast
+
+  // --- LOGIQUE D'ACHAT ---
+  const handlePurchase = async (zoneId: string) => {
+    try {
+      console.log("Tentative d'achat pour la zone :", zoneId);
+      
+      // Appel au service Stripe
+      const data = await stripeService.buyZone(zoneId);
+      
+      // Redirection vers Stripe Checkout
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error("Pas d'URL reçue de Stripe");
+      }
+    } catch (error) {
+      console.error("Erreur achat", error);
+      alert("Erreur lors de la création de la session de paiement.");
+      // toast({ title: "Erreur Stripe", description: "Impossible de lancer le paiement", variant: "destructive" });
+    }
+  };
+
   return (
     <div className="h-full w-full bg-[#0a0e1a] overflow-hidden">
       <style>{customStyles}</style>
-      
+
       <MapContainer
         center={[46.6033, 1.8883]}
         zoom={6}
         className="h-full w-full"
-        zoomControl={false} // Plus propre pour le design
+        zoomControl={false}
       >
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
@@ -112,9 +120,10 @@ export default function MapExplorer({ zonesData = [], searchPos, onSelectZone }:
 
           return (
             <div key={zone.id}>
+              {/* Cercle de zone */}
               <Circle
                 center={[lat, lng]}
-                radius={3000} // Réduit légèrement pour plus de clarté
+                radius={3000}
                 pathOptions={{
                   fillColor: isVendu ? '#ef4444' : '#22c55e',
                   color: isVendu ? '#ef4444' : '#22c55e',
@@ -122,7 +131,8 @@ export default function MapExplorer({ zonesData = [], searchPos, onSelectZone }:
                   fillOpacity: 0.1,
                 }}
               />
-              
+
+              {/* Marqueur interactif */}
               <Marker
                 position={[lat, lng]}
                 icon={createCustomIcon(isVendu)}
@@ -130,31 +140,46 @@ export default function MapExplorer({ zonesData = [], searchPos, onSelectZone }:
                   click: () => onSelectZone?.(zone.id.toString()),
                 }}
               >
-                <Popup minWidth={200} closeButton={false}>
-                  <div className="p-3">
+                <Popup minWidth={220} closeButton={false}>
+                  <div className="p-4">
                     <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">
                       Zone de couverture
                     </p>
-                    <h3 className="text-lg font-bold text-slate-900 leading-tight mb-2">
+                    <h3 className="text-xl font-bold text-slate-900 leading-tight mb-1">
                       {zone.nom}
                     </h3>
                     
-                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
-                      <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-black ${
-                        isVendu 
-                          ? 'bg-red-50 text-red-600 border border-red-100' 
-                          : 'bg-green-50 text-green-600 border border-green-100'
-                      }`}>
-                        <span className={`w-2 h-2 rounded-full ${isVendu ? 'bg-red-500' : 'bg-green-500'}`}></span>
-                        {isVendu ? 'DÉJÀ VENDU' : 'DISPONIBLE'}
-                      </span>
+                    {/* Affichage du prix si disponible */}
+                    {zone.price && (
+                      <p className="text-sm font-medium text-slate-600 mb-3">
+                        Prix : <span className="text-slate-900 font-bold">{zone.price} €</span>
+                      </p>
+                    )}
+
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
                       
-                      <button 
-                        onClick={() => onSelectZone?.(zone.id.toString())}
-                        className="text-[11px] font-bold text-blue-600 hover:underline"
-                      >
-                        Détails →
-                      </button>
+                      {/* Badge Statut */}
+                      <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-black ${isVendu
+                          ? 'bg-red-50 text-red-600 border border-red-100'
+                          : 'bg-green-50 text-green-600 border border-green-100'
+                        }`}>
+                        <span className={`w-2 h-2 rounded-full ${isVendu ? 'bg-red-500' : 'bg-green-500'}`}></span>
+                        {isVendu ? 'VENDU' : 'DISPONIBLE'}
+                      </span>
+
+                      {/* Bouton Acheter (Seulement si LIBRE) */}
+                      {!isVendu && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation(); // Empêche de fermer la popup
+                            handlePurchase(zone.id.toString());
+                          }}
+                          className="bg-blue-600 hover:bg-blue-700 text-white text-[12px] font-bold py-1.5 px-3 rounded shadow transition-colors"
+                        >
+                          Acheter →
+                        </button>
+                      )}
+                      
                     </div>
                   </div>
                 </Popup>
