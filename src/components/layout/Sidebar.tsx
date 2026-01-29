@@ -14,16 +14,16 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { icon: <Home className="w-5 h-5" />, label: "Dashboard", href: "/", active: true },
-  { icon: <TrendingUp className="w-5 h-5" />, label: "Leads", href: "/", badge: 12 },
+  { icon: <Home className="w-5 h-5" />, label: "Dashboard", href: "/admin", active: true },
+  // { icon: <TrendingUp className="w-5 h-5" />, label: "Leads", href: "/", badge: 12 },
   { icon: <Map className="w-5 h-5" />, label: "Zones", href: "/admin/zones" },
-  { icon: <Mail className="w-5 h-5" />, label: "Messages", href: "/messages" },
-  { icon: <Filter className="w-5 h-5" />, label: "Filtres", href: "/filters" },
+  // { icon: <Mail className="w-5 h-5" />, label: "Messages", href: "/messages" },
+  // { icon: <Filter className="w-5 h-5" />, label: "Filtres", href: "/filters" },
 ];
 
 const bottomNavItems: NavItem[] = [
-  { icon: <Bell className="w-5 h-5" />, label: "Notifications", href: "/notifications", badge: 3 },
-  { icon: <Settings className="w-5 h-5" />, label: "Paramètres", href: "/settings" },
+  // { icon: <Bell className="w-5 h-5" />, label: "Notifications", href: "/notifications", badge: 3 },
+  // { icon: <Settings className="w-5 h-5" />, label: "Paramètres", href: "/settings" },
 ];
 
 export function Sidebar() {

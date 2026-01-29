@@ -1,25 +1,50 @@
 import { apiClient } from './client';
 
-// 1. Définition de la structure d'une Zone
-// J'ai passé lat/lng en 'number' car Leaflet a besoin de nombres pour les calculs
+// src/types/zone.ts (ou dans ton service)
+
+// 1. L'entité complète telle qu'elle existe en base de données
 export interface Zone {
-  id: number;
+  id: string;              // UUID dans Supabase = string en TS
   nom: string;
   price: number;
-  lat_center: number; // Modifié en number pour la carte
-  lng_center: number; // Modifié en number pour la carte
-  statut_market: 'LIBRE' | 'VENDU'; 
+
+  // Utilise number pour la compatibilité avec Leaflet [lat, lng]
+  lat_center: number;
+  lng_center: number;
+
+  // Utilise un Union Type pour sécuriser les statuts
+  statut_market: 'LIBRE' | 'VENDU';
+
   codes_postaux: string[];
-  owner_id?: string | null;
+  owner_id: string | null; // UUID de l'utilisateur ou null
+  created_at?: string;     // Optionnel
 }
 
-// 2. Structure pour la création d'une Zone
+// 2. Le type pour la création (Data Transfer Object)
+// On omet l'ID et le statut car ils sont gérés par le backend/DB
 export interface CreateZoneDTO {
-  nom: string; 
-  price: number; 
-  lat_center: number; 
-  lng_center: number; 
+  nom: string;
+  price: number;
+  lat_center: number;
+  lng_center: number;
   codes_postaux: string[];
+}
+
+// 3. Le type pour la mise à jour (Tous les champs sont optionnels)
+export interface UpdateZoneDTO extends Partial<CreateZoneDTO> {
+  statut_market?: 'LIBRE' | 'VENDU';
+  owner_id?: string | null;
+  lat_center?: number;
+  lng_center?: number;
+  codes_postaux?: string[];
+}
+
+// 4. TRÈS IMPORTANT : Le type pour la réponse de ton API paginée
+// C'est ce que renvoie ton ZoneController.getAll
+export interface PaginatedZoneResponse {
+  data: Zone[];
+  totalCount: number;
+  totalPages: number;
 }
 
 // 3. Le Service Zone
@@ -37,10 +62,19 @@ export const zoneService = {
   },
 
   // Récupérer toutes les zones (utilisé pour le tableau d'administration avec pagination)
-  getAll: async (page = 1, limit = 10) => {
-    const res = await apiClient.get(`/zones?page=${page}&limit=${limit}`);
-    return res.data; 
+  getAll: async (page = 1, limit = 10, search = "") => {
+    const res = await apiClient.get(`/zones`, {
+      // Les noms des clés ici (page, limit, search) 
+      // doivent correspondre à ce que le backend lit dans req.query
+      params: {
+        page,
+        limit,
+        search: search || undefined // N'envoie rien si c'est vide
+      }
+    });
+    return res.data;
   },
+
 
   // Récupérer une seule zone par son ID
   getById: async (id: number | string): Promise<Zone> => {
@@ -49,19 +83,18 @@ export const zoneService = {
   },
 
   // Créer une nouvelle zone
-  create: async (data: CreateZoneDTO) => {
+  create: async (data: CreateZoneDTO): Promise<Zone> => {
     const res = await apiClient.post('/zones', data);
     return res.data;
   },
 
-  // Mettre à jour une zone existante
-  update: async (id: number, data: any) => {
+  update: async (id: string, data: UpdateZoneDTO): Promise<Zone> => {
     const res = await apiClient.put(`/zones/${id}`, data);
     return res.data;
   },
 
   // Supprimer une zone
-  delete: async (id: number) => {
+  delete: async (id: string) => {
     const res = await apiClient.delete(`/zones/${id}`);
     return res.data;
   },
@@ -81,7 +114,7 @@ export const zoneService = {
   getAvailableZones: async (): Promise<Zone[]> => {
     const res = await apiClient.get('/zones?page=1&limit=100');
     // On filtre pour ne garder que le statut LIBRE
-    return res.data.data.filter((z: Zone) => 
+    return res.data.data.filter((z: Zone) =>
       z.statut_market === 'LIBRE'
     );
   },

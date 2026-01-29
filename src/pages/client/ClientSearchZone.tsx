@@ -204,8 +204,19 @@ const ClientSearchZone = () => {
                     {/* COLONNE GAUCHE : Recherche et Actions */}
                     <div className="lg:col-span-1 space-y-6 overflow-y-auto pr-2">
 
-                        {/* NOUVEAU : Bouton d'actualisation */}
-                        <div className="flex justify-end">
+                        {/* Boutons d'action */}
+                        <div className="flex justify-between items-center">
+
+                            {/* Bouton gauche (nouveau) */}
+                            <Button
+                                size="sm"
+                                className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+                            >
+                                <Search className="h-4 w-4" />
+                               Toutes les villes
+                            </Button>
+
+                            {/* Bouton actualisation */}
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -216,7 +227,9 @@ const ClientSearchZone = () => {
                                 <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                                 {isRefreshing ? 'Actualisation...' : 'Actualiser les zones'}
                             </Button>
+
                         </div>
+
 
                         {/* Carte Recherche AMÉLIORÉE avec Autocomplete */}
                         <Card className="glass-card border-white/5 shadow-xl relative">
@@ -311,8 +324,8 @@ const ClientSearchZone = () => {
                                         <Badge
                                             variant={selectedZone.statut_market === 'VENDU' ? "destructive" : "default"}
                                             className={`font-bold text-xs px-3 py-1.5 flex items-center gap-1.5 shadow-lg ${selectedZone.statut_market === 'LIBRE'
-                                                    ? "bg-green-500 hover:bg-green-600 text-white border-2 border-green-400"
-                                                    : "bg-red-500 hover:bg-red-600 text-white border-2 border-red-400"
+                                                ? "bg-green-500 hover:bg-green-600 text-white border-2 border-green-400"
+                                                : "bg-red-500 hover:bg-red-600 text-white border-2 border-red-400"
                                                 }`}
                                         >
                                             <div
