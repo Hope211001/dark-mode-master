@@ -16,15 +16,14 @@ const FooterHome = () => {
                             <p>&copy; 2026 ImmoScout. Tous droits réservés.</p>
                         </div>
                         <div className="flex space-x-6">
-                            <Link to="/" className="text-gray-400 hover:text-white transition-colors text-sm">
-                                Accueil
-                            </Link>
-                            <Link to="/about" className="text-gray-400 hover:text-white transition-colors text-sm">
-                                À propos
-                            </Link>
-                            <Link to="/tarifs" className="text-gray-400 hover:text-white transition-colors text-sm">
-                                Tarrif
-                            </Link>
+                                <Link to="/" className="text-gray-400 hover:text-white transition-colors text-sm">
+                                    Accueil
+                                </Link>
+                                <a href="#problem" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Le Problème</a>
+                                <a href="#solution" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">La Solution</a>
+                                <a href="#concession" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Exclusivité</a>
+                                <Link to="/tarifs" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Tarifs</Link>
+                                <div className="h-4 w-px bg-gray-700"></div>
                         </div>
                     </div>
                 </div>

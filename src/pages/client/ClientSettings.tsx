@@ -119,45 +119,38 @@ const ClientSettings = () => {
             <TabsContent value="emails" className="space-y-6">
               <Card className="glass-card">
                 <CardHeader>
-                  <CardTitle>Modèles d'emails</CardTitle>
+                  <CardTitle>Modèles sms</CardTitle>
                   <CardDescription>
                     Personnalisez les messages envoyés aux propriétaires
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label htmlFor="email-subject">Objet de l'email</Label>
                     <Input 
                       id="email-subject" 
                       defaultValue="Proposition de location pour votre bien"
                       className="bg-secondary/50"
                     />
-                  </div>
+                  </div> */}
 
                   <div className="space-y-2">
                     <Label htmlFor="email-body">Corps du message</Label>
                     <Textarea 
                       id="email-body"
                       className="bg-secondary/50 min-h-48"
-                      defaultValue={`Bonjour,
-
-Je me permets de vous contacter concernant votre annonce pour le bien situé à {adresse}.
-
-Je suis très intéressé(e) par cette location et j'aimerais en savoir plus sur les conditions.
-
-Cordialement,
-{signature}`}
+                      defaultValue={`Bonjour {{owner_name}}, je suis intéressé par votre bien à {{ville}}. Dispo ?`}
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label htmlFor="signature">Signature</Label>
                     <Textarea 
                       id="signature"
                       className="bg-secondary/50"
                       defaultValue="Jean Dupont - Investisseur immobilier"
                     />
-                  </div>
+                  </div> */}
 
                   <Button className="w-full gap-2">
                     <Save className="h-4 w-4" />
