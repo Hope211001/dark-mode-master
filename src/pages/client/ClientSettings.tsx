@@ -61,18 +61,18 @@ const ClientSettings = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Surface */}
-                  <div className="space-y-3">
+                  {/* <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <Label>Surface minimum</Label>
                       <Badge variant="secondary" className="mono">25 m²</Badge>
                     </div>
                     <Slider defaultValue={[25]} max={200} step={5} className="w-full" />
-                  </div>
+                  </div> */}
 
                   {/* Budget */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="budget-min">Loyer minimum</Label>
+                      <Label htmlFor="budget-min">Surface minimum</Label>
                       <Input id="budget-min" type="number" placeholder="500" className="bg-secondary/50" />
                     </div>
                     <div className="space-y-2">
@@ -82,7 +82,7 @@ const ClientSettings = () => {
                   </div>
 
                   {/* Property Type */}
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label>Type de bien</Label>
                     <Select defaultValue="all">
                       <SelectTrigger className="bg-secondary/50">
@@ -96,16 +96,16 @@ const ClientSettings = () => {
                         <SelectItem value="loft">Loft</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
+                  </div> */}
 
                   {/* Score Minimum */}
-                  <div className="space-y-3">
+                  {/* <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <Label>Score minimum</Label>
                       <Badge variant="secondary" className="mono bg-success/20 text-success">70%</Badge>
                     </div>
                     <Slider defaultValue={[70]} max={100} step={5} className="w-full" />
-                  </div>
+                  </div> */}
 
                   <Button className="w-full gap-2">
                     <Save className="h-4 w-4" />

@@ -11,7 +11,7 @@ interface ZoneCardProps {
   codes_postaux: string[]; // Vient de Supabase
   leadsCount?: number;     // Optionnel (sera rempli par n8n plus tard)
   leadsThisMonth?: number; // Optionnel
-  averageScore?: number;   // Optionnel
+  price?: number;   // Optionnel
   status?: "active" | "paused" | "expired";
 }
 
@@ -27,7 +27,7 @@ export function ZoneCard({
   codes_postaux = [],
   leadsCount = 0,
   leadsThisMonth = 0,
-  averageScore = 0,
+  price = 0,
   status = "active",
 }: ZoneCardProps) {
   return (
@@ -87,8 +87,8 @@ export function ZoneCard({
             <div className="text-[10px] text-muted-foreground uppercase">Mois</div>
           </div>
           <div className="text-center p-2 bg-secondary/30 rounded-lg border border-border/50">
-            <div className="text-lg font-bold text-foreground mono">{averageScore || '--'}%</div>
-            <div className="text-[10px] text-muted-foreground uppercase">Score</div>
+            <div className="text-lg font-bold text-foreground mono">{price || '--'} €</div>
+            <div className="text-[10px] text-muted-foreground uppercase">prix </div>
           </div>
         </div>
 
@@ -98,7 +98,7 @@ export function ZoneCard({
             <TrendingUp className="h-4 w-4 text-success" />
             <span className="text-xs text-muted-foreground font-medium">Flux de leads</span>
           </div>
-          <span className="text-success font-bold text-xs">+12%</span>
+          {/* <span className="text-success font-bold text-xs">+12%</span> */}
         </div>
 
         {/* Actions principales */}

@@ -37,6 +37,7 @@ const ClientZones = () => {
     }
   };
 
+
   /**
    * LOGIQUE DU MODÈLE BUSINESS (PDF) :
    * Une zone possédée est par défaut une "Concession Exclusive".
@@ -81,7 +82,7 @@ const ClientZones = () => {
                   <p className="text-2xl font-bold text-foreground mono">
                     {loading ? ".." : exclusiveZones.length}
                   </p>
-                  <p className="text-xs text-muted-foreground uppercase font-semibold">Exclusives</p>
+                  <p className="text-xs text-muted-foreground uppercase font-semibold">MES ZONES</p>
                 </div>
               </CardContent>
             </Card>
@@ -95,7 +96,7 @@ const ClientZones = () => {
                   <p className="text-2xl font-bold text-foreground mono">
                     {loading ? ".." : sharedZones.length}
                   </p>
-                  <p className="text-xs text-muted-foreground uppercase font-semibold">Partagées</p>
+                  <p className="text-xs text-muted-foreground uppercase font-semibold">Disponible</p>
                 </div>
               </CardContent>
             </Card>
@@ -193,6 +194,7 @@ const ClientZones = () => {
                         leadsCount={0} // À synchroniser avec votre table 'leads' plus tard
                         leadsThisMonth={0}
                         status="active"
+                        price = {zone.price}
                       />
                     ))}
                   </div>
@@ -200,7 +202,7 @@ const ClientZones = () => {
               </div>
 
               {/* Shared Zones Section (Si applicable) */}
-              {sharedZones.length > 0 && (
+              {/* {sharedZones.length > 0 && (
                 <div className="space-y-4 mt-12 pt-10 border-t border-border/50">
                   <div className="flex items-center gap-3">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary">
@@ -222,7 +224,7 @@ const ClientZones = () => {
                     ))}
                   </div>
                 </div>
-              )}
+              )} */}
             </>
           )}
         </div>
