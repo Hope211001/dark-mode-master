@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { 
-  ArrowRight, MapPin, TrendingUp, Mail, Shield, Clock, Zap, 
-  Menu, X, CheckCircle, Database, BarChart, Lock, Search, 
-  AlertTriangle, MousePointerClick, ChevronDown 
+  MapPin, Menu, X, LayoutDashboard, User
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+// On importe le hook d'authentification
+import { useAuth } from '@/contexts/AuthContext'; 
 
 const HeaderHome = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-      const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
-    
-      const toggleFaq = (index: number) => {
-        setOpenFaqIndex(openFaqIndex === index ? null : index);
-      };
+    // On récupère l'état de connexion et les infos utilisateur
+    const { user, isAuthenticated } = useAuth();
+
+    // Déterminer le lien de redirection selon le rôle
+    const dashboardLink = user?.role === 'admin' ? '/admin' : '/client';
 
     return (
         <div>
@@ -32,13 +32,29 @@ const HeaderHome = () => {
                         <nav className="hidden md:flex items-center gap-8">
                             <a href="#problem" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Le Problème</a>
                             <a href="#solution" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">La Solution</a>
-                            <a href="#concession" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Exclusivité</a>
                             <Link to="/tarifs" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Tarifs</Link>
+                            
                             <div className="h-4 w-px bg-gray-700"></div>
-                            <Link to="/login" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Connexion</Link>
-                            <Link to="/register" className="bg-white text-gray-900 hover:bg-gray-100 px-5 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg transform hover:-translate-y-0.5">
-                                Essai Gratuit
-                            </Link>
+
+                            {/* AFFICHAGE CONDITIONNEL DES BOUTONS */}
+                            {isAuthenticated ? (
+                                // Si connecté : Bouton Mon Espace
+                                <Link 
+                                    to={dashboardLink} 
+                                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg transform hover:-translate-y-0.5"
+                                >
+                                    <LayoutDashboard size={16} />
+                                    Mon Espace {user?.role === 'admin' ? '(Admin)' : ''}
+                                </Link>
+                            ) : (
+                                // Si non connecté : Boutons Connexion / Inscription
+                                <>
+                                    <Link to="/login" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Connexion</Link>
+                                    <Link to="/register" className="bg-white text-gray-900 hover:bg-gray-100 px-5 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg transform hover:-translate-y-0.5">
+                                        Essai Gratuit
+                                    </Link>
+                                </>
+                            )}
                         </nav>
 
                         {/* Mobile Menu Button */}
@@ -57,14 +73,26 @@ const HeaderHome = () => {
                         <a href="#problem" onClick={() => setIsMobileMenuOpen(false)} className="text-lg text-gray-300 hover:text-white py-2 border-b border-gray-800">Le Problème</a>
                         <a href="#solution" onClick={() => setIsMobileMenuOpen(false)} className="text-lg text-gray-300 hover:text-white py-2 border-b border-gray-800">La Solution</a>
                         <Link to="/tarifs" onClick={() => setIsMobileMenuOpen(false)} className="text-lg text-gray-300 hover:text-white py-2 border-b border-gray-800">Tarifs</Link>
-                        <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-lg text-gray-300 hover:text-white py-2">Connexion</Link>
-                        <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="bg-blue-600 text-white py-4 rounded-xl text-center font-bold text-lg mt-2 shadow-blue-900/20 shadow-lg">Commencer</Link>
+                        
+                        {isAuthenticated ? (
+                            <Link 
+                                to={dashboardLink} 
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="bg-blue-600 text-white py-4 rounded-xl text-center font-bold text-lg mt-2 shadow-blue-900/20 shadow-lg flex items-center justify-center gap-2"
+                            >
+                                <LayoutDashboard size={20} />
+                                Mon Espace
+                            </Link>
+                        ) : (
+                            <>
+                                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-lg text-gray-300 hover:text-white py-2">Connexion</Link>
+                                <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="bg-blue-600 text-white py-4 rounded-xl text-center font-bold text-lg mt-2 shadow-blue-900/20 shadow-lg">Commencer</Link>
+                            </>
+                        )}
                     </div>
                 )}
             </header>
         </div>
     )
 }
-export default HeaderHome
-
-
+export default HeaderHome;

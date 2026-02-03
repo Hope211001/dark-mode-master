@@ -50,23 +50,27 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/tarifs" element={<Tarifs />} /> {/* Espace supprimé */}
+            <Route path="/tarifs" element={<Tarifs />} />
 
-            {/* PORTAIL ADMIN - Regroupé pour plus de clarté */}
-            <Route path="/admin">
-              <Route index element={
+            {/* PORTAIL ADMIN - Protégé (Role: admin) */}
+            <Route 
+              path="/admin" 
+              element={
                 <ProtectedRoute allowedRoles={['admin']}>
                   <AdminDashboard />
                 </ProtectedRoute>
-              } />
-              <Route path="zones" element={
+              } 
+            />
+            <Route 
+              path="/admin/zones" 
+              element={
                 <ProtectedRoute allowedRoles={['admin']}>
                   <ZonesManagement />
                 </ProtectedRoute>
-              } />
-            </Route>
+              } 
+            />
 
-            {/* PORTAIL CLIENT */}
+            {/* PORTAIL CLIENT - Protégé (Role: client) */}
             <Route path="/client">
               <Route index element={
                 <ProtectedRoute allowedRoles={['client']}>
@@ -93,17 +97,19 @@ const App = () => (
                   <ClientProfile />
                 </ProtectedRoute>
               } />
+
               <Route path="buy-zone" element={
                 <ProtectedRoute allowedRoles={['client']}>
                   <BuyZone />
                 </ProtectedRoute>
               } />
-              {/* Typo corrigée : mapexplorer */}
-              <Route path="mapexplorer" element={
+
+              <Route path="mapexploter" element={
                 <ProtectedRoute allowedRoles={['client']}>
                   <ClientSearchZone />
                 </ProtectedRoute>
               } />
+
               <Route path="showLead/:id" element={
                 <ProtectedRoute allowedRoles={['client']}>
                   <ShowLead />

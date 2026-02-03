@@ -2,9 +2,10 @@ import { NavLink } from "@/components/NavLink";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { authService,User } from "@/services/auth.service";
+import { authService, User } from "@/services/auth.service";
 import { useEffect, useState } from "react"; // Ajout de hooks
 import { useNavigate } from "react-router-dom"; // Pour la redirection après logout
+import { Link } from "react-router-dom";
 
 import {
   LayoutDashboard,
@@ -31,10 +32,10 @@ const navItems = [
   },
   {
     title: "Achat de zones",
-    url: "/client/mapexploter",
+    url: "/client/mapexplorer",
     icon: Search
   },
-    {
+  {
     title: "Mes Zones",
     url: "/client/zones",
     icon: MapPin
@@ -49,7 +50,7 @@ const settingsItems = [
   },
   {
     title: "Mon Profil",
-    url: "/client/profile", 
+    url: "/client/profile",
     icon: UserIcon
   },
 ];
@@ -97,15 +98,18 @@ export function ClientSidebar() {
     <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-border bg-sidebar">
       <div className="flex h-full flex-col">
         {/* Logo */}
-        <div className="flex h-16 items-center gap-3 border-b border-border px-6">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <MapPin className="h-5 w-5 text-primary-foreground" />
+        <Link to="/">
+          <div className="flex h-16 items-center gap-3 border-b border-border px-6">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+              <MapPin className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-lg font-semibold text-foreground">ImmoScout</span>
+              <span className="text-xs text-muted-foreground">Espace Client</span>
+            </div>
           </div>
-          <div className="flex flex-col">
-            <span className="text-lg font-semibold text-foreground">ImmoScout</span>
-            <span className="text-xs text-muted-foreground">Espace Client</span>
-          </div>
-        </div>
+        </Link>
+
 
         {/* User Info Dynamique */}
         <div className="border-b border-border p-4">
@@ -179,9 +183,9 @@ export function ClientSidebar() {
             </div>
           </div>
 
-          <Button 
+          <Button
             onClick={handleLogout}
-            variant="ghost" 
+            variant="ghost"
             className="w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10"
           >
             <LogOut className="h-4 w-4 mr-2" />
