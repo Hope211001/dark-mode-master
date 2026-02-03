@@ -169,10 +169,21 @@ const ShowLead = () => {
                                 </div>
                                 <div>
                                     <p className="text-slate-400 text-xs mb-1 flex items-center gap-1">
-                                        <CheckCircle2 className="h-3 w-3" /> Score IA
+                                        <CheckCircle2 className="h-3 w-3" /> score IA
                                     </p>
                                     <div className="flex items-baseline gap-1">
-                                        <span className="text-xl font-bold text-white">{lead.score}</span>
+                                        <span className="text-xs text-slate-500">score rentabilite</span>
+                                        <span className="text-xl font-bold text-white">{details.score_rentabilite}</span>
+                                        <span className="text-xs text-slate-500">/10</span>
+                                    </div>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-xs text-slate-500">score localisation</span>
+                                        <span className="text-xl font-bold text-white">{details.score_localisation}</span>
+                                        <span className="text-xs text-slate-500">/10</span>
+                                    </div>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-xs text-slate-500">score vérification</span>
+                                        <span className="text-xl font-bold text-white">{details.score_verification}</span>
                                         <span className="text-xs text-slate-500">/10</span>
                                     </div>
                                 </div>

@@ -85,9 +85,9 @@ export function LeadCard({
           </Badge>
         </div>
         
-        <div className="absolute top-3 right-3">
+        {/* <div className="absolute top-3 right-3">
           <ScoreBadge score={score} />
-        </div>
+        </div> */}
 
         <Button 
           variant="ghost" 

@@ -208,13 +208,13 @@ const ClientSearchZone = () => {
                         <div className="flex justify-between items-center">
 
                             {/* Bouton gauche (nouveau) */}
-                            <Button
+                            {/* <Button
                                 size="sm"
                                 className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
                             >
                                 <Search className="h-4 w-4" />
                                Toutes les villes
-                            </Button>
+                            </Button> */}
 
                             {/* Bouton actualisation */}
                             <Button
