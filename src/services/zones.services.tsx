@@ -61,16 +61,12 @@ export const zoneService = {
     }
   },
 
-  // Récupérer toutes les zones (utilisé pour le tableau d'administration avec pagination)
+
+
+  // Dans zones.service.ts
   getAll: async (page = 1, limit = 10, search = "") => {
-    const res = await apiClient.get(`/zones`, {
-      // Les noms des clés ici (page, limit, search) 
-      // doivent correspondre à ce que le backend lit dans req.query
-      params: {
-        page,
-        limit,
-        search: search || undefined // N'envoie rien si c'est vide
-      }
+    const res = await apiClient.get(`/zones/`, { // <-- Ajoute le / ici
+      params: { page, limit, search: search || undefined }
     });
     return res.data;
   },

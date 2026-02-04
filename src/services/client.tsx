@@ -1,17 +1,17 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 
-// Utilisez 127.0.0.1 au lieu de localhost
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
-console.log('🔧 API_URL:', API_URL); // Doit afficher http://localhost:5000/api
-
+// src/services/client.ts (ou client.tsx)
 export const apiClient = axios.create({
-  baseURL: API_URL,
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Nécessaire pour les cookies/sessions
+   withCredentials: true, // Nécessaire pour les cookies/sessions
 });
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+console.log('🔧 API_URL:', API_URL); 
+
 
 // Intercepteur requête
 apiClient.interceptors.request.use(
