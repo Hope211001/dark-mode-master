@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ClientSidebar } from "@/components/client/ClientSidebar";
 import { ClientHeader } from "@/components/client/ClientHeader";
 import { Button } from "@/components/ui/button";
@@ -9,10 +9,38 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner"; // Utilisation de Sonner pour les notifications
-import { Filter, Mail, Bell, Shield, Save, Loader2 } from "lucide-react";
+import { Filter, Mail, Bell, Shield, Save, Loader2, User } from "lucide-react";
+import { configService } from '@/services/config';
+import { authService } from '@/services/auth.service';
 
 const ClientSettings = () => {
   const [loading, setLoading] = useState(false);
+  const [userConfig, setUserConfig] = useState('')
+  const [profile , setProfil] = useState('')
+
+  useEffect(()=>{
+    fetchUserCong()
+  });
+
+  //get profule
+  // const fetchProfil = async () => {
+  //   try {
+  //     const res = await authService.getProfile(User)
+  //     setProfil(res.data)
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+
+  //get userconfig
+  const fetchUserCong = async () => {
+    try {
+      const res = await configService.getConfig()
+      setUserConfig(res.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   // Fonction générique pour simuler ou appeler la sauvegarde
   const handleSave = async (section: string) => {
