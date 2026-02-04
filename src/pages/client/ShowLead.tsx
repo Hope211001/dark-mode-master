@@ -14,7 +14,8 @@ import {
     Camera, 
     Hash,
     CheckCircle2,
-    XCircle
+    XCircle,
+    Building2
 } from "lucide-react";
 import { leadsService, Lead } from "@/services/leads.service";
 import { useToast } from "@/components/ui/use-toast";
@@ -58,81 +59,116 @@ const ShowLead = () => {
     // @ts-ignore
     const details = lead.score_details || lead.scrore_details;
 
+    const getStatusColor = (status: string) => {
+        const colors: Record<string, string> = {
+            'nouveau': 'bg-blue-500/5 text-blue-400 border-blue-500/20',
+            'en_cours': 'bg-amber-500/5 text-amber-400 border-amber-500/20',
+            'qualifié': 'bg-emerald-500/5 text-emerald-400 border-emerald-500/20',
+            'non_qualifié': 'bg-red-500/5 text-red-400 border-red-500/20',
+        };
+        return colors[status] || 'bg-slate-500/5 text-slate-400 border-slate-500/20';
+    };
+
     return (
         <div className="min-h-screen bg-slate-950 text-slate-50 font-sans">
             <ClientSidebar />
             
-            <main className="ml-64 p-8 min-h-screen">
+            <main className="ml-64 p-8 min-h-screen max-w-[1400px]">
                 
                 {/* --- HEADER : Navigation & Titre --- */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                    <div>
-                        <Button 
-                            variant="ghost" 
-                            className="pl-0 text-slate-400 hover:text-white hover:bg-transparent mb-1 h-auto py-1"
-                            onClick={() => navigate(-1)}
-                        >
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Retour à la liste
-                        </Button>
-                        <h1 className="text-3xl font-bold text-white tracking-tight">{lead.titre}</h1>
-                        <div className="flex items-center gap-3 text-slate-400 text-sm mt-2">
-                            <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-900 border border-slate-800">
-                                <MapPin className="h-3.5 w-3.5 text-slate-500" /> {lead.ville}
-                            </span>
-                            <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-900 border border-slate-800">
-                                <Calendar className="h-3.5 w-3.5 text-slate-500" /> {new Date(lead.date_detection).toLocaleDateString()}
-                            </span>
-                            <Badge variant="outline" className="border-slate-700 text-slate-300">
-                                {lead.statut_prospection}
-                            </Badge>
-                        </div>
-                    </div>
-                    
+                <div className="mb-10">
                     <Button 
-                        className="bg-white text-slate-950 hover:bg-slate-200 font-semibold shadow-lg shadow-white/5" 
-                        asChild
+                        variant="ghost" 
+                        className="pl-0 text-slate-400 hover:text-slate-200 hover:bg-transparent mb-4 h-auto py-1.5 -ml-2"
+                        onClick={() => navigate(-1)}
                     >
-                        <a href={lead.url} target="_blank" rel="noreferrer">
-                            <ExternalLink className="mr-2 h-4 w-4" /> Voir l'annonce
-                        </a>
+                        <ArrowLeft className="mr-2 h-4 w-4" /> 
+                        <span className="text-sm font-medium">Retour à la liste</span>
                     </Button>
+                    
+                    <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6">
+                        <div className="flex-1">
+                            <div className="flex items-start gap-3 mb-3">
+                                <div className="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
+                                    <Building2 className="h-5 w-5 text-slate-400" />
+                                </div>
+                                <div>
+                                    <h1 className="text-3xl font-bold text-white tracking-tight mb-2">{lead.titre}</h1>
+                                    <div className="flex flex-wrap items-center gap-2.5">
+                                        <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-900/80 border border-slate-800 text-slate-300 text-sm">
+                                            <MapPin className="h-3.5 w-3.5 text-slate-500" /> 
+                                            {lead.ville}
+                                        </span>
+                                        <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-900/80 border border-slate-800 text-slate-300 text-sm">
+                                            <Calendar className="h-3.5 w-3.5 text-slate-500" /> 
+                                            {new Date(lead.date_detection).toLocaleDateString('fr-FR', { 
+                                                day: 'numeric', 
+                                                month: 'long', 
+                                                year: 'numeric' 
+                                            })}
+                                        </span>
+                                        <Badge className={`${getStatusColor(lead.statut_prospection)} font-medium px-3 py-1`}>
+                                            {lead.statut_prospection.replace('_', ' ')}
+                                        </Badge>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <Button 
+                            className="bg-white text-slate-950 hover:bg-slate-100 font-semibold shadow-lg shadow-white/5 px-6 h-11" 
+                            asChild
+                        >
+                            <a href={lead.url} target="_blank" rel="noreferrer">
+                                <ExternalLink className="mr-2 h-4 w-4" /> 
+                                Voir l'annonce
+                            </a>
+                        </Button>
+                    </div>
                 </div>
 
                 {/* --- CONTENU PRINCIPAL --- */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                     {/* 1. L'IMMOBILIER (Données brutes) */}
-                    <Card className="bg-slate-900 border-slate-800 shadow-xl overflow-hidden relative">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl -mr-10 -mt-10" />
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-xs font-bold uppercase text-slate-500 tracking-wider flex items-center gap-2">
-                                <Euro className="h-4 w-4" /> Données du Bien
+                    <Card className="bg-gradient-to-br from-slate-900 to-slate-900/50 border-slate-800 shadow-2xl overflow-hidden relative backdrop-blur-sm">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -mr-16 -mt-16" />
+                        <CardHeader className="pb-4">
+                            <CardTitle className="text-xs font-bold uppercase text-slate-400 tracking-widest flex items-center gap-2">
+                                <div className="p-1.5 bg-blue-500/5 rounded">
+                                    <Euro className="h-3.5 w-3.5 text-blue-400" />
+                                </div>
+                                Données du Bien
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-6 pt-4">
+                        <CardContent className="space-y-6 relative z-10">
                             
-                            <div>
-                                <p className="text-slate-400 text-sm mb-1">Loyer Mensuel</p>
-                                <p className="text-3xl font-bold text-white tracking-tight">
-                                    {lead.prix.toLocaleString()} €
+                            <div className="bg-slate-950/40 rounded-xl p-5 border border-slate-800/50">
+                                <p className="text-slate-400 text-xs font-medium uppercase tracking-wide mb-2">Loyer Mensuel</p>
+                                <p className="text-4xl font-bold text-white tracking-tight">
+                                    {lead.prix.toLocaleString('fr-FR')} <span className="text-2xl text-slate-400">€</span>
                                 </p>
                             </div>
 
-                            <Separator className="bg-slate-800" />
+                            <Separator className="bg-slate-800/50" />
 
                             <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p className="text-slate-400 text-xs mb-1 flex items-center gap-1">
-                                        <Maximize className="h-3 w-3" /> Surface
+                                <div className="bg-slate-950/40 rounded-lg p-4 border border-slate-800/50">
+                                    <p className="text-slate-400 text-xs font-medium mb-2 flex items-center gap-1.5">
+                                        <Maximize className="h-3.5 w-3.5" /> 
+                                        Surface
                                     </p>
-                                    <p className="text-xl font-semibold text-slate-200">{lead.surface} m²</p>
+                                    <p className="text-2xl font-bold text-slate-100">
+                                        {lead.surface} <span className="text-sm text-slate-400">m²</span>
+                                    </p>
                                 </div>
-                                <div>
-                                    <p className="text-slate-400 text-xs mb-1 flex items-center gap-1">
-                                        <Target className="h-3 w-3" /> Prix au m²
+                                <div className="bg-slate-950/40 rounded-lg p-4 border border-slate-800/50">
+                                    <p className="text-slate-400 text-xs font-medium mb-2 flex items-center gap-1.5">
+                                        <Target className="h-3.5 w-3.5" /> 
+                                        Prix au m²
                                     </p>
-                                    <p className="text-xl font-semibold text-slate-200">
-                                        {Math.round(lead.prix / lead.surface)} €
+                                    <p className="text-2xl font-bold text-slate-100">
+                                        {Math.round(lead.prix / lead.surface)} <span className="text-sm text-slate-400">€</span>
                                     </p>
                                 </div>
                             </div>
@@ -140,51 +176,65 @@ const ShowLead = () => {
                     </Card>
 
                     {/* 2. LE FINANCIER (Analyse IA) */}
-                    <Card className="bg-slate-900 border-slate-800 shadow-xl overflow-hidden relative group">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-emerald-500/20 transition-all" />
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-xs font-bold uppercase text-emerald-500 tracking-wider flex items-center gap-2">
-                                <TrendingUp className="h-4 w-4" /> Performance Estimée
+                    <Card className="bg-gradient-to-br from-slate-900 to-slate-900/50 border-slate-800 shadow-2xl overflow-hidden relative backdrop-blur-sm group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-emerald-500/20 transition-all duration-500" />
+                        <CardHeader className="pb-4">
+                            <CardTitle className="text-xs font-bold uppercase text-emerald-400 tracking-widest flex items-center gap-2">
+                                <div className="p-1.5 bg-emerald-500/5 rounded">
+                                    <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
+                                </div>
+                                Performance Estimée
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-6 pt-4">
+                        <CardContent className="space-y-6 relative z-10">
                             
-                            <div>
-                                <p className="text-slate-400 text-sm mb-1">Revenu LCD Potentiel</p>
-                                <p className="text-3xl font-bold text-emerald-400 tracking-tight">
-                                    {details ? Number(details.revenu_estime).toLocaleString() : '--'} €
+                            <div className="bg-emerald-500/5 rounded-xl p-5 border border-emerald-500/20">
+                                <p className="text-emerald-300/70 text-xs font-medium uppercase tracking-wide mb-2">Revenu LCD Potentiel</p>
+                                <p className="text-4xl font-bold text-emerald-400 tracking-tight">
+                                    {details ? Number(details.revenu_estime).toLocaleString('fr-FR') : '--'} <span className="text-2xl text-emerald-400/60">€</span>
                                 </p>
                             </div>
 
-                            <Separator className="bg-slate-800" />
+                            <Separator className="bg-slate-800/50" />
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p className="text-slate-400 text-xs mb-1 flex items-center gap-1">
-                                        <Hash className="h-3 w-3" /> Ratio Rentabilité
+                            <div className="space-y-4">
+                                <div className="bg-slate-950/40 rounded-lg p-4 border border-slate-800/50">
+                                    <p className="text-slate-400 text-xs font-medium mb-2 flex items-center gap-1.5">
+                                        <Hash className="h-3.5 w-3.5" /> 
+                                        Ratio Rentabilité
                                     </p>
-                                    <p className="text-xl font-semibold text-white">
+                                    <p className="text-2xl font-bold text-white">
                                         x {details ? Number(details.ratio).toFixed(2) : '--'}
                                     </p>
                                 </div>
-                                <div>
-                                    <p className="text-slate-400 text-xs mb-1 flex items-center gap-1">
-                                        <CheckCircle2 className="h-3 w-3" /> score IA
+                                
+                                <div className="bg-slate-950/40 rounded-lg p-4 border border-slate-800/50">
+                                    <p className="text-slate-400 text-xs font-medium mb-3 flex items-center gap-1.5">
+                                        <CheckCircle2 className="h-3.5 w-3.5" /> 
+                                        Scores IA
                                     </p>
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-xs text-slate-500">score rentabilite</span>
-                                        <span className="text-xl font-bold text-white">{details.score_rentabilite}</span>
-                                        <span className="text-xs text-slate-500">/10</span>
-                                    </div>
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-xs text-slate-500">score localisation</span>
-                                        <span className="text-xl font-bold text-white">{details.score_localisation}</span>
-                                        <span className="text-xs text-slate-500">/10</span>
-                                    </div>
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-xs text-slate-500">score vérification</span>
-                                        <span className="text-xl font-bold text-white">{details.score_verification}</span>
-                                        <span className="text-xs text-slate-500">/10</span>
+                                    <div className="space-y-2.5">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs text-slate-400 font-medium">Rentabilité</span>
+                                            <div className="flex items-baseline gap-1">
+                                                <span className="text-xl font-bold text-white">{details?.score_rentabilite ?? '--'}</span>
+                                                <span className="text-xs text-slate-500">/5</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs text-slate-400 font-medium">Localisation</span>
+                                            <div className="flex items-baseline gap-1">
+                                                <span className="text-xl font-bold text-white">{details?.score_localisation ?? '--'}</span>
+                                                <span className="text-xs text-slate-500">/5</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs text-slate-400 font-medium">Vérification</span>
+                                            <div className="flex items-baseline gap-1">
+                                                <span className="text-xl font-bold text-white">{details?.score_verification ?? '--'}</span>
+                                                <span className="text-xs text-slate-500">/5</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -192,35 +242,46 @@ const ShowLead = () => {
                     </Card>
 
                     {/* 3. LA QUALITÉ (Technique) */}
-                    <Card className="bg-slate-900 border-slate-800 shadow-xl overflow-hidden relative">
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-xs font-bold uppercase text-slate-500 tracking-wider flex items-center gap-2">
-                                <Camera className="h-4 w-4" /> Qualité & Localisation
+                    <Card className="bg-gradient-to-br from-slate-900 to-slate-900/50 border-slate-800 shadow-2xl overflow-hidden relative backdrop-blur-sm">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 rounded-full blur-3xl -mr-16 -mt-16" />
+                        <CardHeader className="pb-4">
+                            <CardTitle className="text-xs font-bold uppercase text-slate-400 tracking-widest flex items-center gap-2">
+                                <div className="p-1.5 bg-violet-500/5 rounded">
+                                    <Camera className="h-3.5 w-3.5 text-violet-400" />
+                                </div>
+                                Qualité & Localisation
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-5 pt-4">
+                        <CardContent className="space-y-4 relative z-10">
                             
                             {/* Distance */}
-                            <div className="flex justify-between items-center bg-slate-950/50 p-3 rounded-lg border border-slate-800">
-                                <span className="text-sm text-slate-400">Distance Centre</span>
-                                <span className="font-bold text-white">{details?.distance_km ?? '--'} km</span>
+                            <div className="flex justify-between items-center bg-slate-950/40 p-4 rounded-lg border border-slate-800/50 hover:border-slate-700/50 transition-colors">
+                                <span className="text-sm text-slate-400 font-medium">Distance Centre</span>
+                                <span className="font-bold text-white text-lg">
+                                    {details?.distance_km ?? '--'} <span className="text-sm text-slate-400">km</span>
+                                </span>
                             </div>
 
                             {/* Photos */}
-                            <div className="flex justify-between items-center bg-slate-950/50 p-3 rounded-lg border border-slate-800">
-                                <span className="text-sm text-slate-400">Photos disponibles</span>
-                                <span className="font-bold text-white">{details?.nb_photos ?? 0}</span>
+                            <div className="flex justify-between items-center bg-slate-950/40 p-4 rounded-lg border border-slate-800/50 hover:border-slate-700/50 transition-colors">
+                                <span className="text-sm text-slate-400 font-medium">Photos disponibles</span>
+                                <div className="flex items-center gap-2">
+                                    <Camera className="h-4 w-4 text-slate-500" />
+                                    <span className="font-bold text-white text-lg">{details?.nb_photos ?? 0}</span>
+                                </div>
                             </div>
 
                             {/* Mots clés */}
-                            <div className="flex justify-between items-center bg-slate-950/50 p-3 rounded-lg border border-slate-800">
-                                <span className="text-sm text-slate-400">Mots-clés LCD</span>
+                            <div className="flex justify-between items-center bg-slate-950/40 p-4 rounded-lg border border-slate-800/50 hover:border-slate-700/50 transition-colors">
+                                <span className="text-sm text-slate-400 font-medium">Mots-clés LCD</span>
                                 {details?.has_keywords ? (
-                                    <Badge className="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border-none">
+                                    <Badge className="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border-emerald-500/30 font-semibold px-3 py-1">
+                                        <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
                                         Présents
                                     </Badge>
                                 ) : (
-                                    <Badge variant="secondary" className="bg-slate-800 text-slate-500">
+                                    <Badge className="bg-slate-800 text-slate-400 hover:bg-slate-800 border-slate-700 font-semibold px-3 py-1">
+                                        <XCircle className="h-3.5 w-3.5 mr-1" />
                                         Absents
                                     </Badge>
                                 )}

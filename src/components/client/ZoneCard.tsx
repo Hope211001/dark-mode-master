@@ -77,7 +77,7 @@ export function ZoneCard({
         </div>
 
         {/* Stats Grid (Données n8n) */}
-        <div className="grid grid-cols-3 gap-2">
+        {/* <div className="grid grid-cols-3 gap-2">
           <div className="text-center p-2 bg-secondary/30 rounded-lg border border-border/50">
             <div className="text-lg font-bold text-foreground mono">{leadsCount}</div>
             <div className="text-[10px] text-muted-foreground uppercase">Total</div>
@@ -90,13 +90,13 @@ export function ZoneCard({
             <div className="text-lg font-bold text-foreground mono">{price || '--'} €</div>
             <div className="text-[10px] text-muted-foreground uppercase">prix </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Performance (Comparaison temporelle) */}
         <div className="flex items-center justify-between p-2.5 bg-gradient-to-r from-success/10 to-transparent rounded-lg border border-success/10">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-success" />
-            <span className="text-xs text-muted-foreground font-medium">Flux de leads</span>
+            <span className="text-xs text-muted-foreground font-medium">prix : {price || '--'} €</span>
           </div>
           {/* <span className="text-success font-bold text-xs">+12%</span> */}
         </div>
