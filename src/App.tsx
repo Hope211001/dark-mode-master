@@ -30,9 +30,11 @@ import { AuthProvider } from './contexts/AuthContext';
 //public
 import AboutPage from "./pages/home/about";
 import Tarifs from "./pages/home/tarifs ";
-import MapExplorer from "./components/Map/MapExplorer";
+
+// client
 import ClientSearchZone from "./pages/client/ClientSearchZone";
 import ShowLead from "./pages/client/ShowLead";
+import ZoneSetting from "./pages/client/ZoneSetting";
 
 const queryClient = new QueryClient();
 
@@ -107,6 +109,11 @@ const App = () => (
               <Route path="showLead/:id" element={
                 <ProtectedRoute allowedRoles={['client']}>
                   <ShowLead />
+                </ProtectedRoute>
+                } />
+              <Route path="zone-setting/:zoneId" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                  <ZoneSetting />
                 </ProtectedRoute>
               } />
             </Route>

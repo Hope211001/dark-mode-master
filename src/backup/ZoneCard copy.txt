@@ -1,20 +1,17 @@
-import { MapPin, TrendingUp, Eye, Settings, Lock, Hash, Mail, Loader2 } from "lucide-react";
+import { MapPin, TrendingUp, Eye, Settings, Lock, Hash } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { subscriptionService, Subscription } from "@/services/subscription";
-import { toast } from "sonner";
 
 interface ZoneCardProps {
   id: string;
-  nom: string;
-  codes_postaux: string[];
-  leadsCount?: number;
-  leadsThisMonth?: number;
-  price?: number;
+  nom: string;          // Vient de Supabase
+  codes_postaux: string[]; // Vient de Supabase
+  leadsCount?: number;     // Optionnel (sera rempli par n8n plus tard)
+  leadsThisMonth?: number; // Optionnel
+  price?: number;   // Optionnel
   status?: "active" | "paused" | "expired";
 }
 
@@ -33,34 +30,12 @@ export function ZoneCard({
   price = 0,
   status = "active",
 }: ZoneCardProps) {
-
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [fetching, setFetching] = useState(true);
-
-  useEffect(() => {
-    if (id) {
-      fetchSubscription();
-    }
-  }, [id]);
-
-  const fetchSubscription = async () => {
-    try {
-      setFetching(true);
-      const data = await subscriptionService.getSubscriptionByZone(id);
-      setSubscription(data);
-    } catch (error: any) {
-      console.error("Erreur lors de la récupération de la zone:", id, error);
-      // On ne met pas de toast ici pour ne pas polluer l'écran si l'utilisateur a bcp de zones
-    } finally {
-      setFetching(false);
-    }
-  };
-
   return (
     <Card className="glass-card transition-all duration-300 hover:border-primary/30 group shadow-lg">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
+            {/* Icône de localisation stylisée */}
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20">
               <MapPin className="h-5 w-5 text-primary" />
             </div>
@@ -74,8 +49,9 @@ export function ZoneCard({
               </div>
             </div>
           </div>
-
+          
           <div className="flex flex-col items-end gap-2">
+            {/* Badge d'exclusivité (Modèle Concession du PDF) */}
             <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30 text-[10px]">
               <Lock className="h-3 w-3 mr-1" />
               CONCESSION
@@ -88,6 +64,7 @@ export function ZoneCard({
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {/* Liste courte des codes postaux possédés */}
         <div className="flex flex-wrap gap-1 mb-2">
           {codes_postaux.slice(0, 4).map((cp) => (
             <span key={cp} className="text-[10px] bg-secondary px-2 py-0.5 rounded border border-border">
@@ -99,40 +76,32 @@ export function ZoneCard({
           )}
         </div>
 
-        <div className="flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-success" />
-          <span className="text-xs text-muted-foreground font-medium">
-            Prix : {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price)}
-          </span>
-        </div>
-
-        {/* AFFICHAGE DYNAMIQUE DE L'AUTO-CONTACT */}
-        <div className={cn(
-            "flex items-center justify-between p-2.5 rounded-lg border transition-all duration-300",
-            fetching 
-              ? "bg-secondary/10 border-border" 
-              : subscription?.auto_contact_enabled 
-                ? "bg-emerald-500/10 border-emerald-500/20" 
-                : "bg-slate-500/10 border-slate-500/20"
-        )}>
-          <div className="flex items-center gap-2">
-            {fetching ? (
-              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-            ) : (
-              <Mail className={cn("h-4 w-4", subscription?.auto_contact_enabled ? "text-emerald-500" : "text-slate-400")} />
-            )}
-            <span className="text-xs text-muted-foreground font-medium">
-              Auto-contact : 
-              <span className={cn(
-                "ml-1 font-bold",
-                subscription?.auto_contact_enabled ? "text-emerald-500" : "text-slate-500"
-              )}>
-                {fetching ? "Chargement..." : (subscription?.auto_contact_enabled ? "Activé" : "Désactivé")}
-              </span>
-            </span>
+        {/* Stats Grid (Données n8n) */}
+        {/* <div className="grid grid-cols-3 gap-2">
+          <div className="text-center p-2 bg-secondary/30 rounded-lg border border-border/50">
+            <div className="text-lg font-bold text-foreground mono">{leadsCount}</div>
+            <div className="text-[10px] text-muted-foreground uppercase">Total</div>
           </div>
+          <div className="text-center p-2 bg-secondary/30 rounded-lg border border-border/50">
+            <div className="text-lg font-bold text-primary mono">+{leadsThisMonth}</div>
+            <div className="text-[10px] text-muted-foreground uppercase">Mois</div>
+          </div>
+          <div className="text-center p-2 bg-secondary/30 rounded-lg border border-border/50">
+            <div className="text-lg font-bold text-foreground mono">{price || '--'} €</div>
+            <div className="text-[10px] text-muted-foreground uppercase">prix </div>
+          </div>
+        </div> */}
+
+        {/* Performance (Comparaison temporelle) */}
+        <div className="flex items-center justify-between p-2.5 bg-gradient-to-r from-success/10 to-transparent rounded-lg border border-success/10">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-success" />
+            <span className="text-xs text-muted-foreground font-medium">prix : {price || '--'} €</span>
+          </div>
+          {/* <span className="text-success font-bold text-xs">+12%</span> */}
         </div>
 
+        {/* Actions principales */}
         <div className="flex items-center gap-2 pt-2 border-t border-border/50">
           <Link to={`/client/leads?zone=${id}`} className="flex-1">
             <Button size="sm" variant="default" className="w-full h-9 font-bold bg-primary hover:bg-primary/90">
@@ -140,11 +109,9 @@ export function ZoneCard({
               Flux Leads
             </Button>
           </Link>
-          <Link to={`/client/zone-setting/${id}`}>
-            <Button size="sm" variant="outline" className="h-9 w-9 p-0">
-              <Settings className="h-4 w-4" />
-            </Button>
-          </Link>
+          <Button size="sm" variant="outline" className="h-9 w-9 p-0">
+            <Settings className="h-4 w-4" />
+          </Button>
         </div>
       </CardContent>
     </Card>
