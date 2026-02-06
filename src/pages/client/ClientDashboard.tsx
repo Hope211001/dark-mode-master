@@ -21,8 +21,14 @@ const ClientDashboard = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
+  // États pour les compteurs
+  const [totalZonesCount, setTotalZonesCount] = useState<number>(0);
+  const [freeZonesCount, setFreeZonesCount] = useState<number>(0);
+  const [soldZonesCount, setSoldZonesCount] = useState<number>(0);
+
   useEffect(() => {
     fetchDashboardData();
+    loadAllData();
   }, []);
 
   const fetchDashboardData = async () => {
@@ -44,6 +50,30 @@ const ClientDashboard = () => {
       setLoading(false);
     }
   };
+
+
+  const loadAllData = async () => {
+    setLoading(true);
+    try {
+      // On utilise allSettled au lieu de all pour éviter qu'une erreur bloque tout
+      const results = await Promise.allSettled([
+        zoneService.getCountAllZone(),
+        zoneService.getCountZoneLibre(),
+        zoneService.getCountZoneVendu()
+      ]);
+
+      // Traitement des résultats
+      if (results[0].status === 'fulfilled') setTotalZonesCount(results[0].value);
+      if (results[1].status === 'fulfilled') setFreeZonesCount(results[1].value);
+      if (results[2].status === 'fulfilled') setSoldZonesCount(results[2].value);
+
+    } catch (error) {
+      console.error("Erreur globale chargement", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
@@ -116,13 +146,13 @@ const ClientDashboard = () => {
               <CardContent className="relative p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-slate-400 mb-1">Zones exclusives</p>
+                    <p className="text-sm font-medium text-slate-400 mb-1">Zones disponibles</p>
                     <div className="flex items-baseline gap-2">
                       <h3 className="text-4xl font-black text-white tracking-tight">
-                        {loading ? ".." : zones.length}
+                        {loading ? ".." : freeZonesCount}
                       </h3>
                       <span className="text-xs font-semibold text-emerald-400 px-2 py-1 bg-emerald-500/10 rounded-full">
-                        {zones.length > 0 ? "Actives" : "Aucune"}
+                        {freeZonesCount > 0 ? "Actives" : "Aucune"}
                       </span>
                     </div>
                     <p className="text-xs text-slate-500 mt-2">secteurs configurés</p>
@@ -146,7 +176,7 @@ const ClientDashboard = () => {
               <div className="relative bg-gradient-to-r from-primary/20 via-primary/10 to-violet-500/10 p-8 border-b border-slate-700/50 overflow-hidden">
                 {/* Effet de brillance */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 animate-pulse" />
-                
+
                 <div className="relative flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="relative">
@@ -165,7 +195,7 @@ const ClientDashboard = () => {
                     </div>
                   </div>
                   <Link to="/client/leads">
-                    <Button 
+                    <Button
                       size="lg"
                       className="bg-gradient-to-r from-primary to-violet-500 hover:from-primary/90 hover:to-violet-500/90 text-white shadow-lg shadow-primary/25 border-0 group font-semibold"
                     >
@@ -175,7 +205,7 @@ const ClientDashboard = () => {
                   </Link>
                 </div>
               </div>
-              
+
               <CardContent className="p-8">
                 {loading ? (
                   <div className="flex flex-col items-center justify-center py-24">

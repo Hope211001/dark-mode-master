@@ -36,6 +36,17 @@ export interface VerifyResponse {
   };
 }
 
+
+// 1. Ajoute cette interface pour typer les données envoyées
+export interface UpdateProfileData {
+  name?: string;
+  email?: string;
+  currentPassword?: string;
+  newPassword?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 class AuthService {
   private readonly BASE_PATH = '/auth';
 
@@ -76,6 +87,16 @@ class AuthService {
   async getProfile(): Promise<ProfileResponse> {
     const response = await apiClient.get<ProfileResponse>(
       `${this.BASE_PATH}/profile`
+    );
+    return response.data;
+  }
+
+
+    //cette méthode pour mettre à jour le profil
+  async updateProfile(data: UpdateProfileData): Promise<AuthResponse> {
+    const response = await apiClient.put<AuthResponse>(
+      `${this.BASE_PATH}/update-profile`,
+      data
     );
     return response.data;
   }

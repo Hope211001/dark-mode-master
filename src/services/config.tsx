@@ -12,7 +12,6 @@ export const configService = {
   async updateConfig(configData: {
     loyer_max?: number;
     surface_min?: number;
-    auto_contact?: boolean;
     template_msg_1?: string;
     template_msg_2?: string;
     template_msg_3?: string;

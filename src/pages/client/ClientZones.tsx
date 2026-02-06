@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, MapPin, Lock, Users, TrendingUp, Loader2, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
-import { zoneService, Zone } from "@/services/zones.services";
+import { zoneService, Zone } from "@/services/zones.services.tsx";
 import { useToast } from "@/components/ui/use-toast";
 
 const ClientZones = () => {
@@ -15,10 +15,41 @@ const ClientZones = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
+  // États pour les compteurs (TYPES CORRIGÉS en number)
+  const [totalZonesCount, setTotalZonesCount] = useState<number>(0);
+  const [freeZonesCount, setFreeZonesCount] = useState<number>(0);
+  const [soldZonesCount, setSoldZonesCount] = useState<number>(0);
+
+
   // Chargement des données réelles au montage
   useEffect(() => {
     fetchMyZones();
+    loadAllData();
   }, []);
+
+
+ const loadAllData = async () => {
+    setLoading(true);
+    try {
+      // On utilise allSettled au lieu de all pour éviter qu'une erreur bloque tout
+      const results = await Promise.allSettled([
+        zoneService.getCountAllZone(),
+        zoneService.getCountZoneLibre(),
+        zoneService.getCountZoneVendu()
+      ]);
+
+      // Traitement des résultats
+      if (results[0].status === 'fulfilled') setTotalZonesCount(results[0].value);
+      if (results[1].status === 'fulfilled') setFreeZonesCount(results[1].value);
+      if (results[2].status === 'fulfilled') setSoldZonesCount(results[2].value);
+
+    } catch (error) {
+      console.error("Erreur globale chargement", error);
+    } finally {
+      setLoading(false);
+    }
+};
+
 
   const fetchMyZones = async () => {
     try {
@@ -66,7 +97,7 @@ const ClientZones = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-foreground mono">
-                    {loading ? ".." : zones.length}
+                     {loading ? "..." : totalZonesCount}
                   </p>
                   <p className="text-xs text-muted-foreground uppercase font-semibold">Total Zones</p>
                 </div>
@@ -94,7 +125,7 @@ const ClientZones = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-foreground mono">
-                    {loading ? ".." : sharedZones.length}
+                    {loading ? ".." : freeZonesCount}
                   </p>
                   <p className="text-xs text-muted-foreground uppercase font-semibold">Disponible</p>
                 </div>
@@ -107,8 +138,10 @@ const ClientZones = () => {
                   <TrendingUp className="h-6 w-6 text-blue-500" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground mono">0</p>
-                  <p className="text-xs text-muted-foreground uppercase font-semibold">Leads (24h)</p>
+                  <p className="text-2xl font-bold text-foreground mono">
+                     {loading ? ".." : soldZonesCount}
+                  </p>
+                  <p className="text-xs text-muted-foreground uppercase font-semibold">zone indisponible</p>
                 </div>
               </CardContent>
             </Card>

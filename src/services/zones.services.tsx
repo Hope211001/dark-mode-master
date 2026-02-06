@@ -47,6 +47,12 @@ export interface PaginatedZoneResponse {
   totalPages: number;
 }
 
+
+// Interface pour la réponse des compteurs API
+interface CountResponse {
+  count: number;
+}
+
 // 3. Le Service Zone
 export const zoneService = {
   // --- NOUVELLE FONCTION POUR LA CARTE ---
@@ -106,6 +112,7 @@ export const zoneService = {
     }
   },
 
+
   // Récupérer uniquement les zones disponibles (pour le Select de la Marketplace)
   getAvailableZones: async (): Promise<Zone[]> => {
     const res = await apiClient.get('/zones?page=1&limit=100');
@@ -114,4 +121,37 @@ export const zoneService = {
       z.statut_market === 'LIBRE'
     );
   },
+
+
+   // --- COMPTEURS CORRIGÉS (Retourne number, pas Zone[]) ---
+  getCountAllZone: async (): Promise<number> => {
+    try {
+      const res = await apiClient.get<CountResponse>('/zones/countAllZone');
+      return res.data.count; // On extrait le nombre
+    } catch (error) {
+      console.error("Erreur countAllZone", error);
+      return 0;
+    }
+  },
+
+  getCountZoneLibre: async (): Promise<number> => {
+    try {
+      const res = await apiClient.get<CountResponse>('/zones/countZoneLibre');
+      return res.data.count;
+    } catch (error) {
+      console.error("Erreur countZoneLibre", error);
+      return 0;
+    }
+  },
+
+  getCountZoneVendu: async (): Promise<number> => {
+    try {
+      const res = await apiClient.get<CountResponse>('/zones/countZoneVendu');
+      return res.data.count;
+    } catch (error) {
+      console.error("Erreur countZoneVendu", error);
+      return 0;
+    }
+  },
+
 };
