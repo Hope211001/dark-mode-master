@@ -6,6 +6,8 @@ import { authService, User } from "@/services/auth.service";
 import { useEffect, useState } from "react"; // Ajout de hooks
 import { useNavigate } from "react-router-dom"; // Pour la redirection après logout
 import { Link } from "react-router-dom";
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 import {
   LayoutDashboard,
@@ -179,7 +181,7 @@ export function ClientSidebar() {
               <Badge className="bg-primary text-primary-foreground text-xs uppercase">{user?.role || '...'}</Badge>
             </div>
             <div className="text-xs text-muted-foreground mt-1">
-              Membre depuis : {user ? new Date(user.created_at).toLocaleDateString() : '...'}
+              Membre depuis : {user?.created_at ? new Date(user.created_at).toLocaleDateString('fr-FR') : '...'}
             </div>
           </div>
 

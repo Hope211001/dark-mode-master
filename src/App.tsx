@@ -30,7 +30,7 @@ import { AuthProvider } from './contexts/AuthContext';
 //public
 import AboutPage from "./pages/home/about";
 import Tarifs from "./pages/home/tarifs ";
-
+import VerifyEmail from "./pages/auth/VerifyEmail"
 // client
 import ClientSearchZone from "./pages/client/ClientSearchZone";
 import ShowLead from "./pages/client/ShowLead";
@@ -52,8 +52,8 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/tarifs" element={<Tarifs />} /> {/* Espace supprimé */}
-
+            <Route path="/tarifs" element={<Tarifs />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
             {/* PORTAIL ADMIN - Regroupé pour plus de clarté */}
             <Route path="/admin">
               <Route index element={
@@ -110,7 +110,7 @@ const App = () => (
                 <ProtectedRoute allowedRoles={['client']}>
                   <ShowLead />
                 </ProtectedRoute>
-                } />
+              } />
               <Route path="zone-setting/:zoneId" element={
                 <ProtectedRoute allowedRoles={['client']}>
                   <ZoneSetting />

@@ -1,3 +1,8 @@
+
+// ========================================
+// 1. src/services/auth.service.tsx
+// ========================================
+
 import { apiClient } from './client';
 
 export interface User {
@@ -19,9 +24,18 @@ export interface LoginData {
   password: string;
 }
 
+// Modifie ton interface AuthResponse
 export interface AuthResponse {
-  token: string;
-  user: User;
+  token?: string;                // Optionnel car absent si verification requise
+  user?: User;                   // Optionnel car absent si verification requise
+  requiresVerification?: boolean; // <-- AJOUTE CETTE LIGNE
+  message?: string;    
+  created_at?: string;
+}
+
+// ✅ NOUVELLE INTERFACE pour la réponse d'inscription
+export interface RegisterResponse {
+  message: string;
 }
 
 export interface ProfileResponse {
@@ -36,8 +50,6 @@ export interface VerifyResponse {
   };
 }
 
-
-// 1. Ajoute cette interface pour typer les données envoyées
 export interface UpdateProfileData {
   name?: string;
   email?: string;
@@ -50,13 +62,21 @@ export interface UpdateProfileData {
 class AuthService {
   private readonly BASE_PATH = '/auth';
 
-  // Inscription
-  async register(data: RegisterData): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>(
+  async googleAuth(credential: string, mode: 'login' | 'register'): Promise<AuthResponse> {
+  const response = await apiClient.post<AuthResponse>(`${this.BASE_PATH}/google-auth`, { 
+    credential, 
+    mode 
+  });
+  return response.data;
+}
+
+  // ✅ FIX : Utiliser RegisterResponse au lieu de AuthResponse
+  async register(data: RegisterData): Promise<RegisterResponse> {
+    const response = await apiClient.post<RegisterResponse>(
       `${this.BASE_PATH}/register`,
       data
     );
-    return response.data;
+    return response.data; // Retourne { message: "..." }
   }
 
   // Connexion
@@ -68,31 +88,25 @@ class AuthService {
     return response.data;
   }
 
-  //logout
-  async logout(): Promise<void> {
-    try {
-      // 1. On informe le serveur (optionnel mais recommandé)
-      await apiClient.post(`${this.BASE_PATH}/logout`);
-    } catch (error) {
-      // Si le serveur est hors ligne ou répond 500, ce n'est pas grave
-      // On veut quand même déconnecter l'utilisateur localement
-      console.warn('Erreur serveur lors du logout (non bloquant):', error);
-    } finally {
-      // 2. Quoi qu'il arrive (succès ou erreur), on supprime le token localement
-      this.removeToken();
-    }
-  }
 
-  // Obtenir le profil
-  async getProfile(): Promise<ProfileResponse> {
-    const response = await apiClient.get<ProfileResponse>(
-      `${this.BASE_PATH}/profile`
+  async verifyEmail(token: string, id: string): Promise<AuthResponse> {
+    const response = await apiClient.get<AuthResponse>(
+      `${this.BASE_PATH}/verify-email?token=${token}&id=${id}`
     );
     return response.data;
   }
 
+  async logout(): Promise<void> {
+    try {
+      await apiClient.post(`${this.BASE_PATH}/logout`);
+    } catch (error) {
+      console.warn('Erreur serveur lors du logout (non bloquant):', error);
+    } finally {
+      this.removeToken();
+    }
+  }
 
-    //cette méthode pour mettre à jour le profil
+
   async updateProfile(data: UpdateProfileData): Promise<AuthResponse> {
     const response = await apiClient.put<AuthResponse>(
       `${this.BASE_PATH}/update-profile`,
@@ -101,7 +115,6 @@ class AuthService {
     return response.data;
   }
 
-  // Vérifier le token
   async verifyToken(): Promise<VerifyResponse> {
     const response = await apiClient.get<VerifyResponse>(
       `${this.BASE_PATH}/verify`
@@ -109,20 +122,15 @@ class AuthService {
     return response.data;
   }
 
-  // Sauvegarder le token
-  saveToken(token: string): void {
-    localStorage.setItem('token', token);
+  async getProfile(): Promise<ProfileResponse> {
+    const response = await apiClient.get<ProfileResponse>(`${this.BASE_PATH}/profile`);
+    return response.data;
   }
 
-  // Récupérer le token
-  getToken(): string | null {
-    return localStorage.getItem('token');
-  }
-
-  // Supprimer le token
-  removeToken(): void {
-    localStorage.removeItem('token');
-  }
+  saveToken(token: string): void { localStorage.setItem('token', token); }
+  getToken(): string | null { return localStorage.getItem('token'); }
+  removeToken(): void { localStorage.removeItem('token'); }
 }
 
 export const authService = new AuthService();
+
