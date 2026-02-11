@@ -22,6 +22,7 @@ import BuyZone from "./pages/client/BuyZone";
 // Admin Pages
 import AdminDashboard from "./pages/admin/dashbord";
 import ZonesManagement from "./pages/admin/zones/zone.liste";
+import ListUser from "./pages/admin/user";
 
 // Auth
 import ProtectedRoute from './components/ProtectedRoute';
@@ -64,6 +65,11 @@ const App = () => (
               <Route path="zones" element={
                 <ProtectedRoute allowedRoles={['admin']}>
                   <ZonesManagement />
+                </ProtectedRoute>
+              } />
+              <Route path="user" element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <ListUser />
                 </ProtectedRoute>
               } />
             </Route>

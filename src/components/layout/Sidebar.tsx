@@ -1,9 +1,9 @@
-import { Home, Map, Mail, Settings, Bell, TrendingUp, Filter, Users, LogOut, MapPin } from "lucide-react";
+import { Home, Map, Mail, Settings, Bell, TrendingUp, Filter, Users as UserIcon, LogOut, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
-import { authService, type User } from "@/services/auth.service";
+import { authService, User } from "@/services/auth.service";
 
 interface NavItem {
   icon: React.ReactNode;
@@ -17,6 +17,7 @@ const navItems: NavItem[] = [
   { icon: <Home className="w-5 h-5" />, label: "Dashboard", href: "/admin", active: true },
   // { icon: <TrendingUp className="w-5 h-5" />, label: "Leads", href: "/", badge: 12 },
   { icon: <Map className="w-5 h-5" />, label: "Zones", href: "/admin/zones" },
+  { icon: <UserIcon className="w-5 h-5" />, label: "User", href: "/admin/user" },
   // { icon: <Mail className="w-5 h-5" />, label: "Messages", href: "/messages" },
   // { icon: <Filter className="w-5 h-5" />, label: "Filtres", href: "/filters" },
 ];
