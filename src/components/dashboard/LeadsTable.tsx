@@ -1,82 +1,19 @@
-import { ExternalLink, Mail, Clock, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ExternalLink, Mail, Clock, TrendingUp, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+// Importation du service et du type
+import { leadsService, Lead } from "@/services/leads.service";
+import { useToast } from "@/components/ui/use-toast";
 
-interface Lead {
-  id: string;
-  title: string;
-  location: string;
-  loyer: number;
-  potentielAirbnb: number;
-  score: number;
-  surface: string;
-  status: "new" | "contacted" | "replied" | "rejected";
-  createdAt: string;
-}
-
-const mockLeads: Lead[] = [
-  {
-    id: "1",
-    title: "T3 Lumineux Centre-Ville",
-    location: "Lyon 3ème",
-    loyer: 950,
-    potentielAirbnb: 2800,
-    score: 9.2,
-    surface: "65m²",
-    status: "new",
-    createdAt: "Il y a 12 min",
-  },
-  {
-    id: "2",
-    title: "Studio Moderne Part-Dieu",
-    location: "Lyon 3ème",
-    loyer: 650,
-    potentielAirbnb: 1900,
-    score: 8.8,
-    surface: "28m²",
-    status: "contacted",
-    createdAt: "Il y a 34 min",
-  },
-  {
-    id: "3",
-    title: "T2 Rénové Guillotière",
-    location: "Lyon 7ème",
-    loyer: 780,
-    potentielAirbnb: 2100,
-    score: 8.1,
-    surface: "42m²",
-    status: "new",
-    createdAt: "Il y a 1h",
-  },
-  {
-    id: "4",
-    title: "Appartement Charme Vieux Lyon",
-    location: "Lyon 5ème",
-    loyer: 1100,
-    potentielAirbnb: 3200,
-    score: 8.5,
-    surface: "55m²",
-    status: "replied",
-    createdAt: "Il y a 2h",
-  },
-  {
-    id: "5",
-    title: "T2 Vue Rhône",
-    location: "Lyon 2ème",
-    loyer: 890,
-    potentielAirbnb: 2400,
-    score: 7.9,
-    surface: "38m²",
-    status: "contacted",
-    createdAt: "Il y a 3h",
-  },
-];
-
-const statusConfig = {
-  new: { label: "Nouveau", className: "bg-primary/20 text-primary" },
-  contacted: { label: "Contacté", className: "bg-warning/20 text-warning" },
-  replied: { label: "Répondu", className: "bg-success/20 text-success" },
-  rejected: { label: "Refusé", className: "bg-destructive/20 text-destructive" },
+// Configuration des statuts basée sur ton backend (statut_prospection)
+const statusConfig: Record<string, { label: string; className: string }> = {
+  "NOUVEAU": { label: "Nouveau", className: "bg-primary/20 text-primary" },
+  "EN_COURS": { label: "Contacté", className: "bg-warning/20 text-warning" },
+  "REVISE": { label: "Répondu", className: "bg-success/20 text-success" },
+  "REFUSE": { label: "Refusé", className: "bg-destructive/20 text-destructive" },
+  // Valeurs par défaut si le backend renvoie autre chose
+  "default": { label: "Inconnu", className: "bg-muted text-muted-foreground" }
 };
 
 function ScoreBadge({ score }: { score: number }) {
@@ -93,21 +30,53 @@ function ScoreBadge({ score }: { score: number }) {
       getScoreColor(score)
     )}>
       <TrendingUp className="w-3.5 h-3.5" />
-      {score.toFixed(1)}
+      {score?.toFixed(1) || "0.0"}
     </div>
   );
 }
 
 export function LeadsTable() {
+  const { toast } = useToast();
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchLatestLeads();
+  }, []);
+
+  const fetchLatestLeads = async () => {
+    try {
+      setLoading(true);
+      // On récupère la page 1 avec une limite de 3
+      const response = await leadsService.getMyLeads(1, 3);
+      setLeads(response.data);
+    } catch (error) {
+      console.error("Erreur fetchLeads:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les derniers leads",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fonction pour formater la date simplement
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  };
+
   return (
     <div className="glass-card rounded-xl overflow-hidden animate-fade-in">
       <div className="p-6 border-b border-border">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-foreground">Derniers Leads</h2>
-            <p className="text-sm text-muted-foreground">Annonces triées par score de rentabilité</p>
+            <p className="text-sm text-muted-foreground">Les opportunités les plus récentes</p>
           </div>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/leads'}>
             Voir tout
           </Button>
         </div>
@@ -117,79 +86,90 @@ export function LeadsTable() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-border bg-muted/30">
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">
-                Annonce
-              </th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">
-                Score
-              </th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">
-                Loyer
-              </th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">
-                Potentiel
-              </th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">
-                Statut
-              </th>
-              <th className="text-right text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">
-                Actions
-              </th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Annonce</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Score</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Loyer</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Potentiel</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Statut</th>
+              <th className="text-right text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {mockLeads.map((lead, index) => (
-              <tr 
-                key={lead.id} 
-                className="hover:bg-muted/20 transition-colors"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
-                <td className="px-6 py-4">
-                  <div className="flex flex-col">
-                    <span className="font-medium text-foreground">{lead.title}</span>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-sm text-muted-foreground">{lead.location}</span>
-                      <span className="text-muted-foreground">•</span>
-                      <span className="text-sm text-muted-foreground">{lead.surface}</span>
-                      <span className="text-muted-foreground">•</span>
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {lead.createdAt}
-                      </span>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <ScoreBadge score={lead.score} />
-                </td>
-                <td className="px-6 py-4">
-                  <span className="font-mono text-foreground">{lead.loyer.toLocaleString()}€</span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="font-mono text-success font-medium">
-                    {lead.potentielAirbnb.toLocaleString()}€
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={cn(
-                    "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium",
-                    statusConfig[lead.status].className
-                  )}>
-                    {statusConfig[lead.status].label}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center justify-end gap-2">
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <Mail className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <ExternalLink className="w-4 h-4" />
-                    </Button>
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="px-6 py-10 text-center">
+                  <div className="flex flex-col items-center gap-2">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <p className="text-sm text-muted-foreground">Chargement des leads...</p>
                   </div>
                 </td>
               </tr>
-            ))}
+            ) : leads.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">
+                  Aucun lead trouvé.
+                </td>
+              </tr>
+            ) : (
+              leads.map((lead, index) => {
+                const status = statusConfig[lead.statut_prospection] || statusConfig["default"];
+                
+                return (
+                  <tr 
+                    key={lead.id} 
+                    className="hover:bg-muted/20 transition-colors animate-fade-in"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-foreground line-clamp-1">{lead.titre}</span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-sm text-muted-foreground">{lead.ville}</span>
+                          <span className="text-muted-foreground">•</span>
+                          <span className="text-sm text-muted-foreground">{lead.surface}m²</span>
+                          <span className="text-muted-foreground">•</span>
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {formatDate(lead.date_detection)}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <ScoreBadge score={lead.score} />
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-mono text-foreground">{lead.prix?.toLocaleString()}€</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-mono text-success font-medium">
+                        {lead.potentiel_revenu?.toLocaleString() || "0"}€
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={cn(
+                        "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium",
+                        status.className
+                      )}>
+                        {status.label}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Mail className="w-4 h-4" />
+                        </Button>
+                        <a href={lead.url} target="_blank" rel="noopener noreferrer">
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>

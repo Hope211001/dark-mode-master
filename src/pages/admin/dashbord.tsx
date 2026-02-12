@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/dashboard/Header";
 import { StatsCard } from "@/components/dashboard/StatsCard";
@@ -5,71 +6,99 @@ import { LeadsTable } from "@/components/dashboard/LeadsTable";
 import { ZoneMap } from "@/components/dashboard/ZoneMap";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { TrendingUp, Mail, MapPin, Target } from "lucide-react";
+import { zoneService, Zone } from "@/services/zones.services";
+import { leadsService, Lead } from "@/services/leads.service";
+import { useToast } from "@/components/ui/use-toast";
 
 const dashbord = () => {
+  const { toast } = useToast();
+
+  // États pour les compteurs réels
+  const [totalLeadsCount, setTotalLeadsCount] = useState(0);
+  const [totalZonesCount, setTotalZonesCount] = useState(0);
+  const [zonesLibresCount, setZonesLibresCount] = useState(0);
+  const [zonesVenduCount, setZonesVenduCount] = useState(0);
+  
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAllStats();
+  }, []);
+
+  const fetchAllStats = async () => {
+    try {
+      setLoading(true);
+      
+      // On lance tous les appels en parallèle pour la performance
+      const [leadsRes, countAll, countLibre, countVendu] = await Promise.all([
+        // Attention : j'utilise getMyLeads pour éviter la 404 si tu n'es pas admin
+        leadsService.getMyLeads(1, 4), 
+        zoneService.getCountAllZone(),
+        zoneService.getCountZoneLibre(),
+        zoneService.getCountZoneVendu()
+      ]);
+
+      setTotalLeadsCount(leadsRes.totalCount);
+      setTotalZonesCount(countAll);
+      setZonesLibresCount(countLibre);
+      setZonesVenduCount(countVendu);
+
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les statistiques",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      
       <main className="ml-64">
         <Header />
-        
         <div className="p-6 space-y-6">
-          {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatsCard
-              title="Leads ce mois"
-              value={47}
-              change="+12%"
-              changeType="positive"
-              description="vs mois dernier"
+              title="Leads"
+              value={totalLeadsCount}
+              change="Total détectés"
               icon={TrendingUp}
             />
             <StatsCard
-              title="Emails envoyés"
-              value={128}
-              change="+23%"
+              title="Zones"
+              value={totalZonesCount}
+              change="Villes couvertes"
               changeType="positive"
-              description="vs mois dernier"
               icon={Mail}
             />
             <StatsCard
-              title="Zones actives"
-              value={4}
-              change="Lyon"
+              title="Zones libres"
+              value={zonesLibresCount}
+              change="Disponibles"
               changeType="neutral"
-              description="exclusives"
               icon={MapPin}
             />
             <StatsCard
-              title="Taux de réponse"
-              value="18%"
-              change="+3%"
+              title="Zones vendues"
+              value={zonesVenduCount}
+              change="Sous contrat"
               changeType="positive"
-              description="vs mois dernier"
               icon={Target}
             />
           </div>
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Leads Table - Takes 2 columns */}
+          <div className="grid grid-cols-1 gap-6">
             <div className="lg:col-span-2">
-              <LeadsTable />
-            </div>
-
-            {/* Right Sidebar */}
-            <div className="space-y-6">
-              <ZoneMap />
-              <ActivityFeed />
+              {/* Le tableau gère sa propre pagination en interne */}
+              <LeadsTable /> 
             </div>
           </div>
         </div>
       </main>
-
-      {/* Background Glow Effects */}
-      <div className="fixed top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="fixed bottom-0 left-64 w-96 h-96 bg-success/5 rounded-full blur-3xl pointer-events-none" />
     </div>
   );
 };

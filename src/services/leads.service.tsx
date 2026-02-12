@@ -46,6 +46,11 @@ interface LeadsResponse {
 }
 
 export const leadsService = {
+  getAll: async (page = 1, limit = 10): Promise<LeadsResponse> => {
+    const response = await apiClient.get<LeadsResponse>(`/leads?page=${page}&limit=${limit}`);
+    return response.data;
+  },
+
   getMyLeads: async (page = 1, limit = 10): Promise<LeadsResponse> => {
     const response = await apiClient.get<LeadsResponse>(`/leads/my?page=${page}&limit=${limit}`);
     return response.data;

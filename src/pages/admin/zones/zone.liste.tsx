@@ -196,11 +196,11 @@ const ZonesManagement = () => {
           </div>
 
           {/* STATISTIQUES */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <StatsCard title="Zones dans la page" value={zones.length} icon={MapPin} changeType="neutral" />
             <StatsCard title="Total en Base" value={totalCount} icon={Globe} changeType="neutral" />
             <StatsCard title="Statut Vendu" value={zones.filter(z => z.statut_market === 'VENDU').length} icon={ShoppingBag} changeType="neutral" />
-          </div>
+          </div> */}
 
           {/* TABLEAU ET RECHERCHE */}
           <div className="glass-card rounded-xl border bg-card shadow-sm overflow-hidden">
