@@ -121,7 +121,7 @@ export function LeadCard({
           </div>
           <div className="flex items-center gap-2 text-xs">
             <Euro className="h-3.5 w-3.5 text-primary/60" />
-            <span className="text-foreground font-semibold">{prix.toLocaleString()}€ <span className="text-[10px] font-normal text-muted-foreground">/hc</span></span>
+            <span className="text-foreground font-semibold">{prix.toLocaleString()} <span className="text-[10px] font-normal text-muted-foreground">/hc</span></span>
           </div>
         </div>
 
