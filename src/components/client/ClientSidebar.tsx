@@ -1,14 +1,6 @@
-import { NavLink } from "@/components/NavLink";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { authService, User } from "@/services/auth.service";
-import { useEffect, useState } from "react"; // Ajout de hooks
-import { useNavigate } from "react-router-dom"; // Pour la redirection après logout
-import { Link } from "react-router-dom";
-import { formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
-
+import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import io from "socket.io-client"; // <--- AJOUT SOCKET
 import {
   LayoutDashboard,
   Users,
@@ -17,15 +9,31 @@ import {
   Bell,
   LogOut,
   User as UserIcon,
-  Search,
-  Mail
+  Search
 } from "lucide-react";
+
+import { NavLink } from "@/components/NavLink";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+
+import { authService, User } from "@/services/auth.service";
+import { notificationService } from "@/services/notification.service"; // <--- AJOUT SERVICE
+
+// URL du Socket (assure-toi que c'est la même que dans ClientHeader)
+const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const navItems = [
   {
     title: "Dashboard",
     url: "/client",
     icon: LayoutDashboard
+  },
+  {
+    title: "Notification",
+    url: "/client/notifications",
+    icon: Bell,
+    isNotification: true, // Marqueur pour identifier cet item
   },
   {
     title: "Mes Leads",
@@ -62,35 +70,66 @@ export function ClientSidebar() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 1. Charger les données du profil au montage du composant
+  // État pour le badge de notification
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // 1. Charger Profil + Notifications
   useEffect(() => {
-    const fetchProfile = async () => {
+    const initData = async () => {
       try {
-        const response = await authService.getProfile();
-        setUser(response.user);
+        // A. Profil
+        const profileRes = await authService.getProfile();
+        setUser(profileRes.user);
+
+        // B. Notifications (Compte initial)
+        const notifRes = await notificationService.getAll();
+        setUnreadCount(notifRes.unreadCount || 0);
+
       } catch (error) {
-        console.error("Erreur lors de la récupération du profil", error);
-        // Si erreur d'auth, on peut rediriger vers login
-        // navigate("/login");
+        console.error("Erreur chargement sidebar", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProfile();
+    initData();
   }, [navigate]);
 
-  // 2. Gérer la déconnexion
+  // 2. Gestion Temps Réel (Socket.io)
+  useEffect(() => {
+    const socket = io(SOCKET_URL, {
+      withCredentials: true,
+      transports: ['websocket', 'polling']
+    });
+
+    // Écouter les nouveaux leads
+    socket.on('new_lead_notification', () => {
+      // On incrémente simplement le compteur visuel
+      setUnreadCount((prev) => prev + 1);
+    });
+
+    // Écouter si tout a été marqué comme lu ailleurs (Optionnel mais recommandé)
+    socket.on('refresh_list', () => {
+      // On recharge le compteur réel
+      notificationService.getAll().then(data => setUnreadCount(data.unreadCount));
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  // 3. Gérer la déconnexion
   const handleLogout = async () => {
     try {
       await authService.logout();
-      navigate("/login"); // Redirige vers la page de connexion
+      navigate("/login");
     } catch (error) {
       console.error("Erreur lors de la déconnexion", error);
     }
   };
 
-  // 3. Fonction pour générer les initiales de l'avatar
+  // 4. Initiales Avatar
   const getInitials = (name?: string, email?: string) => {
     if (name) return name.substring(0, 2).toUpperCase();
     return email ? email.substring(0, 2).toUpperCase() : "??";
@@ -117,7 +156,6 @@ export function ClientSidebar() {
         <div className="border-b border-border p-4">
           <div className="flex items-center gap-3 rounded-lg bg-secondary/50 p-3">
             <Avatar className="h-10 w-10 border-2 border-primary/30">
-              {/* On peut utiliser un avatar par défaut basé sur le nom */}
               <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email}`} />
               <AvatarFallback>{getInitials(user?.name, user?.email)}</AvatarFallback>
             </Avatar>
@@ -129,34 +167,40 @@ export function ClientSidebar() {
                 {user?.email}
               </p>
             </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8 relative">
-              <Bell className="h-4 w-4" />
-              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground flex items-center justify-center">
-                2
-              </span>
-            </Button>
           </div>
         </div>
 
-        {/* Navigation (inchangé) */}
+        {/* Navigation */}
         <nav className="flex-1 space-y-1 p-4">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.url}
-              to={item.url}
-              end={item.url === "/client"}
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-secondary hover:text-foreground group"
-              activeClassName="bg-primary/10 text-primary border border-primary/20"
-            >
-              <item.icon className="h-5 w-5 group-hover:text-primary transition-colors" />
-              <span className="flex-1">{item.title}</span>
-              {item.badge && (
-                <Badge variant="secondary" className="bg-primary/20 text-primary text-xs">
-                  {item.badge}
-                </Badge>
-              )}
-            </NavLink>
-          ))}
+          {navItems.map((item) => {
+            // Logique pour déterminer si on affiche un badge
+            let displayBadge = null;
+
+            // Si c'est l'item "Notification" ET qu'il y a des non-lus
+            if (item.isNotification && unreadCount > 0) {
+              displayBadge = unreadCount > 99 ? '99+' : unreadCount;
+            }
+
+            return (
+              <NavLink
+                key={item.url}
+                to={item.url}
+                end={item.url === "/client"}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-secondary hover:text-foreground group"
+                activeClassName="bg-primary/10 text-primary border border-primary/20"
+              >
+                <item.icon className="h-5 w-5 group-hover:text-primary transition-colors" />
+                <span className="flex-1">{item.title}</span>
+
+                {/* Badge Dynamique */}
+                {displayBadge && (
+                  <Badge className="bg-destructive text-destructive-foreground text-xs hover:bg-destructive h-5 px-1.5 min-w-[1.25rem] flex items-center justify-center">
+                    {displayBadge}
+                  </Badge>
+                )}
+              </NavLink>
+            );
+          })}
 
           <div className="my-6 border-t border-border" />
 

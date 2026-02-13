@@ -18,6 +18,7 @@ import ClientZones from "./pages/client/ClientZones";
 import ClientSettings from "./pages/client/ClientSettings";
 import ClientProfile from "./pages/client/ClientProfile";
 import BuyZone from "./pages/client/BuyZone";
+import NotificationsPage from "./pages/client/NotificationsPage";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/dashbord";
@@ -120,6 +121,12 @@ const App = () => (
               <Route path="zone-setting/:zoneId" element={
                 <ProtectedRoute allowedRoles={['client']}>
                   <ZoneSetting />
+                </ProtectedRoute>
+              } />
+
+              <Route path="notifications" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                 <NotificationsPage />
                 </ProtectedRoute>
               } />
             </Route>
