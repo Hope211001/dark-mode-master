@@ -219,7 +219,7 @@ export function ClientSidebar() {
 
         {/* Subscription & Logout */}
         <div className="border-t border-border p-4">
-          <div className="rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 p-3 mb-3">
+          {/* <div className="rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 p-3 mb-3">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-muted-foreground">Rôle</span>
               <Badge className="bg-primary text-primary-foreground text-xs uppercase">{user?.role || '...'}</Badge>
@@ -227,7 +227,7 @@ export function ClientSidebar() {
             <div className="text-xs text-muted-foreground mt-1">
               Membre depuis : {user?.created_at ? new Date(user.created_at).toLocaleDateString('fr-FR') : '...'}
             </div>
-          </div>
+          </div> */}
 
           <Button
             onClick={handleLogout}

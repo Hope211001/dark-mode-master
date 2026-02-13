@@ -75,6 +75,7 @@ const App = () => (
               } />
             </Route>
 
+
             {/* PORTAIL CLIENT */}
             <Route path="/client">
               <Route index element={
