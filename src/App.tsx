@@ -37,6 +37,7 @@ import VerifyEmail from "./pages/auth/VerifyEmail"
 import ClientSearchZone from "./pages/client/ClientSearchZone";
 import ShowLead from "./pages/client/ShowLead";
 import ZoneSetting from "./pages/client/ZoneSetting";
+import ClientInvoices from "./pages/client/ClientInvoices";
 
 const queryClient = new QueryClient();
 
@@ -128,6 +129,11 @@ const App = () => (
               <Route path="notifications" element={
                 <ProtectedRoute allowedRoles={['client']}>
                  <NotificationsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="invoices" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                  <ClientInvoices />
                 </ProtectedRoute>
               } />
             </Route>

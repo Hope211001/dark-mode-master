@@ -9,7 +9,8 @@ import {
   Bell,
   LogOut,
   User as UserIcon,
-  Search
+  Search,
+  Receipt,
 } from "lucide-react";
 
 import { NavLink } from "@/components/NavLink";
@@ -49,6 +50,11 @@ const navItems = [
     title: "Mes Zones",
     url: "/client/zones",
     icon: MapPin
+  },
+  {
+    title: "Factures",
+    url: "/client/invoices",
+    icon: Receipt
   },
 ];
 

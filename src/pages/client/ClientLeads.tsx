@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, SlidersHorizontal, Grid3X3, List, Download, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
-import { leadsService, Lead } from "@/services/leads.service";
+import { Search, Filter, Phone, Grid3X3, List, Download, Loader2, ChevronLeft, ChevronRight, RefreshCw, ArrowUpDown } from "lucide-react";
+import { leadsService, Lead, LeadsFilters } from "@/services/leads.service";
 import { useToast } from "@/components/ui/use-toast";
 
 const statusFilters = [
@@ -18,12 +18,28 @@ const statusFilters = [
   { value: "NEGOCIATION", label: "En négociation" },
 ];
 
+const phoneFilters = [
+  { value: "all", label: "Tous les leads" },
+  { value: "with_phone", label: "Avec téléphone" },
+  { value: "without_phone", label: "Sans téléphone" },
+];
+
+const sortOptions = [
+  { value: "desc", label: "Plus récents d'abord" },
+  { value: "asc", label: "Plus anciens d'abord" },
+];
+
+const DEBOUNCE_MS = 400;
+
 const ClientLeads = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [phoneFilter, setPhoneFilter] = useState("all");
+  const [sortOrder, setSortOrder] = useState("desc");
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,14 +48,33 @@ const ClientLeads = () => {
 
   const { toast } = useToast();
 
+  // Debounce la recherche texte
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchTerm), DEBOUNCE_MS);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
+
+  // Retour à la page 1 quand les filtres changent
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch, statusFilter, phoneFilter, sortOrder]);
+
   useEffect(() => {
     fetchLeads();
-  }, [currentPage]);
+  }, [currentPage, debouncedSearch, statusFilter, phoneFilter, sortOrder]);
 
   const fetchLeads = async () => {
     try {
       setLoading(true);
-      const res = await leadsService.getMyLeads(currentPage, 12);
+      const filters: LeadsFilters = {
+        page: currentPage,
+        limit: 12,
+        search: debouncedSearch || undefined,
+        statut: statusFilter,
+        phone: phoneFilter,
+        sort: sortOrder,
+      };
+      const res = await leadsService.getMyLeads(filters);
       setLeads(res.data);
       setTotalPages(res.totalPages);
       setTotalCount(res.totalCount);
@@ -50,13 +85,7 @@ const ClientLeads = () => {
     }
   };
 
-  // Filtrage local (pour la recherche et le statut)
-  const filteredLeads = leads.filter(lead => {
-    const matchesSearch = lead.titre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.ville?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || lead.statut_prospection === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredLeads = leads;
 
   return (
     <div className="min-h-screen bg-background">
@@ -93,6 +122,30 @@ const ClientLeads = () => {
               </SelectContent>
             </Select>
 
+            <Select value={phoneFilter} onValueChange={setPhoneFilter}>
+              <SelectTrigger className="w-48 bg-secondary/30">
+                <Phone className="h-4 w-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {phoneFilters.map((f) => (
+                  <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={sortOrder} onValueChange={setSortOrder}>
+              <SelectTrigger className="w-52 bg-secondary/30">
+                <ArrowUpDown className="h-4 w-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {sortOptions.map((f) => (
+                  <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <div className="flex items-center gap-1 bg-secondary/50 rounded-lg p-1">
               <Button variant={viewMode === "grid" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("grid")} className="h-8 w-10 p-0">
                 <Grid3X3 className="h-4 w-4" />
@@ -105,6 +158,24 @@ const ClientLeads = () => {
             <Button variant="outline" className="gap-2">
               <Download className="h-4 w-4" /> Exporter
             </Button>
+
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => {
+                setSearchTerm("");
+                setDebouncedSearch("");
+                setStatusFilter("all");
+                setPhoneFilter("all");
+                setSortOrder("desc");
+                setCurrentPage(1);
+              }}
+              disabled={loading}
+            >
+              <RefreshCw className="h-4 w-4" />
+              Réinitialiser
+            </Button>
+
           </div>
 
           {/* Stats Summary */}
@@ -138,15 +209,15 @@ const ClientLeads = () => {
                 <LeadCard
                   key={lead.id}
                   id={lead.id}
-                  titre={lead.titre}                  // Changé: title -> titre
-                  ville={lead.ville}                  // Changé: location -> ville
+                  titre={lead.titre}
+                  ville={lead.ville}
                   surface={lead.surface}
-                  prix={lead.prix}                    // Changé: loyer -> prix
-                  score={lead.score}                  // Le composant gère déjà le x10 en interne
-                  statut_prospection={lead.statut_prospection} // Changé: status -> statut_prospection
-                  date_detection={lead.date_detection} // Changé: createdAt -> date_detection
-                  url={lead.url}                      // Ajouté: Indispensable pour le bouton LBC
-                  // potentiel_revenu={lead.potentiel_revenu} // Optionnel: Si n8n a déjà calculé le score
+                  prix={lead.prix}
+                  score={lead.score}
+                  statut_prospection={lead.statut_prospection}
+                  date_detection={lead.date_detection}
+                  url={lead.url}
+                  phone={lead.phone}
                 />
               ))}
             </div>

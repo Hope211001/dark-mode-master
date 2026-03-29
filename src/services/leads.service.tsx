@@ -32,6 +32,7 @@ export interface Lead {
   scrore_details?: ScoreDetails; 
   // scrore_details?: ScoreDetails; // Décommentez cette ligne si votre DB a encore la faute de frappe
   
+  phone?: string;
   owner_name?: string;
   zone_id?: string;
   assigned_user_id?: string;
@@ -45,14 +46,29 @@ interface LeadsResponse {
   totalPages: number;
 }
 
+export interface LeadsFilters {
+  page?: number;
+  limit?: number;
+  search?: string;
+  statut?: string;
+  phone?: string;
+  sort?: string;
+}
+
 export const leadsService = {
   getAll: async (page = 1, limit = 10): Promise<LeadsResponse> => {
     const response = await apiClient.get<LeadsResponse>(`/leads?page=${page}&limit=${limit}`);
     return response.data;
   },
 
-  getMyLeads: async (page = 1, limit = 10): Promise<LeadsResponse> => {
-    const response = await apiClient.get<LeadsResponse>(`/leads/my?page=${page}&limit=${limit}`);
+  getMyLeads: async (filters: LeadsFilters = {}): Promise<LeadsResponse> => {
+    const { page = 1, limit = 12, search, statut, phone, sort } = filters;
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (search) params.append('search', search);
+    if (statut && statut !== 'all') params.append('statut', statut);
+    if (phone && phone !== 'all') params.append('phone', phone);
+    if (sort) params.append('sort', sort);
+    const response = await apiClient.get<LeadsResponse>(`/leads/my?${params.toString()}`);
     return response.data;
   },
   

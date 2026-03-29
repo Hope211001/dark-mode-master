@@ -1,4 +1,4 @@
-import { MapPin, Maximize, Euro, Calendar, Mail, ExternalLink, Heart, MoreHorizontal, TrendingUp } from "lucide-react";
+import { MapPin, Maximize, Euro, Calendar, Mail, Phone, Heart, MoreHorizontal, TrendingUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface LeadCardProps {
   id: string;
@@ -22,7 +22,8 @@ interface LeadCardProps {
   score: number;           
   statut_prospection: string; 
   date_detection: string;  
-  url: string;             
+  url: string;
+  phone?: string;
   isFavorite?: boolean;
 }
 
@@ -57,21 +58,26 @@ export function LeadCard({
   titre,
   ville,
   surface,
-  prix = 0, 
+  prix = 0,
   score,
   statut_prospection,
   date_detection,
   url,
+  phone,
   isFavorite = false,
 }: LeadCardProps) {
   
+  const navigate = useNavigate();
   const formattedDate = new Date(date_detection).toLocaleDateString('fr-FR', {
     day: 'numeric',
     month: 'short',
   });
 
   return (
-    <Card className="glass-card overflow-hidden transition-all duration-300 hover:border-primary/30 hover:shadow-xl group border-white/10">
+    <Card
+      className="glass-card overflow-hidden transition-all duration-300 hover:border-primary/30 hover:shadow-xl group border-white/10 cursor-pointer"
+      onClick={() => navigate(`/client/showLead/${id}`)}
+    >
       {/* Header Image / Icon */}
       <div className="relative h-32 bg-secondary/30 overflow-hidden flex items-center justify-center bg-gradient-to-br from-primary/5 to-transparent">
         <div className="text-primary/20 group-hover:scale-110 transition-transform duration-500">
@@ -83,6 +89,12 @@ export function LeadCard({
           <Badge className={cn("border text-[10px] uppercase font-bold", statusConfig[statut_prospection]?.className || statusConfig.NOUVEAU.className)}>
             {statusConfig[statut_prospection]?.label || statut_prospection}
           </Badge>
+          {phone && (
+            <Badge variant="outline" className="border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold gap-1">
+              <Phone className="h-2.5 w-2.5" />
+              Tél
+            </Badge>
+          )}
         </div>
         
         {/* <div className="absolute top-3 right-3">
@@ -135,12 +147,12 @@ export function LeadCard({
         </div>
 
         {/* Actions de prospection */}
-        <div className="flex items-center gap-2 pt-2">
+        <div className="flex items-center gap-2 pt-2" onClick={(e) => e.stopPropagation()}>
           <Button size="sm" className="flex-1 bg-primary hover:bg-primary/90 font-bold text-xs h-9">
             <Mail className="h-3.5 w-3.5 mr-2" />
             Contacter
           </Button>
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="sm" variant="ghost" className="h-9 w-9 p-0">
@@ -153,7 +165,7 @@ export function LeadCard({
                 <DropdownMenuItem asChild>
                     {/* Utilisation des backticks ` ` pour insérer la variable id */}
                     <Link to={`/client/showLead/${id}`} className="w-full h-full block cursor-pointer">
-                        Voir l'analyse
+                        Voir le détail
                     </Link>
                 </DropdownMenuItem>
                 
