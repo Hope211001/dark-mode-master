@@ -12,7 +12,8 @@ import {
   Clock,
   Bell,
   Search,
-  AlertCircle
+  AlertCircle,
+  Inbox
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 

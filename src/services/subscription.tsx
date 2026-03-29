@@ -2,22 +2,27 @@ import { apiClient } from './client';
 
 export interface Subscription {
   id: string;
-  user_id: string;
-  zone_id: string;
-  is_active: boolean;
+  nom?: string;
   auto_contact_enabled: boolean;
+  price_max_filter: number | null;
+  price_min_filter: number | null;
+  surface_min_filter: number | null;
+  searchQuery: string | null;
+  owner_id: string | null; 
+  category_id: number | null;
+  radius: number | null;
+  template_message: string | null;
 }
 
 export const subscriptionService = {
-  // 1. Récupérer la souscription par zone
+  // Cette méthode appelle maintenant le controller qui lit dans 'zones'
   getSubscriptionByZone: async (zoneId: string): Promise<Subscription> => {
     const res = await apiClient.get(`/subscriptions/zone/${zoneId}`);
     return res.data;
-  }, // <--- LA VIRGULE EST OBLIGATOIRE ICI
+  },
 
-  // 2. Mettre à jour la config pour une zone précise
-  updateByZone: async (zoneId: string, auto_contact_enabled: boolean): Promise<Subscription> => {
-    const res = await apiClient.put(`/subscriptions/zone/${zoneId}`, { auto_contact_enabled });
+  updateByZone: async (zoneId: string, updates: Partial<Subscription>): Promise<Subscription> => {
+    const res = await apiClient.put(`/subscriptions/zone/${zoneId}`, updates);
     return res.data;
-  }, // <--- VIRGULE OPTIONNELLE MAIS CONSEILLÉE ICI
+  },
 };

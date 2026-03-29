@@ -1,60 +1,96 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { ClientSidebar } from "@/components/client/ClientSidebar";
 import { ClientHeader } from "@/components/client/ClientHeader";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
 import { toast } from "sonner";
-import { Save, Loader2, ArrowLeft, CheckCircle2 } from "lucide-react";
+import {
+    Save,
+    Loader2,
+    ArrowLeft,
+    Search,
+    Euro,
+    Maximize,
+    Zap,
+    Settings2,
+    Layers,
+    MapPin,
+    MessageSquare
+} from "lucide-react";
 import { subscriptionService, Subscription } from '@/services/subscription';
-import { Link } from 'react-router-dom';
 
 const ZoneSetting = () => {
     const { zoneId } = useParams<{ zoneId: string }>();
-
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
-    const [subscription, setSubscription] = useState<Subscription | null>(null);
+    const [config, setConfig] = useState<Subscription | null>(null);
 
+    // 1. Chargement des données au montage du composant
     useEffect(() => {
-        if (zoneId) {
-            fetchSubscription();
-        }
+        if (zoneId) fetchConfig();
     }, [zoneId]);
 
-    const fetchSubscription = async () => {
+
+    const fetchConfig = async () => {
         try {
             setFetching(true);
             const data = await subscriptionService.getSubscriptionByZone(zoneId!);
-
-            // Sécurité : Vérifie si la donnée reçue contient bien le champ attendu
-            setSubscription(data);
+            console.log("✅ Données reçues :", data);
+            setConfig(data);
         } catch (error: any) {
-            console.error(error);
-            // Si c'est une 404, c'est que l'utilisateur n'a pas encore de droit sur cette zone
-            if (error.response?.status === 404) {
-                toast.error("Vous n'avez pas d'abonnement actif pour cette zone.");
-            } else {
-                toast.error("Erreur lors du chargement des paramètres");
-            }
+            // Affiche l'erreur réelle dans la console pour débugger
+            console.error("❌ Erreur API :", error.response?.data || error.message);
+            toast.error("Erreur de chargement : " + (error.response?.data?.error || "Serveur injoignable"));
         } finally {
             setFetching(false);
         }
     };
 
-    const handleToggle = (checked: boolean) => {
-        if (subscription) {
-            setSubscription({ ...subscription, auto_contact_enabled: checked });
+    // 2. Gestion des changements numériques (Entiers POSITIFS uniquement)
+    const handleIntChange = (field: keyof Subscription, value: string) => {
+        if (!config) return;
+
+        if (value === "") {
+            setConfig({ ...config, [field]: null });
+            return;
+        }
+
+        const parsed = parseInt(value, 10);
+
+        // Sécurité : Ne prend que les nombres positifs
+        if (!isNaN(parsed)) {
+            const finalValue = Math.max(0, parsed);
+            setConfig({ ...config, [field]: finalValue });
         }
     };
 
+    // 3. Sauvegarde vers le backend
     const handleSave = async () => {
-        if (!subscription || !zoneId) return;
-
+        if (!config || !zoneId) return;
         setLoading(true);
         try {
-            await subscriptionService.updateByZone(zoneId, subscription.auto_contact_enabled);
+            await subscriptionService.updateByZone(zoneId, {
+                auto_contact_enabled: config.auto_contact_enabled,
+                price_min_filter: config.price_min_filter,
+                price_max_filter: config.price_max_filter,
+                surface_min_filter: config.surface_min_filter,
+                searchQuery: config.searchQuery,
+                category_id: config.category_id,
+                radius: config.radius,
+                template_message: config.template_message,
+            });
             toast.success("Configuration mise à jour avec succès !");
         } catch (error) {
             toast.error("Erreur lors de la sauvegarde");
@@ -63,107 +99,162 @@ const ZoneSetting = () => {
         }
     };
 
-    if (fetching) {
-        return (
-            <div className="flex h-screen items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-            </div>
-        );
-    }
+    // Bloquer les caractères spéciaux non désirés
+    const blockInvalidChar = (e: React.KeyboardEvent) => {
+        if (['.', ',', '-', 'e', 'E'].includes(e.key)) {
+            e.preventDefault();
+        }
+    };
+
+    if (fetching) return (
+        <div className="flex h-screen items-center justify-center bg-[#020617]">
+            <Loader2 className="h-10 w-10 animate-spin text-indigo-500" />
+        </div>
+    );
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-[#020617] text-slate-200">
             <ClientSidebar />
-            <main className="ml-64">
-                <ClientHeader
-                    title="Paramètres de Zone"
-                    subtitle={`Configuration pour la zone `}
-                />
+            <main className="ml-64 p-8">
+                <ClientHeader title="Configuration Zone" subtitle="Automatisation et filtres" />
 
-                <div className="p-6 max-w-3xl mx-auto">
-                    {/* Bouton retour élégant */}
-                    <Link
-                        to="/client/zones"
-                        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6 group"
-                    >
+                <div className="max-w-4xl mx-auto mt-8">
+                    <Link to="/client/zones" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-400 mb-8 transition-colors group">
                         <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-                        Retour à la liste des zones
+                        Retour
                     </Link>
 
-                    <Card className="glass-card border-white/10 shadow-xl">
-                        <CardHeader className="space-y-1 pb-6">
-                            <CardTitle className="text-2xl">Automatisation</CardTitle>
-                            <CardDescription className="text-base">
-                                Gérez l'envoi automatique de vos messages pour cette zone spécifique.
-                            </CardDescription>
+                    <Card className="bg-[#0f172a]/50 border-white/5 backdrop-blur-xl shadow-2xl">
+                        <CardHeader className="border-b border-white/5 pb-8">
+                            <div className="flex items-center gap-3">
+                                <Settings2 className="h-6 w-6 text-indigo-500" />
+                                <CardTitle className="text-white text-xl font-bold">Paramètres de la Zone</CardTitle>
+                            </div>
                         </CardHeader>
 
-                        <CardContent className="space-y-8">
-                            {/* Carte de paramètre avec meilleur design */}
-                            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-secondary/20 to-secondary/5 p-6 backdrop-blur-sm">
-                                <div className="flex items-center justify-between gap-6">
-                                    <div className="flex-1 space-y-2">
-                                        <div className="flex items-center gap-3">
-                                            <h3 className="font-semibold text-lg">Auto-contact</h3>
-                                            <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full transition-all ${subscription?.auto_contact_enabled
-                                                    ? 'bg-emerald-500/15 text-emerald-500 ring-1 ring-emerald-500/20'
-                                                    : 'bg-slate-500/15 text-slate-500 ring-1 ring-slate-500/20'
-                                                }`}>
-                                                {subscription?.auto_contact_enabled ? (
-                                                    <>
-                                                        <CheckCircle2 className="h-3 w-3" />
-                                                        ACTIF
-                                                    </>
-                                                ) : (
-                                                    "INACTIF"
-                                                )}
-                                            </span>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground leading-relaxed">
-                                            Envoyer automatiquement un SMS dès qu'un nouveau lead correspond à vos filtres configurés.
-                                        </p>
-                                    </div>
+                        <CardContent className="pt-8 space-y-8">
 
-                                    <Switch
-                                        checked={subscription?.auto_contact_enabled || false}
-                                        onCheckedChange={handleToggle}
-                                        className="data-[state=checked]:bg-indigo-600"
+                            {/* SWITCH AUTO CONTACT */}
+                            <div className="p-6 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 flex items-center justify-between transition-colors hover:bg-indigo-500/10">
+                                <div className="space-y-1">
+                                    <h3 className="font-bold text-white flex items-center gap-2">
+                                        <Zap className="h-4 w-4 text-indigo-400" /> Auto-contact
+                                    </h3>
+                                    <p className="text-sm text-slate-400">Automatisation des réponses SMS/Email.</p>
+                                </div>
+                                <Switch
+                                    checked={config?.auto_contact_enabled || false}
+                                    onCheckedChange={(val) => setConfig(prev => prev ? { ...prev, auto_contact_enabled: val } : null)}
+                                    className="data-[state=checked]:bg-indigo-500"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                                {/* CATÉGORIE - SELECT */}
+                                <div className="space-y-2">
+                                    <Label className="text-slate-300 flex items-center gap-2"><Layers className="h-4 w-4 text-indigo-400" /> Type d'offre</Label>
+                                    <Select
+                                        // On force le passage en string pour le composant Select
+                                        value={config?.category_id?.toString() || ""}
+                                        onValueChange={(val) => setConfig(prev => prev ? { ...prev, category_id: parseInt(val) } : null)}
+                                    >
+                                        <SelectTrigger className="bg-[#1e293b]/50 border-white/10 text-white h-12 rounded-xl focus:ring-indigo-500">
+                                            <SelectValue placeholder="Choisir un type" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-[#0f172a] border-white/10 text-white">
+                                            <SelectItem value="10">Locations</SelectItem>
+                                            <SelectItem value="11">Locations Saisonnières</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                {/* SEARCH QUERY */}
+                                <div className="space-y-2">
+                                    <Label className="text-slate-300 flex items-center gap-2"><Search className="h-4 w-4 text-indigo-400" /> Mot-clé de recherche</Label>
+                                    <Input
+                                        value={config?.searchQuery || ""}
+                                        onChange={(e) => setConfig(prev => prev ? { ...prev, searchQuery: e.target.value } : null)}
+                                        className="bg-[#1e293b]/50 border-white/10 text-white h-12 rounded-xl focus:border-indigo-500"
+                                        placeholder="Ex: Appartement, villa..."
+                                    />
+                                </div>
+
+                                {/* SURFACE MIN */}
+                                <div className="space-y-2">
+                                    <Label className="text-slate-300 flex items-center gap-2"><Maximize className="h-4 w-4 text-indigo-400" /> Surface Minimum (m²)</Label>
+                                    <Input
+                                        type="number"
+                                        min="0"
+                                        value={config?.surface_min_filter ?? ""}
+                                        onChange={(e) => handleIntChange('surface_min_filter', e.target.value)}
+                                        onKeyDown={blockInvalidChar}
+                                        className="bg-[#1e293b]/50 border-white/10 text-white h-12 rounded-xl"
+                                    />
+                                </div>
+
+                                {/* RADIUS (RAYON) */}
+                                <div className="space-y-2">
+                                    <Label className="text-slate-300 flex items-center gap-2"><MapPin className="h-4 w-4 text-indigo-400" /> Rayon (km)</Label>
+                                    <Input
+                                        type="number"
+                                        min="0"
+                                        value={config?.radius ?? ""}
+                                        onChange={(e) => handleIntChange('radius', e.target.value)}
+                                        onKeyDown={blockInvalidChar}
+                                        className="bg-[#1e293b]/50 border-white/10 text-white h-12 rounded-xl"
+                                    />
+                                </div>
+
+                                {/* PRIX MIN */}
+                                <div className="space-y-2">
+                                    <Label className="text-slate-300 flex items-center gap-2"><Euro className="h-4 w-4 text-indigo-400" /> Budget Minimum (€)</Label>
+                                    <Input
+                                        type="number"
+                                        min="0"
+                                        value={config?.price_min_filter ?? ""}
+                                        onChange={(e) => handleIntChange('price_min_filter', e.target.value)}
+                                        onKeyDown={blockInvalidChar}
+                                        className="bg-[#1e293b]/50 border-white/10 text-white h-12 rounded-xl"
+                                    />
+                                </div>
+
+                                {/* PRIX MAX */}
+                                <div className="space-y-2">
+                                    <Label className="text-slate-300 flex items-center gap-2"><Euro className="h-4 w-4 text-indigo-400" /> Budget Maximum (€)</Label>
+                                    <Input
+                                        type="number"
+                                        min="0"
+                                        value={config?.price_max_filter ?? ""}
+                                        onChange={(e) => handleIntChange('price_max_filter', e.target.value)}
+                                        onKeyDown={blockInvalidChar}
+                                        className="bg-[#1e293b]/50 border-white/10 text-white h-12 rounded-xl"
                                     />
                                 </div>
                             </div>
 
-                            {/* Séparateur */}
-                            <div className="relative">
-                                <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-white/10"></div>
-                                </div>
+                            {/* SECTION MESSAGE */}
+                            <div className="space-y-3 pt-6 border-t border-white/5">
+                                <Label className="text-slate-300 flex items-center gap-2 font-semibold text-base">
+                                    <MessageSquare className="h-4 w-4 text-indigo-400" /> Message automatique
+                                </Label>
+                                <Textarea
+                                    value={config?.template_message || ""}
+                                    onChange={(e) => setConfig(prev => prev ? { ...prev, template_message: e.target.value } : null)}
+                                    className="bg-[#1e293b]/50 border-white/10 text-white min-h-[140px] rounded-xl focus:ring-indigo-500 placeholder:text-slate-600"
+                                    placeholder="Bonjour, je suis très intéressé par votre annonce..."
+                                />
                             </div>
 
-                            {/* Bouton de sauvegarde amélioré */}
-                            <div className="space-y-4">
+                            <div className="pt-4">
                                 <Button
                                     onClick={handleSave}
-                                    className="w-full h-12 gap-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-medium rounded-xl shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                                    disabled={loading || !subscription}
-                                    size="lg"
+                                    className="w-full h-14 gap-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/10 transition-all active:scale-95"
+                                    disabled={loading}
                                 >
-                                    {loading ? (
-                                        <>
-                                            <Loader2 className="h-5 w-5 animate-spin" />
-                                            Enregistrement en cours...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Save className="h-5 w-5" />
-                                            Enregistrer la configuration
-                                        </>
-                                    )}
+                                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
+                                    Sauvegarder la configuration
                                 </Button>
-
-                                {/* Info supplémentaire */}
-                                <p className="text-xs text-center text-muted-foreground">
-                                    Les modifications seront appliquées immédiatement après la sauvegarde
-                                </p>
                             </div>
                         </CardContent>
                     </Card>
