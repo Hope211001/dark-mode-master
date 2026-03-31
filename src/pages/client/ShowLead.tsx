@@ -143,7 +143,7 @@ const ShowLead = () => {
         <div className="min-h-screen bg-background">
             <ClientSidebar />
 
-            <main className="ml-64">
+            <main className="md:ml-64 transition-[margin] duration-300">
 
                 {/* ── Hero banner ── */}
                 <div className="relative bg-gradient-to-br from-primary/8 via-background to-background border-b border-border px-8 pt-6 pb-8">

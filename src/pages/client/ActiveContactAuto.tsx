@@ -74,7 +74,7 @@ const ActiveContactAuto = () => {
   return (
     <div className="min-h-screen bg-background">
       <ClientSidebar />
-      <main className="ml-64">
+      <main className="md:ml-64 transition-[margin] duration-300">
         <ClientHeader 
           title="Acheter une Zone" 
           subtitle="Choisissez une ville disponible et devenez-en le propriétaire exclusif"

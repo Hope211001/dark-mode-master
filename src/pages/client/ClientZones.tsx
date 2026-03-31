@@ -81,7 +81,7 @@ const ClientZones = () => {
     <div className="min-h-screen bg-background">
       <ClientSidebar />
 
-      <main className="ml-64">
+      <main className="md:ml-64 transition-[margin] duration-300">
         <ClientHeader
           title="Mes Zones"
           subtitle="Gérez vos concessions exclusives et suivez le flux de leads n8n"

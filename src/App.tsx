@@ -28,6 +28,7 @@ import ListUser from "./pages/admin/user";
 // Auth
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
+import { SidebarProvider } from './contexts/SidebarContext';
 
 //public
 import AboutPage from "./pages/home/about";
@@ -48,6 +49,7 @@ const App = () => (
       <Sonner />
       <Router>
         <AuthProvider>
+          <SidebarProvider>
           <Routes>
             {/* Routes publiques */}
             <Route path="/" element={<Index />} />
@@ -141,6 +143,7 @@ const App = () => (
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </SidebarProvider>
         </AuthProvider>
       </Router>
     </TooltipProvider>

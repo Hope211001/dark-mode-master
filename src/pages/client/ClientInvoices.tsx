@@ -179,7 +179,7 @@ const ClientInvoices = () => {
     <div className="min-h-screen bg-background">
       <ClientSidebar />
 
-      <main className="ml-64">
+      <main className="md:ml-64 transition-[margin] duration-300">
         <ClientHeader
           title="Factures & Coûts"
           subtitle="Historique des coûts Apify par mois, avec détail journalier"

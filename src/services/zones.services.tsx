@@ -18,6 +18,7 @@ export interface Zone {
   codes_postaux: string[];
   owner_id: string | null; // UUID de l'utilisateur ou null
   created_at?: string;     // Optionnel
+  auto_contact_enabled?: boolean;
 }
 
 // 2. Le type pour la création (Data Transfer Object)

@@ -108,8 +108,7 @@ const NotificationsPage = () => {
     <div className="min-h-screen bg-slate-950 font-sans text-slate-200">
       <ClientSidebar />
 
-      {/* Le ml-64 assure l'espace pour la sidebar, le w-full prend le reste */}
-      <main className="ml-64 min-h-screen flex flex-col">
+      <main className="md:ml-64 transition-[margin] duration-300 min-h-screen flex flex-col">
         <ClientHeader
           title="Notifications"
           subtitle="Gérez vos alertes et opportunités détectées."

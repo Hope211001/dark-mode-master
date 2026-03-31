@@ -193,7 +193,7 @@ const ClientSearchZone = () => {
         <div className="min-h-screen bg-background">
             <ClientSidebar />
 
-            <main className="ml-64 flex flex-col h-screen">
+            <main className="md:ml-64 transition-[margin] duration-300 flex flex-col h-screen">
                 <ClientHeader
                     title="Marketplace d'Exclusivité"
                     subtitle="Trouvez votre futur secteur et bloquez la concurrence."

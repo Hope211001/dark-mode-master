@@ -115,7 +115,7 @@ const ZoneSetting = () => {
     return (
         <div className="min-h-screen bg-[#020617] text-slate-200">
             <ClientSidebar />
-            <main className="ml-64 p-8">
+            <main className="md:ml-64 transition-[margin] duration-300 p-4 md:p-8">
                 <ClientHeader title="Configuration Zone" subtitle="Automatisation et filtres" />
 
                 <div className="max-w-4xl mx-auto mt-8">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
-import { Bell, HelpCircle, Loader2 } from "lucide-react";
+import { Bell, HelpCircle, Loader2, Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,7 @@ import {
 
 // Assure-toi que l'interface dans ce fichier contient bien 'date_detection'
 import { notificationService, NotificationItem } from "@/services/notification.service";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -26,6 +27,7 @@ interface ClientHeaderProps {
 
 export function ClientHeader({ title, subtitle }: ClientHeaderProps) {
   const navigate = useNavigate();
+  const { toggle } = useSidebar();
 
   // États
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -116,11 +118,21 @@ export function ClientHeader({ title, subtitle }: ClientHeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 backdrop-blur px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 backdrop-blur px-4 md:px-6">
       {/* GAUCHE */}
-      <div>
-        <h1 className="text-xl font-semibold text-foreground">{title}</h1>
-        {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+      <div className="flex items-center gap-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden h-9 w-9 text-muted-foreground hover:text-foreground"
+          onClick={toggle}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <div>
+          <h1 className="text-lg md:text-xl font-semibold text-foreground">{title}</h1>
+          {subtitle && <p className="text-xs md:text-sm text-muted-foreground hidden sm:block">{subtitle}</p>}
+        </div>
       </div>
 
       {/* DROITE */}

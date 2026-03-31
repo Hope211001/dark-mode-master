@@ -79,7 +79,7 @@ const ClientDashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
       <ClientSidebar />
 
-      <main className="ml-64">
+      <main className="md:ml-64 transition-[margin] duration-300">
         <ClientHeader
           title="Tableau de bord"
           subtitle="Voici un aperçu de vos concessions et leads en cours."

@@ -162,7 +162,7 @@ const ZonesManagement = () => {
   return (
     <div className="min-h-screen bg-background flex">
       <Sidebar />
-      <main className="flex-1 ml-64 overflow-y-auto">
+      <main className="flex-1 md:ml-64 transition-[margin] duration-300 overflow-y-auto">
         <Header />
 
         <div className="p-6 space-y-6">

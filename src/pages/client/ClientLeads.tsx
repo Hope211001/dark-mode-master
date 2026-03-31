@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Filter, Phone, Grid3X3, List, Download, Loader2, ChevronLeft, ChevronRight, RefreshCw, ArrowUpDown } from "lucide-react";
 import { leadsService, Lead, LeadsFilters } from "@/services/leads.service";
+import { zoneService, Zone } from "@/services/zones.services";
 import { useToast } from "@/components/ui/use-toast";
 
 const statusFilters = [
@@ -46,7 +47,20 @@ const ClientLeads = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
+  const [zonesMap, setZonesMap] = useState<Record<string, boolean>>({});
+
   const { toast } = useToast();
+
+  // Charger les zones pour connaître auto_contact_enabled
+  useEffect(() => {
+    zoneService.getMyZones().then((zones) => {
+      const map: Record<string, boolean> = {};
+      zones.forEach((z) => {
+        map[z.id] = !!z.auto_contact_enabled;
+      });
+      setZonesMap(map);
+    }).catch(() => {});
+  }, []);
 
   // Debounce la recherche texte
   useEffect(() => {
@@ -91,7 +105,7 @@ const ClientLeads = () => {
     <div className="min-h-screen bg-background">
       <ClientSidebar />
 
-      <main className="ml-64">
+      <main className="md:ml-64 transition-[margin] duration-300">
         <ClientHeader
           title="Mes Leads"
           subtitle="Gérez et suivez tous vos leads immobiliers issus de n8n"
@@ -218,6 +232,7 @@ const ClientLeads = () => {
                   date_detection={lead.date_detection}
                   url={lead.url}
                   phone={lead.phone}
+                  autoContactEnabled={lead.zone_id ? zonesMap[lead.zone_id] ?? false : false}
                 />
               ))}
             </div>

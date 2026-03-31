@@ -91,7 +91,7 @@ const ClientProfile = () => {
     <div className="min-h-screen bg-background">
       <ClientSidebar />
       
-      <main className="ml-64">
+      <main className="md:ml-64 transition-[margin] duration-300">
         <ClientHeader 
           title="Mon Profil" 
           subtitle="Gérez vos informations personnelles et votre abonnement"

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import io from "socket.io-client"; // <--- AJOUT SOCKET
 import {
   LayoutDashboard,
@@ -11,6 +11,7 @@ import {
   User as UserIcon,
   Search,
   Receipt,
+  X,
 } from "lucide-react";
 
 import { NavLink } from "@/components/NavLink";
@@ -20,6 +21,7 @@ import { Button } from "@/components/ui/button";
 
 import { authService, User } from "@/services/auth.service";
 import { notificationService } from "@/services/notification.service"; // <--- AJOUT SERVICE
+import { useSidebar } from "@/contexts/SidebarContext";
 
 // URL du Socket (assure-toi que c'est la même que dans ClientHeader)
 const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -73,11 +75,18 @@ const settingsItems = [
 
 export function ClientSidebar() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isOpen, close } = useSidebar();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   // État pour le badge de notification
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // Fermer la sidebar mobile lors d'un changement de route
+  useEffect(() => {
+    close();
+  }, [location.pathname]);
 
   // 1. Charger Profil + Notifications
   useEffect(() => {
@@ -142,18 +151,37 @@ export function ClientSidebar() {
   };
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-border bg-sidebar">
-      <div className="flex h-full flex-col">
-        {/* Logo */}
-        <Link to="/">
-          <div className="flex h-16 items-center gap-3 border-b border-border px-6">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <MapPin className="h-5 w-5 text-primary-foreground" />
+    <>
+      {/* Overlay mobile */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={close}
+        />
+      )}
+
+      <aside className={`fixed left-0 top-0 z-50 h-screen w-64 border-r border-border bg-sidebar transition-transform duration-300 md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className="flex h-full flex-col">
+          {/* Logo + Close mobile */}
+          <Link to="/">
+          <div className="flex h-16 items-center justify-between border-b border-border px-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+                <MapPin className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-lg font-semibold text-foreground">ImmoScout</span>
+                <span className="text-xs text-muted-foreground">Espace Client</span>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-semibold text-foreground">ImmoScout</span>
-              <span className="text-xs text-muted-foreground">Espace Client</span>
-            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden h-8 w-8 text-muted-foreground hover:text-foreground"
+              onClick={(e) => { e.preventDefault(); close(); }}
+            >
+              <X className="h-5 w-5" />
+            </Button>
           </div>
         </Link>
 
@@ -246,5 +274,6 @@ export function ClientSidebar() {
         </div>
       </div>
     </aside>
+    </>
   );
 }

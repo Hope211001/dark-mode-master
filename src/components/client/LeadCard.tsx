@@ -1,4 +1,4 @@
-import { MapPin, Maximize, Euro, Calendar, Mail, Phone, Heart, MoreHorizontal, TrendingUp } from "lucide-react";
+import { MapPin, Maximize, Euro, Calendar, Mail, Phone, Heart, MoreHorizontal, TrendingUp, CheckCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ interface LeadCardProps {
   url: string;
   phone?: string;
   isFavorite?: boolean;
+  autoContactEnabled?: boolean;
 }
 
 // Mapping des statuts DB vers labels UI
@@ -65,6 +66,7 @@ export function LeadCard({
   url,
   phone,
   isFavorite = false,
+  autoContactEnabled = false,
 }: LeadCardProps) {
   
   const navigate = useNavigate();
@@ -148,10 +150,17 @@ export function LeadCard({
 
         {/* Actions de prospection */}
         <div className="flex items-center gap-2 pt-2" onClick={(e) => e.stopPropagation()}>
-          <Button size="sm" className="flex-1 bg-primary hover:bg-primary/90 font-bold text-xs h-9">
-            <Mail className="h-3.5 w-3.5 mr-2" />
-            Contacter
-          </Button>
+          {autoContactEnabled ? null : statut_prospection === "CONTACTE" ? (
+            <Button size="sm" variant="outline" className="flex-1 font-bold text-xs h-9 opacity-70 cursor-default" disabled>
+              <CheckCircle className="h-3.5 w-3.5 mr-2" />
+              Déjà contacté
+            </Button>
+          ) : (
+            <Button size="sm" className="flex-1 bg-primary hover:bg-primary/90 font-bold text-xs h-9">
+              <Mail className="h-3.5 w-3.5 mr-2" />
+              Contacter
+            </Button>
+          )}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

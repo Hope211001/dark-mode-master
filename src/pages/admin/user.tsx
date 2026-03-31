@@ -124,7 +124,7 @@ const ListUser = () => {
     return (
         <div className="flex min-h-screen bg-background">
             <Sidebar />
-            <main className="flex-1 ml-64 p-6 space-y-6">
+            <main className="flex-1 md:ml-64 transition-[margin] duration-300 p-4 md:p-6 space-y-6">
                 <Header />
                 <div className="flex justify-between items-center">
                     <h1 className="text-3xl font-bold text-gray-800">Utilisateurs</h1>

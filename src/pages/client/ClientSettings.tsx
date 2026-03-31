@@ -103,7 +103,7 @@ const ClientSettings = () => {
     <div className="min-h-screen bg-background">
       <ClientSidebar />
       
-      <main className="ml-64">
+      <main className="md:ml-64 transition-[margin] duration-300">
         <ClientHeader 
           title="Paramètres" 
           subtitle="Gérez vos informations personnelles et votre sécurité"
