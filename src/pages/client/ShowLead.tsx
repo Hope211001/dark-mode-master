@@ -1,28 +1,25 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ClientSidebar } from "@/components/client/ClientSidebar";
+import { ClientHeader } from "@/components/client/ClientHeader";
 import {
     Loader2, ArrowLeft, MapPin, Calendar, Maximize, Euro,
     TrendingUp, ExternalLink, Hash, Phone, Map as MapIcon,
-    FileText, User, CheckCircle2, XCircle, Image as ImageIcon,
-    Navigation, Banknote,
+    FileText, User,
 } from "lucide-react";
 import { leadsService } from "@/services/leads.service";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
-// ── Statut prospection ────────────────────────────────────────────────────
+// ── Statut ────────────────────────────────────────────────────────────────
 const statusConfig: Record<string, { label: string; className: string }> = {
-    NOUVEAU:     { label: "Nouveau",       className: "bg-primary/20 text-primary border-primary/30" },
-    CONTACTE:    { label: "Contacté",      className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-    REPONDU:     { label: "Répondu",       className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
-    NEGOCIATION: { label: "Négociation",   className: "bg-violet-500/20 text-violet-400 border-violet-500/30" },
-    CONVERTI:    { label: "Converti",      className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
-    PERDU:       { label: "Perdu",         className: "bg-muted text-muted-foreground border-muted" },
+    new:        { label: "Nouveau",    className: "bg-primary/20 text-primary border-primary/30" },
+    contacted:  { label: "Contacté",   className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
+    replied:    { label: "Répondu",    className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
+    rejected:   { label: "Rejeté",     className: "bg-destructive/20 text-destructive border-destructive/30" },
 };
 
 // ── Score gauge ───────────────────────────────────────────────────────────
@@ -90,24 +87,6 @@ function DetailRow({ icon: Icon, label, value, highlight = false, href }: {
     );
 }
 
-// ── Barre de sous-score ────────────────────────────────────────────────────
-function SubScoreBar({ label, value, max = 10 }: { label: string; value?: number; max?: number }) {
-    if (value == null) return null;
-    const pct = Math.min(100, (Number(value) / max) * 100);
-    const color = pct >= 70 ? "bg-emerald-500" : pct >= 40 ? "bg-yellow-500" : "bg-destructive";
-    return (
-        <div className="space-y-1.5">
-            <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">{label}</span>
-                <span className="font-mono font-bold text-foreground">{Number(value).toFixed(1)} / {max}</span>
-            </div>
-            <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
-                <div className={cn("h-full rounded-full transition-all duration-700", color)} style={{ width: `${pct}%` }} />
-            </div>
-        </div>
-    );
-}
-
 // ── Page ──────────────────────────────────────────────────────────────────
 const ShowLead = () => {
     const { id } = useParams();
@@ -134,8 +113,7 @@ const ShowLead = () => {
     );
     if (!lead) return null;
 
-    const status = statusConfig[lead.statut_prospection] ?? statusConfig.NOUVEAU;
-    const scoreDisplay = lead.score <= 10 ? lead.score * 10 : lead.score;
+    const status = statusConfig[lead.statut] ?? statusConfig.new;
     const prixM2 = lead.surface > 0 ? Math.round(lead.prix / lead.surface) : 0;
     const sd = lead.scrore_details ?? lead.score_details;
 
@@ -144,251 +122,202 @@ const ShowLead = () => {
             <ClientSidebar />
 
             <main className="md:ml-64 transition-[margin] duration-300">
+                <ClientHeader title="Détail du Lead" subtitle={lead.titre} />
 
-                {/* ── Hero banner ── */}
-                <div className="relative bg-gradient-to-br from-primary/8 via-background to-background border-b border-border px-8 pt-6 pb-8">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none" />
+                <div className="p-4 md:p-6 lg:p-8">
 
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="mb-5 text-muted-foreground hover:text-foreground -ml-1 gap-1.5"
-                        onClick={() => navigate(-1)}
-                    >
-                        <ArrowLeft className="h-4 w-4" /> Retour à la liste
-                    </Button>
-
-                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-5">
-                        <div className="space-y-3">
-                            {/* ID badge + titre */}
-                            <div className="flex items-center gap-2.5">
-                                <Badge variant="outline" className="font-mono text-[10px] text-muted-foreground gap-1">
-                                    <Hash className="h-2.5 w-2.5" />{lead.lbc_id || lead.id}
-                                </Badge>
-                                <Badge className={cn("border text-[10px] uppercase font-bold", status.className)}>
-                                    {status.label}
-                                </Badge>
-                            </div>
-                            <h1 className="text-2xl lg:text-3xl font-bold text-foreground leading-tight max-w-2xl">
-                                {lead.titre}
-                            </h1>
-                            {/* Méta infos */}
-                            <div className="flex flex-wrap items-center gap-2">
-                                <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground bg-secondary/60 rounded-md px-3 py-1.5 border border-border">
-                                    <MapPin className="h-3.5 w-3.5" />{lead.ville}
-                                </span>
-                                <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground bg-secondary/60 rounded-md px-3 py-1.5 border border-border">
-                                    <Calendar className="h-3.5 w-3.5" />
-                                    Détecté le {new Date(lead.date_detection).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                                </span>
-                                <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground bg-secondary/60 rounded-md px-3 py-1.5 border border-border">
-                                    <Badge variant="outline" className="text-[9px] py-0 h-4 uppercase border-border mr-0">LBC</Badge>
-                                    LeBonCoin
-                                </span>
-                            </div>
-                        </div>
+                    {/* ── Hero banner ── */}
+                    <div className="relative bg-gradient-to-br from-primary/8 via-card to-card rounded-2xl border border-border p-5 md:p-8 mb-6">
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none rounded-2xl" />
 
                         <Button
-                            className="shrink-0 gap-2 font-semibold h-11 px-6"
-                            asChild
+                            variant="ghost"
+                            size="sm"
+                            className="mb-4 text-muted-foreground hover:text-foreground -ml-2 gap-1.5"
+                            onClick={() => navigate(-1)}
                         >
-                            <a href={lead.url} target="_blank" rel="noreferrer">
-                                <ExternalLink className="h-4 w-4" />
-                                Voir l'annonce
-                            </a>
+                            <ArrowLeft className="h-4 w-4" /> Retour à la liste
                         </Button>
+
+                        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-5">
+                            <div className="space-y-3 min-w-0">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <Badge variant="outline" className="font-mono text-[10px] text-muted-foreground gap-1">
+                                        <Hash className="h-2.5 w-2.5" />{lead.lbc_id || lead.id}
+                                    </Badge>
+                                    <Badge className={cn("border text-[10px] uppercase font-bold", status.className)}>
+                                        {status.label}
+                                    </Badge>
+                                </div>
+                                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground leading-tight max-w-2xl">
+                                    {lead.titre}
+                                </h1>
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <span className="inline-flex items-center gap-1.5 text-xs md:text-sm text-muted-foreground bg-secondary/60 rounded-lg px-2.5 py-1 md:px-3 md:py-1.5 border border-border">
+                                        <MapPin className="h-3 w-3 md:h-3.5 md:w-3.5" />{lead.ville}
+                                    </span>
+                                    <span className="inline-flex items-center gap-1.5 text-xs md:text-sm text-muted-foreground bg-secondary/60 rounded-lg px-2.5 py-1 md:px-3 md:py-1.5 border border-border">
+                                        <Calendar className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                                        {new Date(lead.date_detection).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <Button className="shrink-0 gap-2 font-semibold h-10 md:h-11 px-5 md:px-6" asChild>
+                                <a href={lead.url} target="_blank" rel="noreferrer">
+                                    <ExternalLink className="h-4 w-4" />
+                                    Voir l'annonce
+                                </a>
+                            </Button>
+                        </div>
                     </div>
-                </div>
 
-                {/* ── Contenu ── */}
-                <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* ── Contenu ── */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
 
-                    {/* ── Colonne gauche (2/3) ── */}
-                    <div className="lg:col-span-2 space-y-6">
+                        {/* ── Colonne gauche (2/3) ── */}
+                        <div className="lg:col-span-2 space-y-4 md:space-y-6">
 
-                        {/* Description */}
-                        <Card className="border-border bg-card">
-                            <CardHeader className="pb-3 border-b border-border/50">
-                                <CardTitle className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-2">
-                                    <FileText className="h-4 w-4 text-primary" />
-                                    Description de l'annonce
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="pt-4">
-                                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                                    {lead.description || "Aucune description fournie."}
-                                </p>
-                            </CardContent>
-                        </Card>
+                            {/* Prix + Surface + Score - Résumé rapide mobile-first */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div className="p-4 bg-card rounded-xl border border-border text-center">
+                                    <Euro className="h-4 w-4 text-primary mx-auto mb-1.5" />
+                                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Prix</p>
+                                    <p className="text-lg md:text-xl font-black text-foreground mt-0.5">
+                                        {lead.prix?.toLocaleString('fr-FR')} <span className="text-primary text-sm">€</span>
+                                    </p>
+                                </div>
+                                <div className="p-4 bg-card rounded-xl border border-border text-center">
+                                    <Maximize className="h-4 w-4 text-primary mx-auto mb-1.5" />
+                                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Surface</p>
+                                    <p className="text-lg md:text-xl font-black text-foreground mt-0.5">
+                                        {lead.surface} <span className="text-muted-foreground text-sm font-normal">m²</span>
+                                    </p>
+                                </div>
+                                <div className="p-4 bg-card rounded-xl border border-border text-center">
+                                    <Euro className="h-4 w-4 text-muted-foreground mx-auto mb-1.5" />
+                                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Prix / m²</p>
+                                    <p className="text-lg md:text-xl font-black text-foreground mt-0.5">
+                                        {prixM2.toLocaleString()} <span className="text-muted-foreground text-sm font-normal">€</span>
+                                    </p>
+                                </div>
+                                <div className="p-4 bg-card rounded-xl border border-border text-center">
+                                    <TrendingUp className="h-4 w-4 text-emerald-400 mx-auto mb-1.5" />
+                                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Score</p>
+                                    <p className={cn("text-lg md:text-xl font-black mt-0.5",
+                                        (lead.score <= 10 ? lead.score * 10 : lead.score) >= 80 ? "text-emerald-400" :
+                                        (lead.score <= 10 ? lead.score * 10 : lead.score) >= 60 ? "text-yellow-400" : "text-destructive"
+                                    )}>
+                                        {lead.score <= 10 ? lead.score * 10 : lead.score}<span className="text-muted-foreground text-sm font-normal">/100</span>
+                                    </p>
+                                </div>
+                            </div>
 
-                        {/* Contact + Zone */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Contact propriétaire */}
+                            {/* Description */}
                             <Card className="border-border bg-card">
                                 <CardHeader className="pb-3 border-b border-border/50">
                                     <CardTitle className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-2">
-                                        <User className="h-4 w-4 text-violet-400" />
-                                        Contact propriétaire
+                                        <FileText className="h-4 w-4 text-primary" />
+                                        Description de l'annonce
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="pt-4">
-                                    <DetailRow
-                                        icon={User}
-                                        label="Nom"
-                                        value={lead.owner_name || "Non renseigné"}
-                                    />
-                                    <DetailRow
-                                        icon={Phone}
-                                        label="Téléphone"
-                                        value={lead.phone || "Indisponible"}
-                                        highlight={!!lead.phone}
-                                        href={lead.phone ? `tel:${lead.phone}` : undefined}
-                                    />
+                                    <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                                        {lead.description || "Aucune description fournie."}
+                                    </p>
                                 </CardContent>
                             </Card>
 
-                            {/* Zone */}
-                            <Card className="border-border bg-card">
-                                <CardHeader className="pb-3 border-b border-border/50">
-                                    <CardTitle className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-2">
-                                        <MapIcon className="h-4 w-4 text-amber-400" />
-                                        Assignation & Zone
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="pt-4">
-                                    <DetailRow icon={MapPin} label="Zone" value={lead.zones?.nom || "Non définie"} />
-                                    {lead.zone_id && (
-                                        <DetailRow icon={Hash} label="Zone ID" value={
-                                            <span className="font-mono text-xs">{lead.zone_id}</span>
-                                        } />
-                                    )}
-                                </CardContent>
-                            </Card>
+                            {/* Contact + Zone */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                <Card className="border-border bg-card">
+                                    <CardHeader className="pb-3 border-b border-border/50">
+                                        <CardTitle className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-2">
+                                            <User className="h-4 w-4 text-violet-400" />
+                                            Contact propriétaire
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="pt-4">
+                                        <DetailRow icon={User} label="Nom" value={lead.owner_name || "Non renseigné"} />
+                                        <DetailRow
+                                            icon={Phone}
+                                            label="Téléphone"
+                                            value={lead.phone || "Indisponible"}
+                                            highlight={!!lead.phone}
+                                            href={lead.phone ? `tel:${lead.phone}` : undefined}
+                                        />
+                                    </CardContent>
+                                </Card>
+
+                                <Card className="border-border bg-card">
+                                    <CardHeader className="pb-3 border-b border-border/50">
+                                        <CardTitle className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-2">
+                                            <MapIcon className="h-4 w-4 text-amber-400" />
+                                            Assignation & Zone
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="pt-4">
+                                        <DetailRow icon={MapPin} label="Zone" value={lead.zones?.nom || "Non définie"} />
+                                        {lead.zone_id && (
+                                            <DetailRow icon={Hash} label="Zone ID" value={
+                                                <span className="font-mono text-xs">{lead.zone_id}</span>
+                                            } />
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </div>
                         </div>
 
-                        {/* Détail du score IA (si disponible) */}
-                        {sd && (
+                        {/* ── Colonne droite (1/3) ── */}
+                        <div className="space-y-4 md:space-y-6">
+
+                            {/* Score gauge */}
                             <Card className="border-border bg-card">
                                 <CardHeader className="pb-3 border-b border-border/50">
                                     <CardTitle className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-2">
                                         <TrendingUp className="h-4 w-4 text-emerald-400" />
-                                        Détail de l'analyse IA
+                                        Score de rentabilité
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent className="pt-5 space-y-4">
-                                    {/* Métriques sous forme de barres */}
-                                    <div className="space-y-3">
-                                        <SubScoreBar label="Score rentabilité" value={sd.score_rentabilite} max={10} />
-                                        <SubScoreBar label="Score localisation" value={sd.score_localisation} max={10} />
-                                        <SubScoreBar label="Score vérification" value={sd.score_verification} max={10} />
-                                    </div>
+                                <CardContent className="pt-5">
+                                    <ScoreGauge score={lead.score || 0} />
 
-                                    <Separator className="bg-border/50" />
-
-                                    {/* Infos complémentaires */}
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {sd.nb_photos != null && (
-                                            <div className="flex items-center gap-2 p-3 bg-secondary/30 rounded-lg border border-border/50">
-                                                <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                                                <div>
-                                                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Photos</p>
-                                                    <p className="text-sm font-bold text-foreground">{sd.nb_photos}</p>
-                                                </div>
-                                            </div>
-                                        )}
-                                        {sd.distance_km != null && (
-                                            <div className="flex items-center gap-2 p-3 bg-secondary/30 rounded-lg border border-border/50">
-                                                <Navigation className="h-4 w-4 text-muted-foreground" />
-                                                <div>
-                                                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Distance</p>
-                                                    <p className="text-sm font-bold text-foreground">{sd.distance_km} km</p>
-                                                </div>
-                                            </div>
-                                        )}
-                                        {sd.revenu_estime != null && (
-                                            <div className="flex items-center gap-2 p-3 bg-secondary/30 rounded-lg border border-border/50">
-                                                <Banknote className="h-4 w-4 text-muted-foreground" />
-                                                <div>
-                                                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Revenu estimé</p>
-                                                    <p className="text-sm font-bold text-foreground">{Number(sd.revenu_estime).toLocaleString()} €</p>
-                                                </div>
-                                            </div>
-                                        )}
-                                        {sd.has_keywords != null && (
-                                            <div className="flex items-center gap-2 p-3 bg-secondary/30 rounded-lg border border-border/50">
-                                                {sd.has_keywords
-                                                    ? <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                                                    : <XCircle className="h-4 w-4 text-destructive" />}
-                                                <div>
-                                                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Mots-clés</p>
-                                                    <p className="text-sm font-bold text-foreground">{sd.has_keywords ? "Présents" : "Absents"}</p>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
+                                    {sd?.ratio != null && (
+                                        <div className="mt-4 p-3 bg-secondary/30 rounded-lg border border-border/50 flex items-center justify-between">
+                                            <span className="text-xs text-muted-foreground font-bold uppercase">Ratio rendement</span>
+                                            <span className="font-mono font-bold text-foreground">{Number(sd.ratio).toFixed(2)}</span>
+                                        </div>
+                                    )}
                                 </CardContent>
                             </Card>
-                        )}
-                    </div>
 
-                    {/* ── Colonne droite (1/3) ── */}
-                    <div className="space-y-6">
+                            {/* Revenu potentiel */}
+                            {lead.potentiel_revenu && (
+                                <Card className="border-emerald-500/20 bg-emerald-500/5">
+                                    <CardContent className="pt-5 pb-5">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Revenu potentiel</p>
+                                                <p className="text-2xl font-black text-emerald-400">
+                                                    {lead.potentiel_revenu.toLocaleString()} <span className="text-sm font-semibold">€ / mois</span>
+                                                </p>
+                                            </div>
+                                            <div className="h-12 w-12 rounded-full bg-emerald-500/15 flex items-center justify-center">
+                                                <Euro className="h-6 w-6 text-emerald-400" />
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
 
-                        {/* Prix & surface */}
-                        <Card className="border-border bg-card overflow-hidden">
-                            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-                            <CardContent className="pt-6 space-y-4">
-                                {/* Prix principal */}
-                                <div className="p-5 bg-secondary/30 rounded-xl border border-border/50 text-center">
-                                    <p className="text-xs text-muted-foreground uppercase font-bold mb-1">Prix du bien</p>
-                                    <p className="text-4xl font-black text-foreground tracking-tight">
-                                        {lead.prix?.toLocaleString('fr-FR')} <span className="text-primary">€</span>
-                                    </p>
-                                </div>
-
-                                {/* Surface / Prix m² */}
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div className="p-4 bg-secondary/20 rounded-lg border border-border/50 text-center">
-                                        <Maximize className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
-                                        <p className="text-xs text-muted-foreground uppercase font-bold mb-0.5">Surface</p>
-                                        <p className="text-xl font-bold text-foreground">{lead.surface} <span className="text-sm font-normal text-muted-foreground">m²</span></p>
-                                    </div>
-                                    <div className="p-4 bg-secondary/20 rounded-lg border border-border/50 text-center">
-                                        <Euro className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
-                                        <p className="text-xs text-muted-foreground uppercase font-bold mb-0.5">Prix / m²</p>
-                                        <p className="text-xl font-bold text-foreground">{prixM2.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">€</span></p>
-                                    </div>
-                                </div>
-
-                                {lead.potentiel_revenu && (
-                                    <div className="p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20 flex items-center justify-between">
-                                        <span className="text-xs text-muted-foreground font-bold uppercase">Revenu potentiel</span>
-                                        <span className="font-bold text-emerald-400">{lead.potentiel_revenu.toLocaleString()} € / mois</span>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-
-                        {/* Score */}
-                        <Card className="border-border bg-card">
-                            <CardHeader className="pb-3 border-b border-border/50">
-                                <CardTitle className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-2">
-                                    <TrendingUp className="h-4 w-4 text-emerald-400" />
-                                    Score de rentabilité
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="pt-5">
-                                <ScoreGauge score={lead.score || 0} />
-
-                                {sd?.ratio != null && (
-                                    <div className="mt-4 p-3 bg-secondary/30 rounded-lg border border-border/50 flex items-center justify-between">
-                                        <span className="text-xs text-muted-foreground font-bold uppercase">Ratio rendement</span>
-                                        <span className="font-mono font-bold text-foreground">{Number(sd.ratio).toFixed(2)}</span>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-
+                            {/* CTA voir l'annonce (mobile-friendly) */}
+                            <Button className="w-full gap-2 font-semibold h-12 lg:hidden" asChild>
+                                <a href={lead.url} target="_blank" rel="noreferrer">
+                                    <ExternalLink className="h-4 w-4" />
+                                    Voir l'annonce originale
+                                </a>
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </main>

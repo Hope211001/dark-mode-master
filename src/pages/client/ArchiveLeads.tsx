@@ -1,31 +1,22 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ClientSidebar } from "@/components/client/ClientSidebar";
 import { ClientHeader } from "@/components/client/ClientHeader";
-import { LeadCard } from "@/components/client/LeadCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, Phone, Grid3X3, List, Download, Loader2, RefreshCw, ArrowUpDown, MapPin } from "lucide-react";
+import {
+  Search, MapPin, Euro, Maximize, Calendar, Grid3X3, List,
+  Loader2, RefreshCw, ArrowUpDown,
+  Archive, Phone, ExternalLink, RotateCcw
+} from "lucide-react";
 import { Pagination } from "@/components/Pagination";
 import { leadsService, Lead, LeadsFilters } from "@/services/leads.service";
 import { zoneService, Zone } from "@/services/zones.services";
 import ErrorAlert from "@/components/alert/error";
 import SuccessAlert from "@/components/alert/success";
-
-const statusFilters = [
-  { value: "all", label: "Tous les statuts" },
-  { value: "new", label: "Nouveaux" },
-  { value: "contacted", label: "Contactés" },
-  { value: "replied", label: "Répondus" },
-];
-
-const phoneFilters = [
-  { value: "all", label: "Tous les leads" },
-  { value: "with_phone", label: "Avec téléphone" },
-  { value: "without_phone", label: "Sans téléphone" },
-];
 
 const sortOptions = [
   { value: "desc", label: "Plus récents d'abord" },
@@ -34,22 +25,124 @@ const sortOptions = [
 
 const DEBOUNCE_MS = 400;
 
-const ClientLeads = () => {
-  const [searchParams] = useSearchParams();
-  const zoneFromUrl = searchParams.get("zone") || "all";
+// ── Card archive ──
+function ArchivedLeadCard({ lead, onRestore, onAlert }: {
+  lead: Lead;
+  onRestore: () => void;
+  onAlert: (type: "success" | "error", message: string) => void;
+}) {
+  const navigate = useNavigate();
+  const [restoring, setRestoring] = useState(false);
 
+  const handleRestore = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      setRestoring(true);
+      await leadsService.updateStatus(lead.id, 'new');
+      onAlert("success", "Lead restauré avec succès !");
+      onRestore();
+    } catch {
+      onAlert("error", "Erreur lors de la restauration.");
+    } finally {
+      setRestoring(false);
+    }
+  };
+
+  const formattedDate = new Date(lead.date_detection).toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+
+  return (
+    <Card
+      className="overflow-hidden transition-all duration-300 hover:border-destructive/30 hover:shadow-lg group border-border/50 cursor-pointer opacity-80 hover:opacity-100"
+      onClick={() => navigate(`/client/showLead/${lead.id}`)}
+    >
+      <div className="relative h-24 bg-destructive/5 overflow-hidden flex items-center justify-center">
+        <div className="text-destructive/15 group-hover:scale-110 transition-transform duration-500">
+          <Archive size={48} />
+        </div>
+        <div className="absolute top-3 left-3">
+          <Badge className="border text-[10px] uppercase font-bold bg-destructive/20 text-destructive border-destructive/30">
+            Rejeté
+          </Badge>
+        </div>
+        {lead.phone && (
+          <Badge variant="outline" className="absolute top-3 right-3 border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold gap-1">
+            <Phone className="h-2.5 w-2.5" />
+            Tél
+          </Badge>
+        )}
+      </div>
+
+      <CardContent className="p-4 space-y-3">
+        <div className="min-h-[40px]">
+          <h3 className="font-bold text-foreground leading-tight line-clamp-2 text-sm group-hover:text-destructive transition-colors">
+            {lead.titre}
+          </h3>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+            <MapPin className="h-3 w-3" />
+            <span className="truncate">{lead.ville}</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 border-y border-border/30 py-2.5">
+          <div className="flex items-center gap-1.5 text-xs">
+            <Maximize className="h-3 w-3 text-muted-foreground" />
+            <span className="text-foreground font-semibold">{lead.surface} m²</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs">
+            <Euro className="h-3 w-3 text-muted-foreground" />
+            <span className="text-foreground font-semibold">{lead.prix?.toLocaleString()} €</span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <Calendar className="h-3 w-3" />
+            <span>{formattedDate}</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 pt-1" onClick={(e) => e.stopPropagation()}>
+          <Button
+            size="sm"
+            variant="outline"
+            className="flex-1 font-bold text-xs h-9 gap-2 hover:bg-primary/10 hover:text-primary hover:border-primary/30"
+            onClick={handleRestore}
+            disabled={restoring}
+          >
+            {restoring ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />}
+            Restaurer
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-9 w-9 p-0"
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(lead.url, '_blank');
+            }}
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Page ──
+const ArchiveLeads = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [exporting, setExporting] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [phoneFilter, setPhoneFilter] = useState("all");
-  const [zoneFilter, setZoneFilter] = useState(zoneFromUrl);
   const [sortOrder, setSortOrder] = useState("desc");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [zoneFilter, setZoneFilter] = useState("all");
 
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -58,25 +151,22 @@ const ClientLeads = () => {
   const [errorAlert, setErrorAlert] = useState({ visible: false, message: "" });
   const [successAlert, setSuccessAlert] = useState({ visible: false, message: "" });
 
-  // Charger les zones pour connaître auto_contact_enabled + liste des zones
   useEffect(() => {
     zoneService.getMyZones().then(setMyZones).catch(() => {});
   }, []);
 
-  // Debounce la recherche texte
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchTerm), DEBOUNCE_MS);
     return () => clearTimeout(t);
   }, [searchTerm]);
 
-  // Retour à la page 1 quand les filtres changent
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearch, statusFilter, phoneFilter, zoneFilter, sortOrder]);
+  }, [debouncedSearch, zoneFilter, sortOrder]);
 
   useEffect(() => {
     fetchLeads();
-  }, [currentPage, debouncedSearch, statusFilter, phoneFilter, zoneFilter, sortOrder]);
+  }, [currentPage, debouncedSearch, zoneFilter, sortOrder]);
 
   const fetchLeads = async () => {
     try {
@@ -85,41 +175,18 @@ const ClientLeads = () => {
         page: currentPage,
         limit: 12,
         search: debouncedSearch || undefined,
-        statut: statusFilter,
-        phone: phoneFilter,
+        statut: 'rejected',
         sort: sortOrder,
         zone_id: zoneFilter,
-        exclude_statut: 'rejected',
       };
       const res = await leadsService.getMyLeads(filters);
       setLeads(res.data);
       setTotalPages(res.totalPages);
       setTotalCount(res.totalCount);
-    } catch (error) {
-      setErrorAlert({ visible: true, message: "Impossible de charger vos leads" });
+    } catch {
+      setErrorAlert({ visible: true, message: "Impossible de charger les leads archivés" });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const filteredLeads = leads;
-
-  const handleExport = async () => {
-    try {
-      setExporting(true);
-      await leadsService.exportCSV({
-        search: debouncedSearch || undefined,
-        statut: statusFilter,
-        phone: phoneFilter,
-        sort: sortOrder,
-        zone_id: zoneFilter,
-        exclude_statut: 'rejected',
-      });
-      setSuccessAlert({ visible: true, message: "Export CSV téléchargé !" });
-    } catch {
-      setErrorAlert({ visible: true, message: "Erreur lors de l'export." });
-    } finally {
-      setExporting(false);
     }
   };
 
@@ -144,14 +211,14 @@ const ClientLeads = () => {
 
       <main className="md:ml-64 transition-[margin] duration-300">
         <ClientHeader
-          title="Mes Leads"
-          subtitle="Gérez et suivez tous vos leads immobiliers issus de n8n"
+          title="Leads Archivés"
+          subtitle="Leads rejetés que vous pouvez restaurer à tout moment"
         />
 
         <div className="p-6 space-y-6">
           {/* Filters Bar */}
           <div className="flex flex-wrap items-center gap-4 p-4 bg-card rounded-xl border border-border shadow-sm">
-            <div className="relative flex-1 min-w-[300px]">
+            <div className="relative flex-1 min-w-[250px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Rechercher une ville, un titre..."
@@ -160,18 +227,6 @@ const ClientLeads = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-48 bg-secondary/30">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {statusFilters.map((f) => (
-                  <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
 
             <Select value={zoneFilter} onValueChange={setZoneFilter}>
               <SelectTrigger className="w-48 bg-secondary/30">
@@ -182,18 +237,6 @@ const ClientLeads = () => {
                 <SelectItem value="all">Toutes les zones</SelectItem>
                 {myZones.map((z) => (
                   <SelectItem key={z.id} value={z.id}>{z.nom}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={phoneFilter} onValueChange={setPhoneFilter}>
-              <SelectTrigger className="w-48 bg-secondary/30">
-                <Phone className="h-4 w-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {phoneFilters.map((f) => (
-                  <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -219,20 +262,13 @@ const ClientLeads = () => {
               </Button>
             </div>
 
-            <Button variant="outline" className="gap-2" onClick={handleExport} disabled={exporting}>
-              {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-              Exporter
-            </Button>
-
             <Button
               variant="outline"
               className="gap-2"
               onClick={() => {
                 setSearchTerm("");
                 setDebouncedSearch("");
-                setStatusFilter("all");
                 setZoneFilter("all");
-                setPhoneFilter("all");
                 setSortOrder("desc");
                 setCurrentPage(1);
               }}
@@ -241,41 +277,42 @@ const ClientLeads = () => {
               <RefreshCw className="h-4 w-4" />
               Réinitialiser
             </Button>
-
           </div>
 
-          {/* Stats Summary */}
+          {/* Stats */}
           {!loading && (
             <div className="flex items-center gap-4 text-sm">
               <span className="text-muted-foreground">
-                <span className="text-foreground font-bold">{totalCount}</span> leads au total
+                <span className="text-foreground font-bold">{totalCount}</span> lead{totalCount > 1 ? "s" : ""} archivé{totalCount > 1 ? "s" : ""}
               </span>
-              <Badge className="bg-primary/10 text-primary border-none">
+              <Badge className="bg-destructive/10 text-destructive border-none">
                 Page {currentPage} / {totalPages}
               </Badge>
             </div>
           )}
 
-          {/* Leads Content */}
+          {/* Content */}
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-              <p className="text-muted-foreground">Chargement de vos opportunités n8n...</p>
+              <Loader2 className="h-10 w-10 animate-spin text-muted-foreground mb-4" />
+              <p className="text-muted-foreground">Chargement des leads archivés...</p>
             </div>
-          ) : filteredLeads.length === 0 ? (
-            <div className="text-center py-20 border-2 border-dashed rounded-2xl">
-              <p className="text-muted-foreground">Aucun lead trouvé.</p>
+          ) : leads.length === 0 ? (
+            <div className="text-center py-20 border-2 border-dashed border-border/50 rounded-2xl">
+              <Archive className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+              <p className="text-muted-foreground font-medium">Aucun lead archivé</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">Les leads que vous rejetez apparaîtront ici</p>
             </div>
           ) : (
             <div className={viewMode === "grid"
               ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
               : "space-y-3"
             }>
-              {filteredLeads.map((lead) => (
-                <LeadCard
+              {leads.map((lead) => (
+                <ArchivedLeadCard
                   key={lead.id}
                   lead={lead}
-                  onStatusChange={fetchLeads}
+                  onRestore={fetchLeads}
                   onAlert={showAlert}
                 />
               ))}
@@ -288,14 +325,14 @@ const ClientLeads = () => {
             totalCount={totalCount}
             onPageChange={setCurrentPage}
             loading={loading}
-            label="lead"
+            label="lead archivé"
           />
         </div>
       </main>
 
-      <div className="fixed top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="fixed top-0 right-0 w-96 h-96 bg-destructive/3 rounded-full blur-3xl pointer-events-none -z-10" />
     </div>
   );
 };
 
-export default ClientLeads;
+export default ArchiveLeads;

@@ -44,6 +44,11 @@ const navItems = [
     icon: Users,
   },
   {
+    title: "Leads Archivé",
+    url: "/client/archive-leads",
+    icon: Receipt
+  },
+  {
     title: "Achat de zones",
     url: "/client/mapexplorer",
     icon: Search

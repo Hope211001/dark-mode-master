@@ -252,15 +252,7 @@ const ClientDashboard = () => {
                       {leads.map((lead) => (
                         <LeadCard
                           key={lead.id}
-                          id={lead.id}
-                          titre={lead.titre}
-                          ville={lead.ville}
-                          surface={lead.surface}
-                          prix={lead.prix || 0}
-                          score={lead.score}
-                          statut_prospection={lead.statut_prospection}
-                          date_detection={lead.date_detection}
-                          url={lead.url}
+                          lead={lead}
                         />
                       ))}
                     </div>

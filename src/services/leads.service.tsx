@@ -38,6 +38,8 @@ export interface Lead {
   assigned_user_id?: string;
   lbc_id?: string;
   status?: string;
+  statut?: string;
+  description?: string;
 }
 
 interface LeadsResponse {
@@ -53,6 +55,8 @@ export interface LeadsFilters {
   statut?: string;
   phone?: string;
   sort?: string;
+  zone_id?: string;
+  exclude_statut?: string;
 }
 
 export const leadsService = {
@@ -62,12 +66,14 @@ export const leadsService = {
   },
 
   getMyLeads: async (filters: LeadsFilters = {}): Promise<LeadsResponse> => {
-    const { page = 1, limit = 12, search, statut, phone, sort } = filters;
+    const { page = 1, limit = 12, search, statut, phone, sort, zone_id, exclude_statut } = filters;
     const params = new URLSearchParams({ page: String(page), limit: String(limit) });
     if (search) params.append('search', search);
     if (statut && statut !== 'all') params.append('statut', statut);
     if (phone && phone !== 'all') params.append('phone', phone);
     if (sort) params.append('sort', sort);
+    if (zone_id && zone_id !== 'all') params.append('zone_id', zone_id);
+    if (exclude_statut) params.append('exclude_statut', exclude_statut);
     const response = await apiClient.get<LeadsResponse>(`/leads/my?${params.toString()}`);
     return response.data;
   },
@@ -75,5 +81,32 @@ export const leadsService = {
   getById: async (id: number | string): Promise<Lead> => {
     const res = await apiClient.get<Lead>(`/leads/my/${id}`);
     return res.data;
-  }
+  },
+
+  updateStatus: async (id: string, statut: string): Promise<Lead> => {
+    const res = await apiClient.patch<Lead>(`/leads/my/${id}/status`, { statut });
+    return res.data;
+  },
+
+  contactLead: async (id: string, message: string): Promise<void> => {
+    await apiClient.post(`/leads/my/${id}/contact`, { message });
+  },
+
+  exportCSV: async (filters: LeadsFilters = {}): Promise<void> => {
+    const { search, statut, phone, sort, zone_id, exclude_statut } = filters;
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (statut && statut !== 'all') params.append('statut', statut);
+    if (phone && phone !== 'all') params.append('phone', phone);
+    if (sort) params.append('sort', sort);
+    if (zone_id && zone_id !== 'all') params.append('zone_id', zone_id);
+    if (exclude_statut) params.append('exclude_statut', exclude_statut);
+    const res = await apiClient.get(`/leads/my/export-csv?${params.toString()}`, { responseType: 'blob' });
+    const blob = new Blob([res.data], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `leads-export-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  },
 };

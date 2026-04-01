@@ -155,7 +155,7 @@ export function ClientHeader({ title, subtitle }: ClientHeaderProps) {
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-80 max-h-[500px] overflow-y-auto">
+          <DropdownMenuContent align="end" className="w-80 max-h-[500px] flex flex-col overflow-hidden">
             <DropdownMenuLabel className="flex items-center justify-between sticky top-0 bg-popover z-10 py-3 border-b">
               <span>Notifications</span>
               {unreadCount > 0 && (
@@ -169,56 +169,53 @@ export function ClientHeader({ title, subtitle }: ClientHeaderProps) {
               )}
             </DropdownMenuLabel>
 
-            {isLoading ? (
-              <div className="p-4 flex justify-center text-muted-foreground">
-                <Loader2 className="animate-spin h-5 w-5" />
-              </div>
-            ) : notifications.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground text-sm">
-                Aucune notification.
-              </div>
-            ) : (
-              notifications.map((notif) => (
-                <DropdownMenuItem
-                  key={notif.id}
-                  className={`flex flex-col items-start gap-1 p-3 cursor-pointer border-b border-border last:border-0 focus:bg-accent transition-colors
-        ${!notif.is_read
-                      ? 'bg-blue-50 dark:bg-blue-900/20 border-l-2 border-l-blue-500' // <-- Changement ici
-                      : 'border-l-2 border-l-transparent'
-                    }`}
-                  onClick={() => handleNotificationClick(notif)}
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center gap-2">
-                      {/* Le point bleu devient un peu plus clair en mode dark pour le contraste */}
-                      <div className={`h-2 w-2 rounded-full ${!notif.is_read ? 'bg-blue-600 dark:bg-blue-400' : 'bg-gray-300 dark:bg-gray-600'}`} />
-
-                      {/* Le titre */}
-                      <span className={`font-medium ${!notif.is_read ? 'text-foreground font-bold' : 'text-muted-foreground'}`}>
-                        {notif.titre || "Nouveau Lead"}
-                      </span>
+            <div className="flex-1 overflow-y-auto">
+              {isLoading ? (
+                <div className="p-4 flex justify-center text-muted-foreground">
+                  <Loader2 className="animate-spin h-5 w-5" />
+                </div>
+              ) : notifications.length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground text-sm">
+                  Aucune notification.
+                </div>
+              ) : (
+                notifications.map((notif) => (
+                  <DropdownMenuItem
+                    key={notif.id}
+                    className={`flex flex-col items-start gap-1 p-3 cursor-pointer border-b border-border last:border-0 focus:bg-accent transition-colors
+          ${!notif.is_read
+                        ? 'bg-blue-50 dark:bg-blue-900/20 border-l-2 border-l-blue-500'
+                        : 'border-l-2 border-l-transparent'
+                      }`}
+                    onClick={() => handleNotificationClick(notif)}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-2">
+                        <div className={`h-2 w-2 rounded-full ${!notif.is_read ? 'bg-blue-600 dark:bg-blue-400' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                        <span className={`font-medium ${!notif.is_read ? 'text-foreground font-bold' : 'text-muted-foreground'}`}>
+                          {notif.titre || "Nouveau Lead"}
+                        </span>
+                      </div>
                     </div>
-                  </div>
 
-                  <span className="text-xs text-muted-foreground pl-4 line-clamp-2">
-                    Avec le prix : {notif?.prix
-                      ? `${notif.prix.toLocaleString()} €`
-                      : 'N/A'}
-                  </span>
+                    <span className="text-xs text-muted-foreground pl-4 line-clamp-2">
+                      Avec le prix : {notif?.prix
+                        ? `${notif.prix.toLocaleString()} €`
+                        : 'N/A'}
+                    </span>
 
+                    <span className="text-[10px] pl-4 font-medium mt-1 text-blue-600 dark:text-blue-400">
+                      {timeAgo(notif.date_detection)}
+                    </span>
+                  </DropdownMenuItem>
+                ))
+              )}
+            </div>
 
-                  {/* La date en bleu clair en mode dark */}
-                  <span className="text-[10px] pl-4 font-medium mt-1 text-blue-600 dark:text-blue-400">
-                    {timeAgo(notif.date_detection)}
-                  </span>
-                </DropdownMenuItem>
-              ))
-            )}
-
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="shrink-0" />
 
             <DropdownMenuItem
-              className="justify-center text-primary cursor-pointer py-3 font-medium"
+              className="justify-center text-primary cursor-pointer py-3 font-medium shrink-0"
               onClick={() => navigate('/client/notifications')}
             >
               Voir toutes les notifications

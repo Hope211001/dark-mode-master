@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Select,
     SelectContent,
@@ -15,6 +15,7 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select";
+import { toast } from "sonner";
 import {
     Save,
     Loader2,
@@ -29,16 +30,12 @@ import {
     MessageSquare
 } from "lucide-react";
 import { subscriptionService, Subscription } from '@/services/subscription';
-import ErrorAlert from "@/components/alert/error";
-import SuccessAlert from "@/components/alert/success";
 
 const ZoneSetting = () => {
     const { zoneId } = useParams<{ zoneId: string }>();
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
     const [config, setConfig] = useState<Subscription | null>(null);
-    const [errorAlert, setErrorAlert] = useState({ visible: false, message: "" });
-    const [successAlert, setSuccessAlert] = useState({ visible: false, message: "" });
 
     // 1. Chargement des données au montage du composant
     useEffect(() => {
@@ -55,7 +52,7 @@ const ZoneSetting = () => {
         } catch (error: any) {
             // Affiche l'erreur réelle dans la console pour débugger
             console.error("❌ Erreur API :", error.response?.data || error.message);
-            setErrorAlert({ visible: true, message: "Erreur de chargement : " + (error.response?.data?.error || "Serveur injoignable") });
+            toast.error("Erreur de chargement : " + (error.response?.data?.error || "Serveur injoignable"));
         } finally {
             setFetching(false);
         }
@@ -79,30 +76,9 @@ const ZoneSetting = () => {
         }
     };
 
-    // 3. Validation + Sauvegarde vers le backend
+    // 3. Sauvegarde vers le backend
     const handleSave = async () => {
         if (!config || !zoneId) return;
-
-        // Validation des champs obligatoires
-        if (!config.searchQuery?.trim()) {
-            setErrorAlert({ visible: true, message: "Le mot-clé de recherche est obligatoire." });
-            return;
-        }
-        if (!config.category_id) {
-            setErrorAlert({ visible: true, message: "Le type d'offre est obligatoire." });
-            return;
-        }
-
-        // Validation prix min < prix max (seulement si les deux sont renseignés)
-        if (
-            config.price_min_filter != null &&
-            config.price_max_filter != null &&
-            config.price_min_filter > config.price_max_filter
-        ) {
-            setErrorAlert({ visible: true, message: "Le budget minimum doit être inférieur au budget maximum." });
-            return;
-        }
-
         setLoading(true);
         try {
             await subscriptionService.updateByZone(zoneId, {
@@ -115,9 +91,9 @@ const ZoneSetting = () => {
                 radius: config.radius,
                 template_message: config.template_message,
             });
-            setSuccessAlert({ visible: true, message: "Configuration mise à jour avec succès !" });
+            toast.success("Configuration mise à jour avec succès !");
         } catch (error) {
-            setErrorAlert({ visible: true, message: "Erreur lors de la sauvegarde." });
+            toast.error("Erreur lors de la sauvegarde");
         } finally {
             setLoading(false);
         }
@@ -138,21 +114,11 @@ const ZoneSetting = () => {
 
     return (
         <div className="min-h-screen bg-[#020617] text-slate-200">
-            <ErrorAlert
-                message={errorAlert.message}
-                visible={errorAlert.visible}
-                onClose={() => setErrorAlert({ visible: false, message: "" })}
-            />
-            <SuccessAlert
-                message={successAlert.message}
-                visible={successAlert.visible}
-                onClose={() => setSuccessAlert({ visible: false, message: "" })}
-            />
             <ClientSidebar />
-            <main className="md:ml-64 transition-[margin] duration-300">
+            <main className="md:ml-64 transition-[margin] duration-300 p-4 md:p-8">
                 <ClientHeader title="Configuration Zone" subtitle="Automatisation et filtres" />
 
-                <div className="max-w-4xl mx-auto mt-8 p-4 md:p-8">
+                <div className="max-w-4xl mx-auto mt-8">
                     <Link to="/client/zones" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-400 mb-8 transition-colors group">
                         <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
                         Retour
@@ -187,7 +153,7 @@ const ZoneSetting = () => {
 
                                 {/* CATÉGORIE - SELECT */}
                                 <div className="space-y-2">
-                                    <Label className="text-slate-300 flex items-center gap-2"><Layers className="h-4 w-4 text-indigo-400" /> Type d'offre <span className="text-red-400">*</span></Label>
+                                    <Label className="text-slate-300 flex items-center gap-2"><Layers className="h-4 w-4 text-indigo-400" /> Type d'offre</Label>
                                     <Select
                                         // On force le passage en string pour le composant Select
                                         value={config?.category_id?.toString() || ""}
@@ -205,7 +171,7 @@ const ZoneSetting = () => {
 
                                 {/* SEARCH QUERY */}
                                 <div className="space-y-2">
-                                    <Label className="text-slate-300 flex items-center gap-2"><Search className="h-4 w-4 text-indigo-400" /> Mot-clé de recherche <span className="text-red-400">*</span></Label>
+                                    <Label className="text-slate-300 flex items-center gap-2"><Search className="h-4 w-4 text-indigo-400" /> Mot-clé de recherche</Label>
                                     <Input
                                         value={config?.searchQuery || ""}
                                         onChange={(e) => setConfig(prev => prev ? { ...prev, searchQuery: e.target.value } : null)}
