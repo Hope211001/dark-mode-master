@@ -1,8 +1,8 @@
 import { useState } from "react";
 import {
   MapPin, Maximize, Euro, Calendar, Mail, Phone,
-  TrendingUp, CheckCircle, XCircle, Loader2,
-  Send, X, MessageSquare, ExternalLink, Eye, Archive
+  TrendingUp, CheckCircle, Loader2,
+  Send, X, MessageSquare, ExternalLink, Archive
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,8 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   rejected:  { label: "Rejeté",    className: "bg-destructive/20 text-destructive border-destructive/30" },
 };
 
+const DESC_MAX = 100;
+
 export function LeadCard({
   lead,
   onStatusChange,
@@ -37,7 +39,7 @@ export function LeadCard({
   const [showContactModal, setShowContactModal] = useState(false);
   const [contactMessage, setContactMessage] = useState("");
 
-  const { id, titre, ville, surface, prix = 0, statut, date_detection, phone, url, score } = lead;
+  const { id, titre, ville, surface, prix = 0, statut, date_detection, phone, url, score, description } = lead;
   const currentStatus = statut || "new";
   const st = statusConfig[currentStatus] || statusConfig.new;
   const displayScore = score != null ? (score <= 10 ? score * 10 : score) : null;
@@ -51,6 +53,10 @@ export function LeadCard({
     day: 'numeric',
     month: 'short',
   });
+
+  const descText = description || "";
+  const isDescLong = descText.length > DESC_MAX;
+  const truncatedDesc = isDescLong ? descText.slice(0, DESC_MAX) + "..." : descText;
 
   const handleOpenContact = () => {
     setContactMessage("");
@@ -165,124 +171,111 @@ export function LeadCard({
 
       {/* ── Card ── */}
       <Card
-        className="glass-card overflow-hidden transition-all duration-300 hover:border-primary/30 hover:shadow-xl group border-white/10 cursor-pointer"
+        className="group flex flex-col border-border/50 bg-card hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 cursor-pointer rounded-xl"
         onClick={() => navigate(`/client/showLead/${id}`)}
       >
-        {/* Header Image / Icon */}
-        <div className="relative h-32 bg-secondary/30 overflow-hidden flex items-center justify-center bg-gradient-to-br from-primary/5 to-transparent">
-          <div className="text-primary/20 group-hover:scale-110 transition-transform duration-500">
-            <TrendingUp size={64} />
+        <CardContent className="flex-1 flex flex-col p-4 space-y-3">
+          {/* Row 1 : Badges + Score + Voir annonce */}
+          <div className="flex items-center justify-between gap-2" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-1.5">
+              <Badge className={cn("border text-[9px] uppercase font-bold", st.className)}>
+                {st.label}
+              </Badge>
+              {displayScore != null && (
+                <Badge variant="outline" className={cn("font-mono font-bold text-[10px]", scoreColor)}>
+                  {displayScore}%
+                </Badge>
+              )}
+            </div>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 px-2 text-[10px] font-medium text-muted-foreground hover:text-primary gap-1"
+              onClick={() => window.open(url, '_blank')}
+            >
+              <ExternalLink className="h-2.5 w-2.5" />
+              Voir annonce
+            </Button>
           </div>
 
-          {/* Overlays statuts et phone */}
-          <div className="absolute top-3 left-3 flex gap-2">
-            <Badge className={cn("border text-[10px] uppercase font-bold", st.className)}>
-              {st.label}
-            </Badge>
+          {/* Row 2 : Titre */}
+          <h3 className="font-semibold text-foreground leading-snug line-clamp-2 text-[13px] group-hover:text-primary transition-colors">
+            {titre}
+          </h3>
+
+          {/* Row 3 : Ville + Téléphone */}
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1 truncate">
+              <MapPin className="h-3 w-3 shrink-0" />{ville}
+            </span>
             {phone && (
-              <Badge variant="outline" className="border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold gap-1">
-                <Phone className="h-2.5 w-2.5" />
-                Tél
-              </Badge>
+              <span className="flex items-center gap-1 text-emerald-400 shrink-0">
+                <Phone className="h-3 w-3" />Tél
+              </span>
             )}
           </div>
-          {displayScore != null && (
-            <div className={cn("absolute top-3 right-3")}>
-              <Badge variant="outline" className={cn("font-mono font-bold text-[11px]", scoreColor)}>
-                {displayScore}%
-              </Badge>
-            </div>
-          )}
-        </div>
 
-        <CardContent className="p-4 space-y-4">
-          {/* Titre & Localisation */}
-          <div className="h-12">
-            <h3 className="font-bold text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors text-sm">
-              {titre}
-            </h3>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-              <MapPin className="h-3 w-3" />
-              <span className="truncate">{ville}</span>
+          {/* Row 4 : Description */}
+          <div className="h-[48px]">
+            {descText ? (
+              <p className="text-[11px] text-muted-foreground/80 leading-relaxed">
+                {truncatedDesc}
+                {isDescLong && (
+                  <span
+                    className="ml-1 text-primary hover:underline font-medium cursor-pointer"
+                    onClick={(e) => { e.stopPropagation(); navigate(`/client/showLead/${id}`); }}
+                  >
+                    lire plus
+                  </span>
+                )}
+              </p>
+            ) : (
+              <p className="text-[11px] text-muted-foreground/30 italic">Aucune description</p>
+            )}
+          </div>
+
+          {/* Row 5 : Stats chips */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 bg-secondary/40 rounded-md px-2 py-1.5">
+              <Maximize className="h-3 w-3 text-muted-foreground" />
+              <span className="text-[11px] font-semibold text-foreground">{surface} m²</span>
+            </div>
+            <div className="flex items-center gap-1.5 bg-secondary/40 rounded-md px-2 py-1.5">
+              <Euro className="h-3 w-3 text-muted-foreground" />
+              <span className="text-[11px] font-semibold text-foreground">{prix.toLocaleString()} €</span>
             </div>
           </div>
 
-          {/* Grille de détails techniques */}
-          <div className="grid grid-cols-2 gap-2 border-y border-white/5 py-3">
-            <div className="flex items-center gap-2 text-xs">
-              <Maximize className="h-3.5 w-3.5 text-primary/60" />
-              <span className="text-foreground font-semibold">{surface} m²</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs">
-              <Euro className="h-3.5 w-3.5 text-primary/60" />
-              <span className="text-foreground font-semibold">{prix.toLocaleString()} <span className="text-[10px] font-normal text-muted-foreground">/hc</span></span>
-            </div>
-          </div>
+          {/* Spacer */}
+          <div className="flex-1" />
 
-          {/* Date et Source */}
-          <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
-              <span>Détecté le {formattedDate}</span>
-            </div>
-            <Badge variant="outline" className="text-[9px] py-0 h-4 uppercase">LBC</Badge>
-          </div>
-
-          {/* Actions principales */}
-          <div className="space-y-2 pt-1" onClick={(e) => e.stopPropagation()}>
-            {/* Bouton Contacter / état */}
+          {/* Row 6 : Contacter + Archiver */}
+          <div className="flex items-center gap-2 pt-2 border-t border-border/30" onClick={(e) => e.stopPropagation()}>
             {currentStatus === "contacted" ? (
-              <Button size="sm" variant="outline" className="w-full font-bold text-xs h-9 opacity-70 cursor-default" disabled>
-                <CheckCircle className="h-3.5 w-3.5 mr-2" />
-                Déjà contacté
+              <Button size="sm" variant="outline" className="flex-1 font-semibold text-[11px] h-8 opacity-60 cursor-default" disabled>
+                <CheckCircle className="h-3 w-3 mr-1.5" />
+                Contacté
               </Button>
             ) : (
               <Button
                 size="sm"
-                className="w-full bg-primary hover:bg-primary/90 font-bold text-xs h-9"
+                className="flex-1 bg-primary hover:bg-primary/90 font-semibold text-[11px] h-8"
                 onClick={handleOpenContact}
               >
-                <Mail className="h-3.5 w-3.5 mr-2" />
+                <Mail className="h-3 w-3 mr-1.5" />
                 Contacter
               </Button>
             )}
-
-            {/* 3 icônes : Voir annonce, Voir détail, Archiver */}
-            <div className="flex items-center gap-1.5">
-              <Button
-                size="sm"
-                variant="outline"
-                className="flex-1 text-xs h-8 gap-1.5 font-medium border-border/40 hover:border-primary/30 hover:text-primary"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  window.open(url, '_blank');
-                }}
-                title="Voir l'annonce originale"
-              >
-                <ExternalLink className="h-3 w-3" />
-                Annonce
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="flex-1 text-xs h-8 gap-1.5 font-medium border-border/40 hover:border-primary/30 hover:text-primary"
-                onClick={() => navigate(`/client/showLead/${id}`)}
-                title="Voir le détail"
-              >
-                <Eye className="h-3 w-3" />
-                Détail
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-8 w-8 p-0 border-border/40 text-muted-foreground hover:border-destructive/30 hover:text-destructive hover:bg-destructive/5"
-                onClick={handleReject}
-                disabled={rejecting}
-                title="Archiver le lead"
-              >
-                {rejecting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Archive className="h-3.5 w-3.5" />}
-              </Button>
-            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="flex-1 font-semibold text-[11px] h-8 border-amber-500/30 text-amber-400 bg-amber-500/5 hover:bg-amber-500/15 hover:border-amber-500/40"
+              onClick={handleReject}
+              disabled={rejecting}
+            >
+              {rejecting ? <Loader2 className="h-3 w-3 mr-1.5 animate-spin" /> : <Archive className="h-3 w-3 mr-1.5" />}
+              Archiver
+            </Button>
           </div>
         </CardContent>
       </Card>

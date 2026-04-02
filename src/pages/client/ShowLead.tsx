@@ -5,14 +5,16 @@ import { ClientHeader } from "@/components/client/ClientHeader";
 import {
     Loader2, ArrowLeft, MapPin, Calendar, Maximize, Euro,
     TrendingUp, ExternalLink, Hash, Phone, Map as MapIcon,
-    FileText, User,
+    FileText, User, Mail, Archive, Send, X, MessageSquare, CheckCircle,
 } from "lucide-react";
 import { leadsService } from "@/services/leads.service";
-import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import ErrorAlert from "@/components/alert/error";
+import SuccessAlert from "@/components/alert/success";
 
 // ── Statut ────────────────────────────────────────────────────────────────
 const statusConfig: Record<string, { label: string; className: string }> = {
@@ -91,20 +93,58 @@ function DetailRow({ icon: Icon, label, value, highlight = false, href }: {
 const ShowLead = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { toast } = useToast();
     const [lead, setLead] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
+    const [contacting, setContacting] = useState(false);
+    const [rejecting, setRejecting] = useState(false);
+    const [showContactModal, setShowContactModal] = useState(false);
+    const [contactMessage, setContactMessage] = useState("");
+    const [errorAlert, setErrorAlert] = useState({ visible: false, message: "" });
+    const [successAlert, setSuccessAlert] = useState({ visible: false, message: "" });
 
     useEffect(() => {
         if (!id) return;
         leadsService.getById(id)
             .then(setLead)
             .catch(() => {
-                toast({ title: "Erreur", description: "Lead introuvable", variant: "destructive" });
+                setErrorAlert({ visible: true, message: "Lead introuvable" });
                 navigate(-1);
             })
             .finally(() => setLoading(false));
     }, [id]);
+
+    const handleContact = async () => {
+        if (!contactMessage.trim()) {
+            setErrorAlert({ visible: true, message: "Veuillez rédiger un message." });
+            return;
+        }
+        try {
+            setContacting(true);
+            await leadsService.contactLead(lead.id, contactMessage);
+            setShowContactModal(false);
+            setContactMessage("");
+            setSuccessAlert({ visible: true, message: "Message envoyé avec succès !" });
+            const updated = await leadsService.getById(lead.id);
+            setLead(updated);
+        } catch {
+            setErrorAlert({ visible: true, message: "Erreur lors de l'envoi." });
+        } finally {
+            setContacting(false);
+        }
+    };
+
+    const handleReject = async () => {
+        try {
+            setRejecting(true);
+            await leadsService.updateStatus(lead.id, 'rejected');
+            setSuccessAlert({ visible: true, message: "Lead archivé." });
+            setTimeout(() => navigate('/client/leads'), 1200);
+        } catch {
+            setErrorAlert({ visible: true, message: "Erreur lors de l'archivage." });
+        } finally {
+            setRejecting(false);
+        }
+    };
 
     if (loading) return (
         <div className="h-screen w-full flex items-center justify-center bg-background">
@@ -117,8 +157,78 @@ const ShowLead = () => {
     const prixM2 = lead.surface > 0 ? Math.round(lead.prix / lead.surface) : 0;
     const sd = lead.scrore_details ?? lead.score_details;
 
+    const currentStatus = lead?.statut || "new";
+
     return (
         <div className="min-h-screen bg-background">
+            <ErrorAlert
+                message={errorAlert.message}
+                visible={errorAlert.visible}
+                onClose={() => setErrorAlert({ visible: false, message: "" })}
+            />
+            <SuccessAlert
+                message={successAlert.message}
+                visible={successAlert.visible}
+                onClose={() => setSuccessAlert({ visible: false, message: "" })}
+            />
+
+            {/* Modal Contact */}
+            {showContactModal && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowContactModal(false)} />
+                    <div className="relative animate-in zoom-in-95 fade-in duration-200 bg-[#0f172a] border border-primary/20 rounded-2xl shadow-2xl shadow-primary/5 w-full max-w-lg overflow-hidden">
+                        <div className="relative bg-gradient-to-r from-primary/10 to-transparent px-6 py-5 border-b border-white/5">
+                            <button
+                                onClick={() => setShowContactModal(false)}
+                                className="absolute top-4 right-4 h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                            <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center">
+                                    <MessageSquare className="h-5 w-5 text-primary" />
+                                </div>
+                                <div>
+                                    <h3 className="text-white font-bold text-base">Contacter le propriétaire</h3>
+                                    <p className="text-xs text-slate-400 mt-0.5">Rédigez votre message pour ce lead</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="px-6 pt-4 pb-2">
+                            <label className="text-xs font-semibold text-slate-300 uppercase tracking-wide mb-2 block">Votre message</label>
+                            <Textarea
+                                value={contactMessage}
+                                onChange={(e) => setContactMessage(e.target.value)}
+                                placeholder="Bonjour, je suis très intéressé par votre bien..."
+                                className="bg-white/5 border-white/10 text-white min-h-[120px] rounded-xl focus:ring-primary focus:border-primary placeholder:text-slate-600 resize-none"
+                                autoFocus
+                            />
+                            <p className="text-[10px] text-slate-500 mt-1.5 text-right">
+                                {contactMessage.length} caractère{contactMessage.length > 1 ? "s" : ""}
+                            </p>
+                        </div>
+                        <div className="px-6 pb-5 flex items-center gap-3">
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowContactModal(false)}
+                                className="flex-1 rounded-xl border-white/10 text-slate-300 hover:bg-white/5 hover:text-white h-11"
+                                disabled={contacting}
+                            >
+                                Annuler
+                            </Button>
+                            <Button
+                                onClick={handleContact}
+                                className="flex-1 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold h-11 gap-2"
+                                disabled={contacting || !contactMessage.trim()}
+                            >
+                                {contacting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                                Envoyer
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <ClientSidebar />
 
             <main className="md:ml-64 transition-[margin] duration-300">
@@ -270,6 +380,37 @@ const ShowLead = () => {
 
                         {/* ── Colonne droite (1/3) ── */}
                         <div className="space-y-4 md:space-y-6">
+
+                            {/* Actions Contacter + Archiver */}
+                            <Card className="border-border bg-card">
+                                <CardContent className="p-4 space-y-3">
+                                    {currentStatus === "contacted" ? (
+                                        <Button size="lg" variant="outline" className="w-full font-bold text-sm h-11 opacity-70 cursor-default" disabled>
+                                            <CheckCircle className="h-4 w-4 mr-2" />
+                                            Déjà contacté
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            size="lg"
+                                            className="w-full bg-primary hover:bg-primary/90 font-bold text-sm h-11"
+                                            onClick={() => { setContactMessage(""); setShowContactModal(true); }}
+                                        >
+                                            <Mail className="h-4 w-4 mr-2" />
+                                            Contacter le propriétaire
+                                        </Button>
+                                    )}
+                                    <Button
+                                        size="lg"
+                                        variant="outline"
+                                        className="w-full font-bold text-sm h-11 border-amber-500/30 text-amber-400 bg-amber-500/5 hover:bg-amber-500/15 hover:border-amber-500/40"
+                                        onClick={handleReject}
+                                        disabled={rejecting}
+                                    >
+                                        {rejecting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Archive className="h-4 w-4 mr-2" />}
+                                        Archiver le lead
+                                    </Button>
+                                </CardContent>
+                            </Card>
 
                             {/* Score gauge */}
                             <Card className="border-border bg-card">

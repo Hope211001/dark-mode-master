@@ -49,6 +49,11 @@ const navItems = [
     icon: Receipt
   },
   {
+    title: "Leads injoignable",
+    url: "/client/injoignable",
+    icon: Receipt
+  },
+  {
     title: "Achat de zones",
     url: "/client/mapexplorer",
     icon: Search
@@ -210,7 +215,7 @@ export function ClientSidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-1 p-4">
+        <nav className="flex-1 overflow-y-auto space-y-1 p-4">
           {navItems.map((item) => {
             // Logique pour déterminer si on affiche un badge
             let displayBadge = null;

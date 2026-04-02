@@ -40,6 +40,8 @@ import ShowLead from "./pages/client/ShowLead";
 import ZoneSetting from "./pages/client/ZoneSetting";
 import ClientInvoices from "./pages/client/ClientInvoices";
 import ArchiveLeads from "./pages/client/ArchiveLeads";
+import UnreachableLeads from "./pages/client/UnreachableLeads";
+import FormCookies from "./pages/client/FormCookies";
 
 const queryClient = new QueryClient();
 
@@ -102,6 +104,11 @@ const App = () => (
                     <ClientSettings />
                   </ProtectedRoute>
                 } />
+                <Route path="cookies" element={
+                  <ProtectedRoute allowedRoles={['client']}>
+                    <FormCookies />
+                  </ProtectedRoute>
+                } />
                 <Route path="profile" element={
                   <ProtectedRoute allowedRoles={['client']}>
                     <ClientProfile />
@@ -143,6 +150,12 @@ const App = () => (
                 <Route path="archive-leads" element={
                   <ProtectedRoute allowedRoles={['client']}>
                     <ArchiveLeads />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="injoignable" element={
+                  <ProtectedRoute allowedRoles={['client']}>
+                    <UnreachableLeads />
                   </ProtectedRoute>
                 } />
 
