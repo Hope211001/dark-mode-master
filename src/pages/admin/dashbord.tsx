@@ -32,7 +32,7 @@ const dashbord = () => {
       // On lance tous les appels en parallèle pour la performance
       const [leadsRes, countAll, countLibre, countVendu] = await Promise.all([
         // Attention : j'utilise getMyLeads pour éviter la 404 si tu n'es pas admin
-        leadsService.getMyLeads(1, 4), 
+        leadsService.getAll({ page: 1, limit: 4 }),
         zoneService.getCountAllZone(),
         zoneService.getCountZoneLibre(),
         zoneService.getCountZoneVendu()

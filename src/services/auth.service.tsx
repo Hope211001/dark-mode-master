@@ -115,6 +115,14 @@ class AuthService {
     return response.data;
   }
 
+  async changePassword(data: { currentPassword: string; newPassword: string }): Promise<{ message: string }> {
+    const response = await apiClient.put<{ message: string }>(
+      `${this.BASE_PATH}/change-password`,
+      data
+    );
+    return response.data;
+  }
+
   async verifyToken(): Promise<VerifyResponse> {
     const response = await apiClient.get<VerifyResponse>(
       `${this.BASE_PATH}/verify`

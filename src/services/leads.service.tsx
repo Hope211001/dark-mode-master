@@ -57,11 +57,24 @@ export interface LeadsFilters {
   sort?: string;
   zone_id?: string;
   exclude_statut?: string;
+  ville?: string;
 }
 
 export const leadsService = {
-  getAll: async (page = 1, limit = 10): Promise<LeadsResponse> => {
-    const response = await apiClient.get<LeadsResponse>(`/leads?page=${page}&limit=${limit}`);
+  getAll: async (filters: LeadsFilters = {}): Promise<LeadsResponse> => {
+    const { page = 1, limit = 10, search, statut, phone, sort, ville } = filters;
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (search) params.append('search', search);
+    if (statut && statut !== 'all') params.append('statut', statut);
+    if (phone && phone !== 'all') params.append('phone', phone);
+    if (sort) params.append('sort', sort);
+    if (ville && ville !== 'all') params.append('ville', ville);
+    const response = await apiClient.get<LeadsResponse>(`/leads?${params.toString()}`);
+    return response.data;
+  },
+
+  getDistinctVilles: async (): Promise<string[]> => {
+    const response = await apiClient.get<string[]>('/leads/villes');
     return response.data;
   },
 

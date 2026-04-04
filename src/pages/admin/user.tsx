@@ -213,44 +213,46 @@ const ListUser = () => {
                                             </Badge>
                                         </TableCell>
 
-                                        <TableCell className="text-right space-x-1">
-                                            {/* Bouton Modifier */}
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="hover:bg-blue-500/10 hover:text-blue-500 text-muted-foreground transition-all"
-                                                onClick={() => {
-                                                    setEditingUser(u);
-                                                    setFormData({ name: u.name, email: u.email, role: u.role, statut: u.statut });
-                                                    setIsModalOpen(true);
-                                                }}
-                                            >
-                                                <Edit className="h-4 w-4" />
-                                            </Button>
+                                        <TableCell className="text-right">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="gap-1.5 hover:bg-blue-500/10 hover:text-blue-500 hover:border-blue-500/30"
+                                                    onClick={() => {
+                                                        setEditingUser(u);
+                                                        setFormData({ name: u.name, email: u.email, role: u.role, statut: u.statut });
+                                                        setIsModalOpen(true);
+                                                    }}
+                                                >
+                                                    <Edit className="h-3.5 w-3.5" />
+                                                    Modifier
+                                                </Button>
 
-                                            {/* Bouton Bloquer / Débloquer */}
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className={
-                                                    u.statut === 'BLOQUE'
-                                                        ? "hover:bg-emerald-500/10 text-emerald-500"
-                                                        : "hover:bg-orange-500/10 text-orange-500"
-                                                }
-                                                onClick={() => handleBlock(u.id, u.statut)}
-                                            >
-                                                {u.statut === 'BLOQUE' ? <UserCheck className="h-4 w-4" /> : <Ban className="h-4 w-4" />}
-                                            </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className={
+                                                        u.statut === 'BLOQUE'
+                                                            ? "gap-1.5 hover:bg-emerald-500/10 text-emerald-500 border-emerald-500/30"
+                                                            : "gap-1.5 hover:bg-orange-500/10 text-orange-500 border-orange-500/30"
+                                                    }
+                                                    onClick={() => handleBlock(u.id, u.statut)}
+                                                >
+                                                    {u.statut === 'BLOQUE' ? <UserCheck className="h-3.5 w-3.5" /> : <Ban className="h-3.5 w-3.5" />}
+                                                    {u.statut === 'BLOQUE' ? 'Réactiver' : 'Bloquer'}
+                                                </Button>
 
-                                            {/* Bouton Supprimer */}
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all"
-                                                onClick={() => handleDelete(u.id)}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="gap-1.5 hover:bg-destructive/10 text-destructive border-destructive/30"
+                                                    onClick={() => handleDelete(u.id)}
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                    Supprimer
+                                                </Button>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 ))

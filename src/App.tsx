@@ -24,6 +24,8 @@ import NotificationsPage from "./pages/client/NotificationsPage";
 import AdminDashboard from "./pages/admin/dashbord";
 import ZonesManagement from "./pages/admin/zones/zone.liste";
 import ListUser from "./pages/admin/user";
+import AdminLeads from "./pages/admin/AdminLeads";
+import AdminSettings from "./pages/admin/AdminSettings";
 
 // Auth
 import ProtectedRoute from './components/ProtectedRoute';
@@ -69,9 +71,19 @@ const App = () => (
                     <AdminDashboard />
                   </ProtectedRoute>
                 } />
+                <Route path="leads" element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminLeads />
+                  </ProtectedRoute>
+                } />
                 <Route path="zones" element={
                   <ProtectedRoute allowedRoles={['admin']}>
                     <ZonesManagement />
+                  </ProtectedRoute>
+                } />
+                <Route path="settings" element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminSettings />
                   </ProtectedRoute>
                 } />
                 <Route path="user" element={

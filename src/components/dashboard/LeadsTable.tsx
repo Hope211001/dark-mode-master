@@ -48,7 +48,7 @@ export function LeadsTable() {
     try {
       setLoading(true);
       // On récupère la page 1 avec une limite de 3
-      const response = await leadsService.getMyLeads(1, 3);
+      const response = await leadsService.getAll({ page: 1, limit: 3 });
       setLeads(response.data);
     } catch (error) {
       console.error("Erreur fetchLeads:", error);

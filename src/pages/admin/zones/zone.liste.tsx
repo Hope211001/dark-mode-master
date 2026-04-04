@@ -187,7 +187,7 @@ const ZonesManagement = () => {
                       <div className="space-y-2"><Label>Longitude (Centre)</Label><Input type="number" step="any" required value={newZone.lng_center} onChange={(e) => setNewZone({ ...newZone, lng_center: e.target.value })} /></div>
                     </div>
                     <div className="space-y-2"><Label>Prix (€)</Label><Input type="number" required value={newZone.price || ""} onChange={(e) => setNewZone({ ...newZone, price: Number(e.target.value) })} /></div>
-                    <div className="space-y-2"><Label>Codes postaux (Ex: 75001, 75002)</Label><Input placeholder="75001, 75002" value={newZone.codes_postaux_raw} onChange={(e) => setNewZone({ ...newZone, codes_postaux_raw: e.target.value })} /></div>
+                    <div className="space-y-2"><Label>Codes postaux </Label><Input placeholder="75000" value={newZone.codes_postaux_raw} onChange={(e) => setNewZone({ ...newZone, codes_postaux_raw: e.target.value })} /></div>
                   </div>
                   <DialogFooter><Button type="submit" className="w-full">Enregistrer en base</Button></DialogFooter>
                 </form>

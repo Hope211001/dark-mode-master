@@ -16,12 +16,11 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { icon: <Home className="w-5 h-5" />, label: "Dashboard", href: "/admin", active: true },
-  // { icon: <TrendingUp className="w-5 h-5" />, label: "Leads", href: "/", badge: 12 },
+  { icon: <Home className="w-5 h-5" />, label: "Dashboard", href: "/admin" },
+  { icon: <TrendingUp className="w-5 h-5" />, label: "Tous les Leads", href: "/admin/leads" },
   { icon: <Map className="w-5 h-5" />, label: "Zones", href: "/admin/zones" },
   { icon: <UserIcon className="w-5 h-5" />, label: "User", href: "/admin/user" },
-  // { icon: <Mail className="w-5 h-5" />, label: "Messages", href: "/messages" },
-  // { icon: <Filter className="w-5 h-5" />, label: "Filtres", href: "/filters" },
+  { icon: <Settings className="w-5 h-5" />, label: "Paramètres", href: "/admin/settings" },
 ];
 
 const bottomNavItems: NavItem[] = [
@@ -115,31 +114,37 @@ export function Sidebar() {
 
       {/* Main Navigation */}
       <nav className="flex-1 p-4 space-y-1">
-        {navItems.map((item) => (
-          <a
-            key={item.label}
-            href={item.href}
-            className={cn(
-              "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group",
-              item.active
-                ? "bg-primary/10 text-primary"
-                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            )}
-          >
-            <span className={cn(
-              "transition-colors",
-              item.active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-            )}>
-              {item.icon}
-            </span>
-            <span className="font-medium">{item.label}</span>
-            {item.badge && (
-              <span className="ml-auto bg-primary/20 text-primary text-xs font-semibold px-2 py-0.5 rounded-full">
-                {item.badge}
+        {navItems.map((item) => {
+          const isActive = item.href === "/admin"
+            ? location.pathname === "/admin"
+            : location.pathname.startsWith(item.href);
+
+          return (
+            <Link
+              key={item.label}
+              to={item.href}
+              className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group",
+                isActive
+                  ? "bg-primary/10 text-primary"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              )}
+            >
+              <span className={cn(
+                "transition-colors",
+                isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+              )}>
+                {item.icon}
               </span>
-            )}
-          </a>
-        ))}
+              <span className="font-medium">{item.label}</span>
+              {item.badge && (
+                <span className="ml-auto bg-primary/20 text-primary text-xs font-semibold px-2 py-0.5 rounded-full">
+                  {item.badge}
+                </span>
+              )}
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Bottom Navigation */}
