@@ -14,6 +14,8 @@ import {
   TableHeader, TableRow
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Filter } from "lucide-react";
 import {
   Plus, MapPin, Trash2, Edit,
   ShoppingBag, Loader2, Search, Globe, ChevronLeft, ChevronRight
@@ -31,7 +33,8 @@ const ZonesManagement = () => {
   const [loading, setLoading] = useState(true);
 
   // --- ÉTATS RECHERCHE & PAGINATION ---
-  const [searchTerm, setSearchTerm] = useState(""); // Recherche backend
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statutFilter, setStatutFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -57,13 +60,13 @@ const ZonesManagement = () => {
     }, 400); // On attend 400ms après la frappe avant d'appeler le backend
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm, currentPage]); // Re-déclenche si la recherche ou la page change
+  }, [searchTerm, currentPage, statutFilter]);
 
   const fetchZones = async () => {
     try {
       setLoading(true);
       // ICI : Vérifie bien que tu as mis les 3 arguments !
-      const response = await zoneService.getAll(currentPage, limit, searchTerm);
+      const response = await zoneService.getAll(currentPage, limit, searchTerm, statutFilter);
       setZones(response.data);
       setTotalPages(response.totalPages);
       setTotalCount(response.totalCount);
@@ -204,16 +207,27 @@ const ZonesManagement = () => {
 
           {/* TABLEAU ET RECHERCHE */}
           <div className="glass-card rounded-xl border bg-card shadow-sm overflow-hidden">
-            <div className="p-4 border-b flex items-center gap-4 bg-secondary/5">
-              <div className="relative flex-1">
+            <div className="p-4 border-b flex flex-wrap items-center gap-3 bg-secondary/5">
+              <div className="relative flex-1 min-w-[250px]">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Recherche globale (Nom de ville ou Code Postal)..."
-                  className="pl-10 max-w-sm bg-background"
+                  placeholder="Rechercher ville ou code postal..."
+                  className="pl-10 bg-background"
                   value={searchTerm}
                   onChange={(e) => handleSearchChange(e.target.value)}
                 />
               </div>
+              <Select value={statutFilter} onValueChange={(v) => { setStatutFilter(v); setCurrentPage(1); }}>
+                <SelectTrigger className="w-[180px]">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les statuts</SelectItem>
+                  <SelectItem value="LIBRE">Libre</SelectItem>
+                  <SelectItem value="VENDU">Vendu</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <Table>
@@ -240,14 +254,31 @@ const ZonesManagement = () => {
                       </TableCell>
                       <TableCell>{zone.price} €</TableCell>
                       <TableCell>
-                        <Badge variant={zone.statut_market === 'VENDU' ? "secondary" : "outline"}>
+                        <Badge variant="outline" className={
+                          zone.statut_market === 'VENDU'
+                            ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                            : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                        }>
                           {zone.statut_market || 'LIBRE'}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right space-x-1">
-                        {zone.statut_market !== 'VENDU' && <Button size="sm" variant="default" onClick={() => handleBuy(zone.id)}>Acheter</Button>}
-                        <Button size="icon" variant="ghost" onClick={() => openEditModal(zone)}><Edit className="h-4 w-4" /></Button>
-                        <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleDelete(zone.id)}><Trash2 className="h-4 w-4" /></Button>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {zone.statut_market !== 'VENDU' && (
+                            <Button size="sm" variant="ghost" className="gap-1.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 h-7 text-xs" onClick={() => handleBuy(zone.id)}>
+                              <MapPin className="h-3.5 w-3.5" />
+                              Acheter
+                            </Button>
+                          )}
+                          <Button size="sm" variant="ghost" className="gap-1.5 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 h-7 text-xs" onClick={() => openEditModal(zone)}>
+                            <Edit className="h-3.5 w-3.5" />
+                            Modifier
+                          </Button>
+                          <Button size="sm" variant="ghost" className="gap-1.5 bg-red-500/10 text-red-500 hover:bg-red-500/20 h-7 text-xs" onClick={() => handleDelete(zone.id)}>
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Supprimer
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))

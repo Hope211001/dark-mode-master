@@ -71,9 +71,9 @@ export const zoneService = {
 
 
   // Dans zones.service.ts
-  getAll: async (page = 1, limit = 10, search = "") => {
-    const res = await apiClient.get(`/zones/`, { // <-- Ajoute le / ici
-      params: { page, limit, search: search || undefined }
+  getAll: async (page = 1, limit = 10, search = "", statut = "") => {
+    const res = await apiClient.get(`/zones/`, {
+      params: { page, limit, search: search || undefined, statut: statut && statut !== "all" ? statut : undefined }
     });
     return res.data;
   },

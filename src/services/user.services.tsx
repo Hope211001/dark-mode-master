@@ -10,7 +10,8 @@ export interface User {
     role: UserRole;
     statut: UserStatus;
     created_at?: string;
-    is_verified?: boolean; // Changé en boolean
+    is_verified?: boolean;
+    leads_count?: number;
 }
 
 export interface PaginatedUserResponse {
@@ -20,9 +21,9 @@ export interface PaginatedUserResponse {
 }
 
 export const userService = {
-    getAll: async (page = 1, limit = 10, search = "", status = ""): Promise<PaginatedUserResponse> => {
+    getAll: async (page = 1, limit = 10, search = "", status = "", role = ""): Promise<PaginatedUserResponse> => {
         const res = await apiClient.get('/users', {
-            params: { page, limit, search: search || undefined, status: status !== "all" ? status : undefined }
+            params: { page, limit, search: search || undefined, status: status !== "all" ? status : undefined, role: role && role !== "all" ? role : undefined }
         });
         return res.data;
     },

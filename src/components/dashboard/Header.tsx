@@ -65,12 +65,12 @@ export function Header({ title = "Espace Administration", subtitle }: HeaderProp
         )}
         <Button
           variant="ghost"
-          size="icon"
-          className="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10"
+          size="sm"
+          className="gap-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-500/10"
           onClick={logout}
-          title="Se déconnecter"
         >
           <LogOut className="h-4 w-4" />
+          <span className="hidden sm:inline">Déconnexion</span>
         </Button>
       </div>
     </header>

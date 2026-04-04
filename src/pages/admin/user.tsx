@@ -31,6 +31,7 @@ const ListUser = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState<string>("all");
+    const [roleFilter, setRoleFilter] = useState<string>("all");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
@@ -45,7 +46,7 @@ const ListUser = () => {
     const fetchUsers = async () => {
         try {
             setLoading(true);
-            const response = await userService.getAll(currentPage, 10, searchTerm, statusFilter);
+            const response = await userService.getAll(currentPage, 10, searchTerm, statusFilter, roleFilter);
             setUsers(response.data);
             setTotalPages(response.totalPages);
             setTotalCount(response.totalCount);
@@ -59,7 +60,7 @@ const ListUser = () => {
     useEffect(() => {
         const delayDebounce = setTimeout(fetchUsers, 400);
         return () => clearTimeout(delayDebounce);
-    }, [searchTerm, currentPage, statusFilter]);
+    }, [searchTerm, currentPage, statusFilter, roleFilter]);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -139,8 +140,16 @@ const ListUser = () => {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input placeholder="Rechercher..." className="pl-10" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                     </div>
+                    <Select value={roleFilter} onValueChange={setRoleFilter}>
+                        <SelectTrigger className="w-[160px]"><SelectValue placeholder="Rôle" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Tous les rôles</SelectItem>
+                            <SelectItem value="client">Client</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                        </SelectContent>
+                    </Select>
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger className="w-[200px]"><SelectValue placeholder="Statut" /></SelectTrigger>
+                        <SelectTrigger className="w-[160px]"><SelectValue placeholder="Statut" /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">Tous (actifs)</SelectItem>
                             <SelectItem value="ACTIF">Actifs</SelectItem>
@@ -155,6 +164,7 @@ const ListUser = () => {
                             <TableRow className="hover:bg-transparent border-border">
                                 <TableHead className="text-muted-foreground font-bold">Utilisateur</TableHead>
                                 <TableHead className="text-muted-foreground font-bold">Rôle</TableHead>
+                                <TableHead className="text-muted-foreground font-bold">Leads</TableHead>
                                 <TableHead className="text-muted-foreground font-bold">Statut</TableHead>
                                 <TableHead className="text-right text-muted-foreground font-bold">Actions</TableHead>
                             </TableRow>
@@ -162,14 +172,14 @@ const ListUser = () => {
                         <TableBody>
                             {loading ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="text-center py-20">
+                                    <TableCell colSpan={6} className="text-center py-20">
                                         <Loader2 className="animate-spin mx-auto text-primary h-8 w-8" />
                                         <p className="text-sm text-muted-foreground mt-2">Chargement des données...</p>
                                     </TableCell>
                                 </TableRow>
                             ) : users.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="text-center py-20 text-muted-foreground">
+                                    <TableCell colSpan={6} className="text-center py-20 text-muted-foreground">
                                         Aucun utilisateur trouvé.
                                     </TableCell>
                                 </TableRow>
@@ -194,9 +204,24 @@ const ListUser = () => {
                                         </TableCell>
 
                                         <TableCell>
-                                            <Badge variant="outline" className="font-medium border-primary/20 bg-primary/5 text-primary">
+                                            <Badge variant="outline" className={`font-medium ${u.role === 'admin'
+                                                ? "border-amber-500/20 bg-amber-500/10 text-amber-500"
+                                                : "border-cyan-500/20 bg-cyan-500/10 text-cyan-500"
+                                            }`}>
                                                 {u.role}
                                             </Badge>
+                                        </TableCell>
+
+                                        <TableCell>
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="gap-1.5 bg-primary/10 text-primary hover:bg-primary/20 border-0 h-7 text-xs font-bold"
+                                                onClick={() => navigate(`/admin/user/${u.id}/leads?name=${encodeURIComponent(u.name)}`)}
+                                            >
+                                                <Eye className="h-3.5 w-3.5" />
+                                                {u.leads_count || 0} leads
+                                            </Button>
                                         </TableCell>
 
                                         <TableCell>
@@ -216,18 +241,6 @@ const ListUser = () => {
 
                                         <TableCell className="text-right">
                                             <div className="flex items-center justify-end gap-1.5 flex-wrap">
-                                                {u.role === 'client' && (
-                                                    <Button
-                                                        size="sm"
-                                                        className="gap-1.5 bg-primary/10 text-primary hover:bg-primary/20 border-0 h-7 text-xs"
-                                                        variant="ghost"
-                                                        onClick={() => navigate(`/admin/user/${u.id}/leads?name=${encodeURIComponent(u.name)}`)}
-                                                    >
-                                                        <Eye className="h-3.5 w-3.5" />
-                                                        Leads
-                                                    </Button>
-                                                )}
-
                                                 <Button
                                                     size="sm"
                                                     className="gap-1.5 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-0 h-7 text-xs"
