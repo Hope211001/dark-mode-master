@@ -78,6 +78,18 @@ export const leadsService = {
     return response.data;
   },
 
+  getLeadsByUser: async (userId: string, filters: LeadsFilters = {}): Promise<LeadsResponse> => {
+    const { page = 1, limit = 10, search, statut, phone, sort, ville } = filters;
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (search) params.append('search', search);
+    if (statut && statut !== 'all') params.append('statut', statut);
+    if (phone && phone !== 'all') params.append('phone', phone);
+    if (sort) params.append('sort', sort);
+    if (ville && ville !== 'all') params.append('ville', ville);
+    const response = await apiClient.get<LeadsResponse>(`/leads/user/${userId}?${params.toString()}`);
+    return response.data;
+  },
+
   getMyLeads: async (filters: LeadsFilters = {}): Promise<LeadsResponse> => {
     const { page = 1, limit = 12, search, statut, phone, sort, zone_id, exclude_statut } = filters;
     const params = new URLSearchParams({ page: String(page), limit: String(limit) });

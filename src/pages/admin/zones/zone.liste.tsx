@@ -163,7 +163,7 @@ const ZonesManagement = () => {
     <div className="min-h-screen bg-background flex">
       <Sidebar />
       <main className="flex-1 md:ml-64 transition-[margin] duration-300 overflow-y-auto">
-        <Header />
+        <Header title="Zones" subtitle="Gestion des zones géographiques" />
 
         <div className="p-6 space-y-6">
           {/* HEADER DE LA PAGE */}

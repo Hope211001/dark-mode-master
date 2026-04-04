@@ -64,9 +64,7 @@ const AdminSettings = () => {
     <div className="flex min-h-screen bg-background">
       <Sidebar />
       <main className="flex-1 md:ml-64 transition-[margin] duration-300 p-4 md:p-6 space-y-6">
-        <Header />
-
-        <h1 className="text-3xl font-bold text-foreground">Paramètres</h1>
+        <Header title="Paramètres" subtitle="Gérez votre compte" />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Informations du profil */}

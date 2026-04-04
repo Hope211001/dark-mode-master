@@ -8,7 +8,8 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Edit, Loader2, Search, Lock, Ban, UserCheck } from "lucide-react";
+import { Plus, Trash2, Edit, Loader2, Search, Lock, Ban, UserCheck, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { userService, User, UserRole, UserStatus } from "@/services/user.services";
 import { useToast } from "@/components/ui/use-toast";
 import { DataTablePagination } from "@/components/shared/DataTablePagination";
@@ -25,6 +26,7 @@ interface UserFormData {
 
 const ListUser = () => {
     const { toast } = useToast();
+    const navigate = useNavigate();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
@@ -125,9 +127,8 @@ const ListUser = () => {
         <div className="flex min-h-screen bg-background">
             <Sidebar />
             <main className="flex-1 md:ml-64 transition-[margin] duration-300 p-4 md:p-6 space-y-6">
-                <Header />
-                <div className="flex justify-between items-center">
-                    <h1 className="text-3xl font-bold text-gray-800">Utilisateurs</h1>
+                <Header title="Utilisateurs" subtitle="Gestion des comptes utilisateurs" />
+                <div className="flex justify-end">
                     <Button onClick={() => { setEditingUser(null); setIsModalOpen(true); }} className="gap-2">
                         <Plus className="h-4 w-4" /> Ajouter
                     </Button>
@@ -214,11 +215,23 @@ const ListUser = () => {
                                         </TableCell>
 
                                         <TableCell className="text-right">
-                                            <div className="flex items-center justify-end gap-2">
+                                            <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                                                {u.role === 'client' && (
+                                                    <Button
+                                                        size="sm"
+                                                        className="gap-1.5 bg-primary/10 text-primary hover:bg-primary/20 border-0 h-7 text-xs"
+                                                        variant="ghost"
+                                                        onClick={() => navigate(`/admin/user/${u.id}/leads?name=${encodeURIComponent(u.name)}`)}
+                                                    >
+                                                        <Eye className="h-3.5 w-3.5" />
+                                                        Leads
+                                                    </Button>
+                                                )}
+
                                                 <Button
-                                                    variant="outline"
                                                     size="sm"
-                                                    className="gap-1.5 hover:bg-blue-500/10 hover:text-blue-500 hover:border-blue-500/30"
+                                                    className="gap-1.5 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-0 h-7 text-xs"
+                                                    variant="ghost"
                                                     onClick={() => {
                                                         setEditingUser(u);
                                                         setFormData({ name: u.name, email: u.email, role: u.role, statut: u.statut });
@@ -230,13 +243,12 @@ const ListUser = () => {
                                                 </Button>
 
                                                 <Button
-                                                    variant="outline"
                                                     size="sm"
-                                                    className={
-                                                        u.statut === 'BLOQUE'
-                                                            ? "gap-1.5 hover:bg-emerald-500/10 text-emerald-500 border-emerald-500/30"
-                                                            : "gap-1.5 hover:bg-orange-500/10 text-orange-500 border-orange-500/30"
-                                                    }
+                                                    variant="ghost"
+                                                    className={`gap-1.5 h-7 text-xs border-0 ${u.statut === 'BLOQUE'
+                                                        ? "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
+                                                        : "bg-orange-500/10 text-orange-500 hover:bg-orange-500/20"
+                                                    }`}
                                                     onClick={() => handleBlock(u.id, u.statut)}
                                                 >
                                                     {u.statut === 'BLOQUE' ? <UserCheck className="h-3.5 w-3.5" /> : <Ban className="h-3.5 w-3.5" />}
@@ -244,9 +256,9 @@ const ListUser = () => {
                                                 </Button>
 
                                                 <Button
-                                                    variant="outline"
                                                     size="sm"
-                                                    className="gap-1.5 hover:bg-destructive/10 text-destructive border-destructive/30"
+                                                    variant="ghost"
+                                                    className="gap-1.5 bg-red-500/10 text-red-500 hover:bg-red-500/20 border-0 h-7 text-xs"
                                                     onClick={() => handleDelete(u.id)}
                                                 >
                                                     <Trash2 className="h-3.5 w-3.5" />

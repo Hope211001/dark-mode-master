@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams, useSearchParams, Link } from "react-router-dom";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/dashboard/Header";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Filter, Phone, Loader2, ArrowUpDown, ExternalLink, Clock, MapPin, RefreshCw, Rows3 } from "lucide-react";
+import { Search, Filter, Phone, Loader2, ArrowUpDown, ExternalLink, Clock, MapPin, RefreshCw, Rows3, ArrowLeft } from "lucide-react";
 import { Pagination } from "@/components/Pagination";
 import { leadsService, Lead, LeadsFilters } from "@/services/leads.service";
 import { useToast } from "@/components/ui/use-toast";
@@ -46,7 +47,11 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 
 const DEBOUNCE_MS = 400;
 
-const AdminLeads = () => {
+const AdminUserLeads = () => {
+  const { userId } = useParams<{ userId: string }>();
+  const [searchParams] = useSearchParams();
+  const userName = searchParams.get("name") || "Utilisateur";
+
   const { toast } = useToast();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,7 +69,6 @@ const AdminLeads = () => {
 
   const [villes, setVilles] = useState<string[]>([]);
 
-  // Charger les villes distinctes au montage
   useEffect(() => {
     leadsService.getDistinctVilles().then(setVilles).catch(() => {});
   }, []);
@@ -79,10 +83,11 @@ const AdminLeads = () => {
   }, [debouncedSearch, statusFilter, phoneFilter, villeFilter, sortOrder, limit]);
 
   useEffect(() => {
-    fetchLeads();
-  }, [currentPage, debouncedSearch, statusFilter, phoneFilter, villeFilter, sortOrder, limit]);
+    if (userId) fetchLeads();
+  }, [currentPage, debouncedSearch, statusFilter, phoneFilter, villeFilter, sortOrder, limit, userId]);
 
   const fetchLeads = async () => {
+    if (!userId) return;
     try {
       setLoading(true);
       const filters: LeadsFilters = {
@@ -94,7 +99,7 @@ const AdminLeads = () => {
         ville: villeFilter,
         sort: sortOrder,
       };
-      const res = await leadsService.getAll(filters);
+      const res = await leadsService.getLeadsByUser(userId, filters);
       setLeads(res.data);
       setTotalPages(res.totalPages);
       setTotalCount(res.totalCount);
@@ -126,7 +131,20 @@ const AdminLeads = () => {
     <div className="flex min-h-screen bg-background">
       <Sidebar />
       <main className="flex-1 md:ml-64 transition-[margin] duration-300 p-4 md:p-6 space-y-6">
-        <Header title="Tous les Leads" subtitle="Gestion de tous les leads de la plateforme" />
+        <Header title={`Leads de ${userName}`} subtitle="Leads assignés à cet utilisateur" />
+
+        {/* Retour + compteur */}
+        <div className="flex items-center justify-between">
+          <Link to="/admin/user">
+            <Button variant="outline" size="sm" className="gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Retour aux utilisateurs
+            </Button>
+          </Link>
+          <Badge variant="outline" className="text-sm px-3 py-1">
+            {totalCount} leads
+          </Badge>
+        </div>
 
         {/* Filters */}
         <div className="flex flex-wrap gap-3 bg-card p-4 rounded-xl border shadow-sm">
@@ -201,12 +219,7 @@ const AdminLeads = () => {
             </SelectContent>
           </Select>
 
-          <Button
-            variant="outline"
-            className="gap-2"
-            onClick={handleReset}
-            disabled={loading}
-          >
+          <Button variant="outline" className="gap-2" onClick={handleReset} disabled={loading}>
             <RefreshCw className="h-4 w-4" />
             Réinitialiser
           </Button>
@@ -238,7 +251,7 @@ const AdminLeads = () => {
               ) : leads.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-20 text-muted-foreground">
-                    Aucun lead trouvé.
+                    Aucun lead trouvé pour cet utilisateur.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -306,4 +319,4 @@ const AdminLeads = () => {
   );
 };
 
-export default AdminLeads;
+export default AdminUserLeads;

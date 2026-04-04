@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ExternalLink, Mail, Clock, TrendingUp, Loader2 } from "lucide-react";
+import { ExternalLink, Clock, TrendingUp, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 // Importation du service et du type
@@ -48,7 +48,7 @@ export function LeadsTable() {
     try {
       setLoading(true);
       // On récupère la page 1 avec une limite de 3
-      const response = await leadsService.getAll({ page: 1, limit: 3 });
+      const response = await leadsService.getAll({ page: 1, limit: 3, sort: 'desc' });
       setLeads(response.data);
     } catch (error) {
       console.error("Erreur fetchLeads:", error);
@@ -76,7 +76,7 @@ export function LeadsTable() {
             <h2 className="text-lg font-semibold text-foreground">Derniers Leads</h2>
             <p className="text-sm text-muted-foreground">Les opportunités les plus récentes</p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => window.location.href = '/leads'}>
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/admin/leads'}>
             Voir tout
           </Button>
         </div>
@@ -89,7 +89,7 @@ export function LeadsTable() {
               <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Annonce</th>
               <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Score</th>
               <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Loyer</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Potentiel</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Date</th>
               <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Statut</th>
               <th className="text-right text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Actions</th>
             </tr>
@@ -142,8 +142,9 @@ export function LeadsTable() {
                       <span className="font-mono text-foreground">{lead.prix?.toLocaleString()}€</span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-mono text-success font-medium">
-                        {lead.potentiel_revenu?.toLocaleString() || "0"}€
+                      <span className="text-sm text-muted-foreground flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {formatDate(lead.date_detection)}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -155,10 +156,7 @@ export function LeadsTable() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Mail className="w-4 h-4" />
-                        </Button>
+                      <div className="flex items-center justify-end">
                         <a href={lead.url} target="_blank" rel="noopener noreferrer">
                           <Button variant="ghost" size="icon" className="h-8 w-8">
                             <ExternalLink className="w-4 h-4" />

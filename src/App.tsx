@@ -26,6 +26,7 @@ import ZonesManagement from "./pages/admin/zones/zone.liste";
 import ListUser from "./pages/admin/user";
 import AdminLeads from "./pages/admin/AdminLeads";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminUserLeads from "./pages/admin/AdminUserLeads";
 
 // Auth
 import ProtectedRoute from './components/ProtectedRoute';
@@ -84,6 +85,11 @@ const App = () => (
                 <Route path="settings" element={
                   <ProtectedRoute allowedRoles={['admin']}>
                     <AdminSettings />
+                  </ProtectedRoute>
+                } />
+                <Route path="user/:userId/leads" element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminUserLeads />
                   </ProtectedRoute>
                 } />
                 <Route path="user" element={
