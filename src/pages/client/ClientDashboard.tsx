@@ -4,7 +4,7 @@ import { ClientHeader } from "@/components/client/ClientHeader";
 import { LeadCard } from "@/components/client/LeadCard";
 import {
   Mail, MapPin, Loader2, Sparkles, ChevronRight,
-  Target, BarChart3, Clock
+  Target, BarChart3, Clock, Radar, Send
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,6 +30,8 @@ const ClientDashboard = () => {
     zonesCount: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [scrapingLoading, setScrapingLoading] = useState(false);
+  const [contactLoading, setContactLoading] = useState(false);
   const [errorAlert, setErrorAlert] = useState({ visible: false, message: "" });
   const [successAlert, setSuccessAlert] = useState({ visible: false, message: "" });
 
@@ -65,6 +67,30 @@ const ClientDashboard = () => {
   const showAlert = (type: "success" | "error", message: string) => {
     if (type === "success") setSuccessAlert({ visible: true, message });
     else setErrorAlert({ visible: true, message });
+  };
+
+  const handleScraping = async () => {
+    try {
+      setScrapingLoading(true);
+      await fetch("https://n8n.srv903010.hstgr.cloud/webhook/scrping-ville", { method: "POST" });
+      setSuccessAlert({ visible: true, message: "Scraping lancé avec succès !" });
+    } catch {
+      setErrorAlert({ visible: true, message: "Erreur lors du lancement du scraping." });
+    } finally {
+      setScrapingLoading(false);
+    }
+  };
+
+  const handleContactAuto = async () => {
+    try {
+      setContactLoading(true);
+      await fetch("https://n8n.srv903010.hstgr.cloud/webhook/contact-auto", { method: "POST" });
+      setSuccessAlert({ visible: true, message: "Contact automatique lancé avec succès !" });
+    } catch {
+      setErrorAlert({ visible: true, message: "Erreur lors du lancement du contact automatique." });
+    } finally {
+      setContactLoading(false);
+    }
   };
 
   const statCards = [
@@ -171,6 +197,26 @@ const ClientDashboard = () => {
                 </CardContent>
               </Card>
             ))}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-3">
+            <Button
+              onClick={handleScraping}
+              disabled={scrapingLoading}
+              className="gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold shadow-lg shadow-cyan-500/20"
+            >
+              {scrapingLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Radar className="h-4 w-4" />}
+              Lancer le scraping
+            </Button>
+            <Button
+              onClick={handleContactAuto}
+              disabled={contactLoading}
+              className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-semibold shadow-lg shadow-violet-500/20"
+            >
+              {contactLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              Lancer le contact automatique
+            </Button>
           </div>
 
           {/* Recent Leads */}
