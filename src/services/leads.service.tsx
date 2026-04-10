@@ -40,6 +40,7 @@ export interface Lead {
   status?: string;
   statut?: string;
   description?: string;
+  categorie_scraping?: string;
 }
 
 interface LeadsResponse {
@@ -58,6 +59,7 @@ export interface LeadsFilters {
   zone_id?: string;
   exclude_statut?: string;
   ville?: string;
+  categorie?: string;
 }
 
 export const leadsService = {
@@ -91,7 +93,7 @@ export const leadsService = {
   },
 
   getMyLeads: async (filters: LeadsFilters = {}): Promise<LeadsResponse> => {
-    const { page = 1, limit = 12, search, statut, phone, sort, zone_id, exclude_statut } = filters;
+    const { page = 1, limit = 12, search, statut, phone, sort, zone_id, exclude_statut, categorie } = filters;
     const params = new URLSearchParams({ page: String(page), limit: String(limit) });
     if (search) params.append('search', search);
     if (statut && statut !== 'all') params.append('statut', statut);
@@ -99,6 +101,7 @@ export const leadsService = {
     if (sort) params.append('sort', sort);
     if (zone_id && zone_id !== 'all') params.append('zone_id', zone_id);
     if (exclude_statut) params.append('exclude_statut', exclude_statut);
+    if (categorie && categorie !== 'all') params.append('categorie', categorie);
     const response = await apiClient.get<LeadsResponse>(`/leads/my?${params.toString()}`);
     return response.data;
   },
@@ -118,7 +121,7 @@ export const leadsService = {
   },
 
   exportCSV: async (filters: LeadsFilters = {}): Promise<void> => {
-    const { search, statut, phone, sort, zone_id, exclude_statut } = filters;
+    const { search, statut, phone, sort, zone_id, exclude_statut, categorie } = filters;
     const params = new URLSearchParams();
     if (search) params.append('search', search);
     if (statut && statut !== 'all') params.append('statut', statut);
@@ -126,6 +129,7 @@ export const leadsService = {
     if (sort) params.append('sort', sort);
     if (zone_id && zone_id !== 'all') params.append('zone_id', zone_id);
     if (exclude_statut) params.append('exclude_statut', exclude_statut);
+    if (categorie && categorie !== 'all') params.append('categorie', categorie);
     const res = await apiClient.get(`/leads/my/export-csv?${params.toString()}`, { responseType: 'blob' });
     const blob = new Blob([res.data], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');

@@ -39,9 +39,25 @@ export function LeadCard({
   const [showContactModal, setShowContactModal] = useState(false);
   const [contactMessage, setContactMessage] = useState("");
 
-  const { id, titre, ville, surface, prix = 0, statut, date_detection, phone, url, score, description } = lead;
+  const { id, titre, ville, surface, prix = 0, statut, date_detection, phone, url, score, description, categorie_scraping } = lead;
   const currentStatus = statut || "new";
   const st = statusConfig[currentStatus] || statusConfig.new;
+
+  const sourceConfig: Record<string, { label: string; className: string; glow: string; dot: string }> = {
+    "leboncoin": {
+      label: "Leboncoin",
+      className: "bg-gradient-to-r from-orange-500/20 via-orange-500/15 to-amber-500/10 text-orange-300 border-orange-500/40",
+      glow: "shadow-[0_0_12px_-2px_rgba(251,146,60,0.45)]",
+      dot: "bg-orange-400 shadow-[0_0_6px_rgba(251,146,60,0.9)]",
+    },
+    "pap.fr": {
+      label: "PAP.fr",
+      className: "bg-gradient-to-r from-sky-500/20 via-sky-500/15 to-blue-500/10 text-sky-300 border-sky-500/40",
+      glow: "shadow-[0_0_12px_-2px_rgba(56,189,248,0.45)]",
+      dot: "bg-sky-400 shadow-[0_0_6px_rgba(56,189,248,0.9)]",
+    },
+  };
+  const source = categorie_scraping ? sourceConfig[categorie_scraping] : null;
   const displayScore = score != null ? (score <= 10 ? score * 10 : score) : null;
   const scoreColor = displayScore != null
     ? displayScore >= 80 ? "text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
@@ -175,14 +191,31 @@ export function LeadCard({
         onClick={() => navigate(`/client/showLead/${id}`)}
       >
         <CardContent className="flex-1 flex flex-col p-4 space-y-3">
+          {/* Row 0 : Source badge (top) */}
+          {source && (
+            <div className="flex justify-end -mt-1 -mr-1">
+              <span className={cn(
+                "group/src relative inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.08em] backdrop-blur-sm transition-all duration-300 hover:scale-105",
+                source.className,
+                source.glow
+              )}>
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className={cn("absolute inline-flex h-full w-full animate-ping rounded-full opacity-60", source.dot)} />
+                  <span className={cn("relative inline-flex h-1.5 w-1.5 rounded-full", source.dot)} />
+                </span>
+                {source.label}
+              </span>
+            </div>
+          )}
+
           {/* Row 1 : Badges + Score + Voir annonce */}
           <div className="flex items-center justify-between gap-2" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-1.5">
-              <Badge className={cn("border text-[9px] uppercase font-bold", st.className)}>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <Badge className={cn("border text-[9px] uppercase font-bold shrink-0", st.className)}>
                 {st.label}
               </Badge>
               {displayScore != null && (
-                <Badge variant="outline" className={cn("font-mono font-bold text-[10px]", scoreColor)}>
+                <Badge variant="outline" className={cn("font-mono font-bold text-[10px] shrink-0", scoreColor)}>
                   {displayScore}%
                 </Badge>
               )}

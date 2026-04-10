@@ -258,6 +258,18 @@ const ShowLead = () => {
                                     <Badge className={cn("border text-[10px] uppercase font-bold", status.className)}>
                                         {status.label}
                                     </Badge>
+                                    {lead.categorie_scraping === "pap.fr" && (
+                                        <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-500/30 bg-sky-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-sky-400">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                                            PAP.fr
+                                        </span>
+                                    )}
+                                    {lead.categorie_scraping === "leboncoin" && (
+                                        <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-500/30 bg-orange-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-orange-400">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-orange-400" />
+                                            Leboncoin
+                                        </span>
+                                    )}
                                 </div>
                                 <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground leading-tight max-w-2xl">
                                     {lead.titre}
