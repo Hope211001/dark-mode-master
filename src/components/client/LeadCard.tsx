@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  MapPin, Maximize, Euro, Calendar, Mail, Phone,
+  MapPin, Maximize, Euro, Calendar as CalendarIcon, Mail, Phone,
   TrendingUp, CheckCircle, Loader2,
   Send, X, MessageSquare, ExternalLink, Archive
 } from "lucide-react";
@@ -25,7 +25,7 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   rejected:  { label: "Rejeté",    className: "bg-destructive/20 text-destructive border-destructive/30" },
 };
 
-const DESC_MAX = 100;
+const DESC_MAX = 200;
 
 export function LeadCard({
   lead,
@@ -56,6 +56,12 @@ export function LeadCard({
       glow: "shadow-[0_0_12px_-2px_rgba(56,189,248,0.45)]",
       dot: "bg-sky-400 shadow-[0_0_6px_rgba(56,189,248,0.9)]",
     },
+    "seloger": {
+      label: "SeLoger",
+      className: "bg-gradient-to-r from-rose-500/20 via-rose-500/15 to-red-500/10 text-rose-300 border-rose-500/40",
+      glow: "shadow-[0_0_12px_-2px_rgba(244,63,94,0.45)]",
+      dot: "bg-rose-400 shadow-[0_0_6px_rgba(244,63,94,0.9)]",
+    },
   };
   const source = categorie_scraping ? sourceConfig[categorie_scraping] : null;
   const displayScore = score != null ? (score <= 10 ? score * 10 : score) : null;
@@ -65,10 +71,9 @@ export function LeadCard({
     : "text-slate-400 border-slate-500/30 bg-slate-500/10"
     : "";
 
-  const formattedDate = new Date(date_detection).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'short',
-  });
+  const formattedDate = date_detection
+    ? new Date(date_detection).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
+    : null;
 
   const descText = description || "";
   const isDescLong = descText.length > DESC_MAX;
@@ -236,11 +241,16 @@ export function LeadCard({
             {titre}
           </h3>
 
-          {/* Row 3 : Ville + Téléphone */}
+          {/* Row 3 : Ville + Date + Téléphone */}
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="flex items-center gap-1 truncate">
               <MapPin className="h-3 w-3 shrink-0" />{ville}
             </span>
+            {formattedDate && (
+              <span className="flex items-center gap-1 shrink-0">
+                <CalendarIcon className="h-3 w-3" />{formattedDate}
+              </span>
+            )}
             {phone && (
               <span className="flex items-center gap-1 text-emerald-400 shrink-0">
                 <Phone className="h-3 w-3" />Tél
@@ -249,7 +259,7 @@ export function LeadCard({
           </div>
 
           {/* Row 4 : Description */}
-          <div className="h-[48px]">
+          <div className="min-h-[72px]">
             {descText ? (
               <p className="text-[11px] text-muted-foreground/80 leading-relaxed">
                 {truncatedDesc}
