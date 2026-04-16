@@ -147,7 +147,7 @@ const AdminLeads = () => {
           </div>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[200px]">
               <Filter className="h-4 w-4 mr-2" />
               <SelectValue />
             </SelectTrigger>
@@ -159,7 +159,7 @@ const AdminLeads = () => {
           </Select>
 
           <Select value={villeFilter} onValueChange={setVilleFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[200px]">
               <MapPin className="h-4 w-4 mr-2" />
               <SelectValue />
             </SelectTrigger>
@@ -171,8 +171,28 @@ const AdminLeads = () => {
             </SelectContent>
           </Select>
 
+          <Select value={categorieFilter} onValueChange={setCategorieFilter}>
+            <SelectTrigger className="w-[200px]">
+              <Tag className="h-4 w-4 mr-2 shrink-0" />
+              <SelectValue placeholder="Toutes les sources" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes les sources</SelectItem>
+              <SelectItem value="leboncoin">LeBonCoin</SelectItem>
+              <SelectItem value="pap.fr">PAP.fr</SelectItem>
+              <SelectItem value="seloger">SeLoger</SelectItem>
+              {categories
+                .filter((c) => !["leboncoin", "pap.fr", "seloger"].includes(c))
+                .map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {categorieConfig[c]?.label || c}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+
           <Select value={phoneFilter} onValueChange={setPhoneFilter}>
-            <SelectTrigger className="w-[150px]">
+            <SelectTrigger className="w-[200px]">
               <Phone className="h-4 w-4 mr-2" />
               <SelectValue />
             </SelectTrigger>
@@ -184,7 +204,7 @@ const AdminLeads = () => {
           </Select>
 
           <Select value={sortOrder} onValueChange={setSortOrder}>
-            <SelectTrigger className="w-[170px]">
+            <SelectTrigger className="w-[200px]">
               <ArrowUpDown className="h-4 w-4 mr-2" />
               <SelectValue />
             </SelectTrigger>
