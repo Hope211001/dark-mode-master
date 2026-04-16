@@ -44,13 +44,16 @@ const Login: React.FC = () => {
         
         {/* Logo Section - Gardé important mais plus compact */}
         <div className="text-center mb-6">
-          <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-500/20">
-            <MapPin className="text-white" size={24} />
-          </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
-            Immo<span className="text-blue-500">Scout</span>
-          </h1>
+          <Link to="/" className="inline-block group">
+            <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
+              <MapPin className="text-white" size={24} />
+            </div>
+            <h1 className="text-2xl font-bold text-white tracking-tight">
+              Immo<span className="text-blue-500">Scout</span>
+            </h1>
+          </Link>
           <p className="text-xs text-gray-400 mt-1">Connectez-vous pour continuer</p>
+          <Link to="/" className="text-xs text-blue-400 hover:text-blue-300 transition-colors mt-1 inline-block">← Retour à l'accueil</Link>
         </div>
 
         {/* Google Login - Optimisé pour mobile */}

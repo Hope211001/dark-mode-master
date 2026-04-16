@@ -1,441 +1,413 @@
-import React, { useState } from 'react';
-import { 
-  ArrowRight, MapPin, TrendingUp, Mail, Shield, Clock, Zap, 
-  Menu, X, CheckCircle, Database, BarChart, Lock, Search, 
-  AlertTriangle, MousePointerClick, ChevronDown 
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
-import FooterHome from '@/components/partials/footer/footer.home';
-import HeaderHome from '@/components/partials/header/header.home';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  ArrowRight, Shield, Zap, Search, BarChart, Mail,
+  ChevronDown, CheckCircle, Star, Play, Sparkles,
+  TrendingUp, Clock, Users, Eye, Phone,
+} from "lucide-react";
+import FooterHome from "@/components/partials/footer/footer.home";
+import HeaderHome from "@/components/partials/header/header.home";
 
-const LandingPage: React.FC = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const LandingPage = () => {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
-  const toggleFaq = (index: number) => {
-    setOpenFaqIndex(openFaqIndex === index ? null : index);
-  };
+  const faqs = [
+    { q: "Est-ce que je peux changer de zone ?", a: "Oui, a tout moment. Vous pouvez liberer votre zone et en prendre une autre directement depuis le dashboard." },
+    { q: "Comment fonctionne le scoring ?", a: "Nous comparons le loyer mensuel demande avec le revenu potentiel genere par une location courte duree (Airbnb) dans le meme quartier via Beyond Pricing." },
+    { q: "Les emails sont-ils envoyes de ma part ?", a: "Oui. Vous connectez votre compte Gmail ou Outlook. Le proprietaire voit VOTRE nom et repond directement dans VOTRE boite mail." },
+    { q: "Y a-t-il un engagement ?", a: "Non. Abonnement mensuel sans engagement, annulable a tout moment." },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-950 font-sans text-gray-100 selection:bg-blue-500 selection:text-white overflow-x-hidden">
-      
-      {/* --- BACKGROUND EFFECTS --- */}
+
+      {/* Background effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[10%] -right-[10%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[100px] animate-pulse"></div>
-        <div className="absolute top-[40%] -left-[10%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[100px]"></div>
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-indigo-600/10 rounded-full blur-[80px]"></div>
+        <div className="absolute -top-[10%] -right-[10%] w-[800px] h-[800px] bg-blue-600/8 rounded-full blur-[150px] animate-pulse" />
+        <div className="absolute top-[30%] -left-[15%] w-[600px] h-[600px] bg-purple-600/8 rounded-full blur-[130px]" />
+        <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] bg-indigo-600/6 rounded-full blur-[120px]" />
+        {/* Grid pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
       </div>
 
-      {/* --- HEADER--- */}
-      <HeaderHome></HeaderHome>
+      <HeaderHome />
 
-      {/* --- HERO SECTION --- */}
-      <section className="relative z-10 pt-32 pb-20 md:pt-48 md:pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* ═══════════ HERO ═══════════ */}
+      <section className="relative z-10 pt-32 pb-20 md:pt-44 md:pb-32 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-8 animate-fade-in-up hover:bg-blue-500/20 transition-colors cursor-default">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border border-blue-500/20 mb-10 backdrop-blur-sm">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500" />
             </span>
-            <span className="text-xs md:text-sm font-medium text-blue-400 uppercase tracking-wide">Technologie n8n + Apify intégrée</span>
+            <span className="text-xs md:text-sm font-semibold text-blue-300 uppercase tracking-wider">Scraping Leboncoin + PAP + SeLoger</span>
           </div>
 
-          <h1 className="text-4xl md:text-7xl font-extrabold text-white mb-8 leading-[1.1] tracking-tight">
-            Chassez l'immobilier <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">en pilote automatique</span>
+          <h1 className="text-5xl md:text-8xl font-black text-white mb-8 leading-[1.05] tracking-tight">
+            Chassez l'immobilier
+            <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 animate-gradient">en pilote automatique</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-3xl mx-auto leading-relaxed px-4">
-            Arrêtez de rafraîchir Leboncoin. Notre algorithme détecte les annonces, calcule la rentabilité Airbnb (Scoring), et <span className="text-white font-medium">contacte les propriétaires à votre place</span>.
+          <p className="text-lg md:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
+            Notre IA detecte les annonces, calcule la rentabilite Airbnb, et
+            <span className="text-white font-medium"> contacte les proprietaires a votre place</span>.
+            <br className="hidden md:block" />
+            Vous, vous attendez les reponses.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 px-4">
-            <Link to="/register" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-600/25 flex items-center justify-center group hover:scale-105">
-              Vérifier si ma ville est libre
-              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+          {/* CTA buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
+            <Link to="/register" className="w-full sm:w-auto relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur-lg opacity-60 group-hover:opacity-100 transition-opacity" />
+              <div className="relative bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-10 py-5 rounded-xl font-bold text-lg flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform">
+                Verifier si ma ville est libre
+                <ArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />
+              </div>
             </Link>
-            <button className="w-full sm:w-auto bg-gray-800 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-700 transition-all border border-gray-700 flex items-center justify-center hover:bg-gray-700/80">
-              Voir la démo vidéo
-            </button>
+            <Link to="/fonctionnalites" className="w-full sm:w-auto bg-white/5 backdrop-blur-sm text-white px-10 py-5 rounded-xl font-bold text-lg border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-3">
+              <Play size={18} className="text-blue-400" />
+              Comment ca marche
+            </Link>
           </div>
 
-          {/* Social Proof / Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 border-t border-gray-800 pt-10 max-w-4xl mx-auto">
-            <div className="p-4 rounded-xl hover:bg-gray-900/50 transition-colors">
-              <div className="text-3xl font-bold text-white mb-1">2h/j</div>
-              <div className="text-xs md:text-sm text-gray-500 font-medium uppercase tracking-wide">Temps économisé</div>
-            </div>
-            <div className="p-4 rounded-xl hover:bg-gray-900/50 transition-colors">
-              <div className="text-3xl font-bold text-white mb-1">x3</div>
-              <div className="text-xs md:text-sm text-gray-500 font-medium uppercase tracking-wide">Rentabilité Airbnb</div>
-            </div>
-            <div className="p-4 rounded-xl hover:bg-gray-900/50 transition-colors">
-              <div className="text-3xl font-bold text-white mb-1">100%</div>
-              <div className="text-xs md:text-sm text-gray-500 font-medium uppercase tracking-wide">Exclusivité Zone</div>
-            </div>
-            <div className="p-4 rounded-xl hover:bg-gray-900/50 transition-colors">
-              <div className="text-3xl font-bold text-white mb-1">24/7</div>
-              <div className="text-xs md:text-sm text-gray-500 font-medium uppercase tracking-wide">Scraping Actif</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* --- PROBLEM SECTION --- */}
-      <section id="problem" className="py-20 bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">L'investissement locatif classique est cassé</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              Si vous cherchez encore manuellement, vous avez déjà perdu. Les meilleures affaires partent en moins de 30 minutes.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-gray-950 p-8 rounded-2xl border border-gray-800 hover:border-red-500/30 transition-colors group">
-              <div className="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mb-6 group-hover:bg-red-500/20 transition-colors">
-                <Clock className="text-red-400" size={28} />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Trop de temps perdu</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Vous passez vos soirées à rafraîchir Leboncoin. Quand vous appelez enfin, l'appartement est déjà sous offre ou le propriétaire est harcelé.
-              </p>
-            </div>
-            <div className="bg-gray-950 p-8 rounded-2xl border border-gray-800 hover:border-orange-500/30 transition-colors group">
-              <div className="w-14 h-14 bg-orange-500/10 rounded-full flex items-center justify-center mb-6 group-hover:bg-orange-500/20 transition-colors">
-                <AlertTriangle className="text-orange-400" size={28} />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Rentabilité incertaine</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Vous estimez la rentabilité "au doigt mouillé". Sans données précises (Beyond Pricing), vous risquez d'investir dans un bien qui ne rapportera pas assez.
-              </p>
-            </div>
-            <div className="bg-gray-950 p-8 rounded-2xl border border-gray-800 hover:border-yellow-500/30 transition-colors group">
-              <div className="w-14 h-14 bg-yellow-500/10 rounded-full flex items-center justify-center mb-6 group-hover:bg-yellow-500/20 transition-colors">
-                <MousePointerClick className="text-yellow-400" size={28} />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Concurrence déloyale</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Sur les autres logiciels d'alerte, vous êtes 500 sur la même ville. C'est la course au clic. Le premier qui appelle gagne, les autres perdent.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* --- SOLUTION SECTION (Workflow) --- */}
-      <section id="solution" className="relative z-10 py-24 px-4 sm:px-6 lg:px-8 bg-gray-950/50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="inline-block px-3 py-1 mb-4 rounded-md bg-green-500/10 border border-green-500/20 text-green-400 text-sm font-bold">
-              ⚡️ Le "Cerveau" de l'opération
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Comment l'IA travaille pour vous</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              Deux workflows n8n puissants tournent en arrière-plan toutes les 15 minutes.
-            </p>
-          </div>
-
-          <div className="relative">
-            {/* Connecting Line for Desktop */}
-            <div className="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 -translate-y-1/2 z-0"></div>
-
-            <div className="grid md:grid-cols-3 gap-8 relative z-10">
-              {/* Step 1: Scraping */}
-              <div className="group relative bg-gray-900 border border-gray-700 rounded-2xl p-8 hover:transform hover:-translate-y-2 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-900/20">
-                <div className="absolute -top-6 left-8 bg-gray-900 border border-gray-700 text-white font-bold w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-20">1</div>
-                <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-6 text-blue-400 mx-auto md:mx-0">
-                  <Search size={32} />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3">Récupération (Le Chasseur)</h3>
-                <p className="text-gray-400 text-sm leading-relaxed mb-4">
-                  Notre robot interroge <strong>Apify</strong> pour scanner les dernières annonces Leboncoin. Il filtre instantanément pour vérifier si l'annonce est dans votre zone exclusive.
-                </p>
-                <div className="flex flex-wrap gap-2 mt-auto">
-                  <span className="text-[10px] uppercase font-bold tracking-wider bg-gray-800 text-gray-300 px-2 py-1 rounded border border-gray-700">Apify</span>
-                  <span className="text-[10px] uppercase font-bold tracking-wider bg-gray-800 text-gray-300 px-2 py-1 rounded border border-gray-700">PostgreSQL</span>
-                </div>
-              </div>
-
-              {/* Step 2: Scoring */}
-              <div className="group relative bg-gray-900 border border-gray-700 rounded-2xl p-8 hover:transform hover:-translate-y-2 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-900/20">
-                <div className="absolute -top-6 left-8 bg-gray-900 border border-gray-700 text-white font-bold w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-20">2</div>
-                <div className="w-16 h-16 bg-indigo-600/20 rounded-2xl flex items-center justify-center mb-6 text-indigo-400 mx-auto md:mx-0">
-                  <BarChart size={32} />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3">Enrichissement (Le Cerveau)</h3>
-                <p className="text-gray-400 text-sm leading-relaxed mb-4">
-                  On ne regarde pas juste le prix. On interroge <strong>Beyond Pricing</strong>.
-                  <br/>Si Loyer = 800€ mais Potentiel Airbnb = 2500€, l'annonce reçoit un score de <strong>9.5/10</strong>.
-                </p>
-                <div className="flex flex-wrap gap-2 mt-auto">
-                  <span className="text-[10px] uppercase font-bold tracking-wider bg-gray-800 text-gray-300 px-2 py-1 rounded border border-gray-700">Beyond Pricing</span>
-                  <span className="text-[10px] uppercase font-bold tracking-wider bg-gray-800 text-gray-300 px-2 py-1 rounded border border-gray-700">Math.js</span>
-                </div>
-              </div>
-
-              {/* Step 3: Prospecting */}
-              <div className="group relative bg-gray-900 border border-gray-700 rounded-2xl p-8 hover:transform hover:-translate-y-2 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-900/20">
-                <div className="absolute -top-6 left-8 bg-gray-900 border border-gray-700 text-white font-bold w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-20">3</div>
-                <div className="w-16 h-16 bg-purple-600/20 rounded-2xl flex items-center justify-center mb-6 text-purple-400 mx-auto md:mx-0">
-                  <Mail size={32} />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3">Contact (Le Bras Armé)</h3>
-                <p className="text-gray-400 text-sm leading-relaxed mb-4">
-                  Si le score superieur 7/10, le système attend 20 min (pour simuler un humain) et envoie un email personnalisé <strong>depuis votre adresse</strong>. Il relance même à J+2 si pas de réponse.
-                </p>
-                <div className="flex flex-wrap gap-2 mt-auto">
-                  <span className="text-[10px] uppercase font-bold tracking-wider bg-gray-800 text-gray-300 px-2 py-1 rounded border border-gray-700">Gmail API</span>
-                  <span className="text-[10px] uppercase font-bold tracking-wider bg-gray-800 text-gray-300 px-2 py-1 rounded border border-gray-700">Outlook</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* --- BUSINESS MODEL: LA CONCESSION --- */}
-      <section id="concession" className="relative z-10 py-24 bg-gray-800/30 border-y border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            
-            {/* Visual Part */}
-            <div className="relative order-2 md:order-1">
-              <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-2xl opacity-20 animate-pulse"></div>
-              <div className="relative bg-gray-900 border border-gray-700 rounded-2xl p-6 md:p-8 overflow-hidden shadow-2xl">
-                <div className="flex items-center justify-between mb-6">
-                  <h4 className="text-white font-semibold flex items-center gap-2">
-                    <Database size={18} className="text-blue-400"/> Base de données Zones
-                  </h4>
-                  <div className="flex gap-1">
-                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  </div>
-                </div>
-                
-                {/* List of zones */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-4 bg-gray-800/40 rounded-lg border border-red-900/30">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
-                      <div>
-                        <span className="text-gray-300 font-mono block text-sm">Zone: Lyon (69)</span>
-                        <span className="text-xs text-gray-500">Utilisateur: thomas@invest.com</span>
-                      </div>
-                    </div>
-                    <Lock size={16} className="text-red-400" />
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 bg-green-900/10 rounded-lg border border-green-500/30 transform scale-105 shadow-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-green-500 animate-ping"></div>
-                      <div>
-                        <span className="text-white font-mono font-bold block text-sm">Zone: Bordeaux (33)</span>
-                        <span className="text-xs text-green-400">Statut: DISPONIBLE</span>
-                      </div>
-                    </div>
-                    <button className="text-xs font-bold text-gray-900 bg-green-400 px-3 py-1 rounded hover:bg-green-300 transition-colors">
-                      Réserver
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 bg-gray-800/40 rounded-lg border border-red-900/30">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
-                      <div>
-                        <span className="text-gray-300 font-mono block text-sm">Zone: Paris (75)</span>
-                        <span className="text-xs text-gray-500">Utilisateur: sophie@immo.fr</span>
-                      </div>
-                    </div>
-                    <Lock size={16} className="text-red-400" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Text Part */}
-            <div className="order-1 md:order-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-purple-500/10 border border-purple-500/20 text-purple-400 text-sm font-bold mb-4">
-                💎 Modèle Business Unique
-              </div>
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">La "Concession" : <br/>Fini la concurrence interne.</h2>
-              <p className="text-lg text-gray-400 mb-8 leading-relaxed">
-                Contrairement aux logiciels classiques où tout le monde se bat pour les mêmes annonces, ici nous vendons de l'exclusivité. C'est votre territoire.
-              </p>
-              <ul className="space-y-6">
-                <li className="flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0 mt-1">
-                    <Shield className="text-green-400" size={18} />
-                  </div>
-                  <div>
-                    <h4 className="text-white font-bold text-lg">Zéro concurrence sur la plateforme</h4>
-                    <p className="text-gray-400 text-sm mt-1">Si vous achetez la zone "Lyon", personne d'autre ne recevra les alertes pour Lyon.</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-1">
-                    <Database className="text-blue-400" size={18} />
-                  </div>
-                  <div>
-                    <h4 className="text-white font-bold text-lg">Garantie Technique</h4>
-                    <p className="text-gray-400 text-sm mt-1">Notre base de données vérifie qu'un code postal n'appartient qu'à un seul client actif.</p>
-                  </div>
-                </li>
-              </ul>
-              
-              <div className="mt-10">
-                <Link to="/register" className="inline-flex items-center text-white border-b border-blue-500 hover:text-blue-400 transition-colors pb-1 font-medium">
-                  Voir la carte des zones disponibles <ArrowRight className="ml-2 w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* --- DASHBOARD PREVIEW --- */}
-      <section className="relative z-10 py-24 bg-gray-950 border-t border-gray-800 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Votre tour de contrôle</h2>
-          <p className="text-gray-400 mb-12 max-w-2xl mx-auto">
-            Connectez-vous pour voir votre "rivière de leads". Les annonces sont triées par score. Vous n'avez plus qu'à attendre que les propriétaires vous répondent.
-          </p>
-          
-          <div className="relative mx-auto max-w-5xl rounded-t-2xl border border-gray-700 bg-gray-900 shadow-2xl overflow-hidden group">
-            {/* Header Browser Style */}
-            <div className="flex items-center justify-between border-b border-gray-700 bg-gray-800 p-4">
-              <div className="flex gap-2">
-                <div className="h-3 w-3 rounded-full bg-red-500" />
-                <div className="h-3 w-3 rounded-full bg-yellow-500" />
-                <div className="h-3 w-3 rounded-full bg-green-500" />
-              </div>
-              <div className="text-xs text-gray-500 font-mono">dashboard.immoscout.com/leads</div>
-              <div></div>
-            </div>
-
-            {/* Dashboard Content Mockup */}
-            <div className="p-4 md:p-8 grid gap-4 text-left transition-opacity">
-               {/* Lead 1 */}
-               <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-800/30 rounded-lg border border-gray-700 border-l-4 border-l-green-500 hover:bg-gray-800/50 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-4 w-full md:w-auto mb-4 md:mb-0">
-                    <div className="w-12 h-12 bg-gray-700 rounded bg-cover bg-center" style={{backgroundImage: 'url("https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=100")'}}></div>
-                    <div>
-                      <h4 className="text-white font-semibold">T2 Centre Ville - 45m²</h4>
-                      <p className="text-xs md:text-sm text-gray-400">69002 Lyon • Loyer: 850€ • <span className="text-blue-400">Il y a 10 min</span></p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
-                    <div className="text-right">
-                      <div className="text-xl font-bold text-green-400">Score: 9.2/10</div>
-                      <p className="text-xs text-gray-500">Potentiel: 2400€/mois</p>
-                    </div>
-                    <div className="bg-blue-600/20 text-blue-400 px-3 py-1 rounded-full text-xs font-bold border border-blue-600/30">
-                      Email envoyé ✅
-                    </div>
-                  </div>
-               </div>
-
-               {/* Lead 2 */}
-               <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-800/30 rounded-lg border border-gray-700 border-l-4 border-l-yellow-500 hover:bg-gray-800/50 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-4 w-full md:w-auto mb-4 md:mb-0">
-                    <div className="w-12 h-12 bg-gray-700 rounded bg-cover bg-center" style={{backgroundImage: 'url("https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=100")'}}></div>
-                    <div>
-                      <h4 className="text-white font-semibold">Studio Gare Part-Dieu</h4>
-                      <p className="text-xs md:text-sm text-gray-400">69003 Lyon • Loyer: 600€ • <span className="text-blue-400">Il y a 45 min</span></p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
-                    <div className="text-right">
-                      <div className="text-xl font-bold text-yellow-400">Score: 7.5/10</div>
-                      <p className="text-xs text-gray-500">Potentiel: 1200€/mois</p>
-                    </div>
-                     <div className="bg-yellow-600/20 text-yellow-400 px-3 py-1 rounded-full text-xs font-bold border border-yellow-600/30 flex items-center gap-1">
-                      <Clock size={12}/> En attente (15m)
-                    </div>
-                  </div>
-               </div>
-
-                {/* Lead 3 (Blurry) */}
-               <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-800/30 rounded-lg border border-gray-700 opacity-50 blur-[1px]">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gray-700 rounded"></div>
-                    <div>
-                      <h4 className="text-white font-semibold">Appartement T3 Rénové</h4>
-                      <p className="text-sm text-gray-400">69001 Lyon • Loyer: 1100€</p>
-                    </div>
-                  </div>
-               </div>
-            </div>
-            
-            {/* Overlay Gradient at bottom */}
-            <div className="absolute bottom-0 left-0 h-32 w-full bg-gradient-to-t from-gray-950 via-gray-950/80 to-transparent flex items-end justify-center pb-8">
-                <Link to="/register" className="bg-white text-gray-900 px-6 py-3 rounded-lg font-bold hover:bg-gray-200 transition-colors shadow-lg z-20">
-                    Voir mes leads maintenant
-                </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* --- FAQ SECTION --- */}
-      <section className="py-20 bg-gray-900">
-        <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-white text-center mb-12">Questions Fréquentes</h2>
-          <div className="space-y-4">
+          {/* Animated stats cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto">
             {[
-              { q: "Est-ce que je peux changer de zone ?", a: "Oui, à tout moment. Si vous voyez que Lyon est trop concurrentiel ou ne donne pas assez de résultats, vous pouvez 'libérer' la zone et en prendre une autre (ex: Bordeaux) directement depuis le dashboard." },
-              { q: "Comment fonctionne le scoring ?", a: "Nous utilisons l'API de Beyond Pricing. Nous comparons le loyer mensuel demandé sur Leboncoin avec le revenu potentiel généré par une location courte durée (Airbnb) dans le même quartier." },
-              { q: "Les emails sont-ils vraiment envoyés de ma part ?", a: "Oui. Lors de la configuration, vous connectez votre compte Gmail ou Outlook. Le système utilise votre API pour envoyer les emails. Le propriétaire voit VOTRE nom et répond directement dans VOTRE boîte mail." },
-              { q: "Y a-t-il un engagement ?", a: "Non. Vous pouvez annuler votre abonnement mensuel à tout moment. L'accès s'arrêtera à la fin de la période facturée." }
-            ].map((faq, idx) => (
-              <div key={idx} className="border border-gray-800 rounded-lg bg-gray-950 overflow-hidden">
-                <button 
-                  onClick={() => toggleFaq(idx)}
-                  className="w-full flex items-center justify-between p-4 text-left text-white font-medium hover:bg-gray-900 transition-colors"
-                >
-                  {faq.q}
-                  <ChevronDown className={`transform transition-transform ${openFaqIndex === idx ? 'rotate-180' : ''}`} size={20} />
-                </button>
-                {openFaqIndex === idx && (
-                  <div className="p-4 text-gray-400 text-sm border-t border-gray-800 bg-gray-900/50 leading-relaxed">
-                    {faq.a}
-                  </div>
-                )}
+              { val: "2h/j", label: "Temps economise", icon: Clock, color: "from-blue-500/20 to-blue-600/10", border: "border-blue-500/20", iconColor: "text-blue-400" },
+              { val: "x3", label: "Rentabilite Airbnb", icon: TrendingUp, color: "from-green-500/20 to-green-600/10", border: "border-green-500/20", iconColor: "text-green-400" },
+              { val: "100%", label: "Exclusivite Zone", icon: Shield, color: "from-purple-500/20 to-purple-600/10", border: "border-purple-500/20", iconColor: "text-purple-400" },
+              { val: "24/7", label: "Scraping Actif", icon: Zap, color: "from-amber-500/20 to-amber-600/10", border: "border-amber-500/20", iconColor: "text-amber-400" },
+            ].map((s) => (
+              <div key={s.label} className={`bg-gradient-to-br ${s.color} backdrop-blur-sm border ${s.border} rounded-2xl p-5 md:p-6 hover:scale-105 transition-all duration-300 group`}>
+                <s.icon className={`${s.iconColor} mb-3 group-hover:scale-110 transition-transform`} size={22} />
+                <div className="text-2xl md:text-3xl font-black text-white mb-1">{s.val}</div>
+                <div className="text-[10px] md:text-xs text-gray-400 font-semibold uppercase tracking-wider">{s.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* --- CTA FINAL --- */}
-      <section className="relative z-10 py-24 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 p-8 md:p-12 text-center shadow-2xl border border-white/10">
-            {/* Decorative circles */}
-            <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-0 left-0 -ml-16 -mb-16 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl"></div>
-            
-            <h2 className="relative z-10 text-3xl md:text-5xl font-bold text-white mb-6">
-              Ne laissez pas un autre prendre votre ville
-            </h2>
-            <p className="relative z-10 text-blue-100 text-lg mb-10 max-w-2xl mx-auto">
-              Chaque zone est unique. Une fois qu'un investisseur la réserve, elle n'est plus disponible pour vous. Vérifiez la disponibilité maintenant.
-            </p>
-            <div className="relative z-10 flex flex-col sm:flex-row justify-center gap-4">
-              <Link to="/register" className="bg-white text-blue-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105">
-                Sécuriser ma zone
-              </Link>
-            </div>
-            <p className="relative z-10 text-blue-200 text-sm mt-6 flex items-center justify-center gap-2">
-              <Shield size={14} /> Garantie satisfait ou remboursé 30 jours
-            </p>
+      {/* ═══════════ LOGOS / SOURCES ═══════════ */}
+      <section className="relative z-10 py-12 border-y border-gray-800/50">
+        <div className="max-w-5xl mx-auto px-4">
+          <p className="text-center text-xs text-gray-500 uppercase tracking-widest font-semibold mb-8">Sources scannees en continu</p>
+          <div className="flex items-center justify-center gap-8 md:gap-16 flex-wrap">
+            {[
+              { name: "Leboncoin", color: "text-orange-400" },
+              { name: "PAP.fr", color: "text-sky-400" },
+              { name: "SeLoger", color: "text-rose-400" },
+              { name: "Beyond Pricing", color: "text-green-400" },
+              { name: "n8n", color: "text-indigo-400" },
+            ].map((s) => (
+              <span key={s.name} className={`${s.color} font-bold text-lg md:text-xl opacity-40 hover:opacity-100 transition-opacity cursor-default`}>{s.name}</span>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* --- FOOTER --- */}
+      {/* ═══════════ COMMENT CA MARCHE ═══════════ */}
+      <section className="relative z-10 py-28 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 mb-6">
+              <Sparkles size={14} className="text-green-400" />
+              <span className="text-xs font-semibold text-green-400 uppercase tracking-wider">Simple et puissant</span>
+            </div>
+            <h2 className="text-4xl md:text-6xl font-black text-white mb-6">3 etapes, 0 effort</h2>
+            <p className="text-gray-400 max-w-2xl mx-auto text-lg">Le systeme travaille pour vous 24h/24. Vous recoltez les resultats.</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 md:gap-8 mb-12">
+            {[
+              { num: "01", icon: Search, title: "Detection", desc: "Scan automatique de Leboncoin, PAP.fr et SeLoger toutes les 15 minutes. Les nouvelles annonces sont captees instantanement.", gradient: "from-blue-600 to-blue-700", glow: "shadow-blue-600/20", bg: "bg-blue-500/10", border: "hover:border-blue-500/40" },
+              { num: "02", icon: BarChart, title: "Scoring IA", desc: "Analyse de rentabilite basee sur les donnees Airbnb reelles. Chaque lead recoit un score de 0 a 10 base sur le ratio loyer/revenu.", gradient: "from-indigo-600 to-indigo-700", glow: "shadow-indigo-600/20", bg: "bg-indigo-500/10", border: "hover:border-indigo-500/40" },
+              { num: "03", icon: Mail, title: "Contact auto", desc: "Email personnalise envoye depuis VOTRE adresse. Relance automatique a J+2 si pas de reponse. Le proprietaire vous repond directement.", gradient: "from-purple-600 to-purple-700", glow: "shadow-purple-600/20", bg: "bg-purple-500/10", border: "hover:border-purple-500/40" },
+            ].map((step) => (
+              <div key={step.num} className={`relative bg-gray-900/80 backdrop-blur-sm p-8 md:p-10 rounded-3xl border border-gray-800 ${step.border} transition-all duration-500 group hover:-translate-y-2 hover:shadow-2xl ${step.glow}`}>
+                {/* Number */}
+                <div className={`absolute -top-5 left-8 bg-gradient-to-r ${step.gradient} text-white font-black text-sm w-10 h-10 rounded-xl flex items-center justify-center shadow-lg`}>
+                  {step.num}
+                </div>
+                <div className={`w-16 h-16 ${step.bg} rounded-2xl flex items-center justify-center mb-6 mt-2 group-hover:scale-110 transition-transform`}>
+                  <step.icon className="text-white" size={28} />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">{step.title}</h3>
+                <p className="text-gray-400 leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Link to="/fonctionnalites" className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold text-lg transition-colors group">
+              Voir le detail complet <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ DASHBOARD PREVIEW ═══════════ */}
+      <section className="relative z-10 py-28 bg-gray-900/30">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Votre tour de controle</h2>
+            <p className="text-gray-400 max-w-2xl mx-auto text-lg">Les leads arrivent automatiquement. Tries par score. Vous n'avez plus qu'a attendre les reponses.</p>
+          </div>
+
+          <div className="relative max-w-5xl mx-auto">
+            <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-purple-500/20 rounded-3xl blur-2xl opacity-50" />
+            <div className="relative rounded-2xl border border-gray-700 bg-gray-900 shadow-2xl overflow-hidden">
+              {/* Browser bar */}
+              <div className="flex items-center gap-3 border-b border-gray-700 bg-gray-800/80 px-5 py-3">
+                <div className="flex gap-2">
+                  <div className="h-3 w-3 rounded-full bg-red-500" />
+                  <div className="h-3 w-3 rounded-full bg-yellow-500" />
+                  <div className="h-3 w-3 rounded-full bg-green-500" />
+                </div>
+                <div className="flex-1 bg-gray-900 rounded-lg px-4 py-1.5 text-xs text-gray-500 font-mono">dashboard.immoscout.com/leads</div>
+              </div>
+
+              {/* Leads mockup */}
+              <div className="p-4 md:p-8 space-y-4">
+                {[
+                  { titre: "T2 Centre Ville - 45m2", ville: "Lyon 2e", prix: "850", score: "9.2", potentiel: "2400", status: "Email envoye", statusColor: "green", borderColor: "border-l-green-500", delay: "10 min" },
+                  { titre: "Studio Gare Part-Dieu", ville: "Lyon 3e", prix: "600", score: "7.5", potentiel: "1200", status: "En attente 15m", statusColor: "yellow", borderColor: "border-l-yellow-500", delay: "45 min" },
+                  { titre: "T3 Renove avec terrasse", ville: "Lyon 6e", prix: "1100", score: "8.8", potentiel: "3100", status: "Reponse recue!", statusColor: "blue", borderColor: "border-l-blue-500", delay: "2h" },
+                ].map((lead, i) => (
+                  <div key={i} className={`flex flex-col md:flex-row items-start md:items-center justify-between p-5 bg-gray-800/30 rounded-xl border border-gray-700/50 border-l-4 ${lead.borderColor} hover:bg-gray-800/50 transition-all cursor-pointer group`}>
+                    <div className="flex items-center gap-4 mb-3 md:mb-0">
+                      <div className="w-12 h-12 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center shrink-0">
+                        <Eye size={18} className="text-gray-400" />
+                      </div>
+                      <div>
+                        <h4 className="text-white font-semibold group-hover:text-blue-300 transition-colors">{lead.titre}</h4>
+                        <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
+                          <span>{lead.ville}</span>
+                          <span>Loyer: {lead.prix}EUR</span>
+                          <span className="text-blue-400">Il y a {lead.delay}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-5 w-full md:w-auto justify-between md:justify-end">
+                      <div className="text-right">
+                        <div className={`text-xl font-black ${parseFloat(lead.score) >= 8.5 ? "text-green-400" : "text-yellow-400"}`}>
+                          {lead.score}/10
+                        </div>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-wider">Potentiel: {lead.potentiel}EUR/mois</p>
+                      </div>
+                      <div className={`bg-${lead.statusColor}-500/15 text-${lead.statusColor}-400 border border-${lead.statusColor}-500/20 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap`}>
+                        {lead.status}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Fade overlay */}
+              <div className="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-gray-950 via-gray-950/80 to-transparent flex items-end justify-center pb-6">
+                <Link to="/register" className="bg-white text-gray-900 px-8 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors shadow-xl z-20 hover:scale-105">
+                  Voir mes leads maintenant
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ EXCLUSIVITE ═══════════ */}
+      <section className="relative z-10 py-28 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 border border-gray-700/50 p-8 md:p-16">
+            {/* Decorative */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] -mr-48 -mt-48" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px] -ml-32 -mb-32" />
+
+            <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 mb-6">
+                  <Shield size={14} className="text-purple-400" />
+                  <span className="text-xs font-semibold text-purple-400 uppercase tracking-wider">Modele exclusif</span>
+                </div>
+                <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight">
+                  Votre ville,<br />votre territoire
+                </h2>
+                <p className="text-gray-400 mb-8 leading-relaxed text-lg">
+                  Quand vous reservez une zone, <span className="text-white font-semibold">personne d'autre ne recoit les leads</span> de cette ville. Zero concurrence.
+                </p>
+                <ul className="space-y-4 mb-10">
+                  {[
+                    { icon: Shield, text: "Zone exclusivement reservee pour vous" },
+                    { icon: Users, text: "Zero concurrence sur la plateforme" },
+                    { icon: CheckCircle, text: "Changez de zone a tout moment" },
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-center gap-4">
+                      <div className="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center shrink-0">
+                        <item.icon size={16} className="text-green-400" />
+                      </div>
+                      <span className="text-gray-300 font-medium">{item.text}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/tarifs" className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-600/25 hover:scale-[1.02]">
+                  Voir les zones disponibles <ArrowRight size={18} />
+                </Link>
+              </div>
+
+              {/* Zone cards */}
+              <div className="space-y-3">
+                {[
+                  { ville: "Lyon (69)", libre: false, user: "thomas@..." },
+                  { ville: "Bordeaux (33)", libre: true, user: null },
+                  { ville: "Paris 15e (75)", libre: false, user: "sophie@..." },
+                  { ville: "Marseille (13)", libre: true, user: null },
+                  { ville: "Toulouse (31)", libre: false, user: "marc@..." },
+                ].map((z) => (
+                  <div key={z.ville} className={`flex items-center justify-between p-4 rounded-xl border backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] ${z.libre ? "bg-green-500/5 border-green-500/30 shadow-lg shadow-green-500/5" : "bg-gray-800/30 border-gray-700/50"}`}>
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full ${z.libre ? "bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.5)]" : "bg-red-500/80"}`} />
+                      <div>
+                        <span className={`font-mono text-sm font-semibold ${z.libre ? "text-white" : "text-gray-400"}`}>{z.ville}</span>
+                        {!z.libre && <span className="text-[10px] text-gray-600 block">{z.user}</span>}
+                      </div>
+                    </div>
+                    <span className={`text-xs font-bold px-4 py-1.5 rounded-full ${z.libre ? "bg-green-500/20 text-green-400 border border-green-500/30" : "bg-red-500/10 text-red-400/60 border border-red-500/10"}`}>
+                      {z.libre ? "LIBRE" : "RESERVE"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ TEMOIGNAGES ═══════════ */}
+      <section className="relative z-10 py-28 bg-gray-900/30">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-6">
+              <Star size={14} className="text-yellow-400 fill-yellow-400" />
+              <span className="text-xs font-semibold text-yellow-400 uppercase tracking-wider">Temoignages</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-4">Ils nous font confiance</h2>
+            <p className="text-gray-400 text-lg">Des investisseurs qui gagnent du temps chaque jour.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { name: "Thomas L.", role: "Investisseur Lyon", text: "J'ai recu 3 leads qualifies des la premiere semaine. Le scoring est incroyablement precis. J'ai fait ma premiere offre en 10 jours.", avatar: "T" },
+              { name: "Sophie M.", role: "Investisseur Bordeaux", text: "Plus besoin de rafraichir Leboncoin. Les emails sont envoyes automatiquement. J'ai signe 2 baux en 3 mois grace a ImmoScout.", avatar: "S" },
+              { name: "Marc D.", role: "Investisseur Marseille", text: "L'exclusivite zone change tout. Enfin un outil ou je ne suis pas en competition avec 500 personnes. Le ROI est evident.", avatar: "M" },
+            ].map((t, i) => (
+              <div key={i} className="relative bg-gray-900/80 backdrop-blur-sm border border-gray-800 rounded-2xl p-8 hover:border-gray-700 transition-all duration-300 group">
+                <div className="absolute top-6 right-6 text-6xl font-black text-gray-800/50 leading-none select-none">"</div>
+                <div className="flex gap-1 mb-5">
+                  {Array.from({ length: 5 }).map((_, j) => <Star key={j} size={16} className="text-yellow-400 fill-yellow-400" />)}
+                </div>
+                <p className="text-gray-300 leading-relaxed mb-8 relative z-10">"{t.text}"</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg">
+                    {t.avatar}
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold">{t.name}</p>
+                    <p className="text-gray-500 text-xs">{t.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ AVANTAGES RAPIDES ═══════════ */}
+      <section className="relative z-10 py-28 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Pourquoi ImmoScout ?</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {[
+              { icon: Search, title: "3 plateformes", desc: "Leboncoin, PAP.fr, SeLoger scannes en continu", color: "blue" },
+              { icon: Zap, title: "Scan / 15 min", desc: "Les nouvelles annonces detectees instantanement", color: "amber" },
+              { icon: Phone, title: "Telephone inclus", desc: "Numeros des proprietaires recuperes automatiquement", color: "green" },
+              { icon: TrendingUp, title: "Scoring precis", desc: "Basee sur les donnees Airbnb reelles", color: "purple" },
+              { icon: Mail, title: "Email auto", desc: "Envoyes depuis votre propre adresse", color: "rose" },
+              { icon: Shield, title: "Zone exclusive", desc: "Aucune concurrence sur votre ville", color: "indigo" },
+              { icon: Clock, title: "Relance J+2", desc: "Suivi automatique si pas de reponse", color: "cyan" },
+              { icon: Users, title: "Dashboard", desc: "Tous vos leads en un seul endroit", color: "orange" },
+            ].map((f, i) => (
+              <div key={i} className={`bg-gray-900/50 border border-gray-800 rounded-2xl p-6 hover:border-${f.color}-500/30 hover:bg-gray-900/80 transition-all duration-300 group`}>
+                <div className={`w-11 h-11 bg-${f.color}-500/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                  <f.icon className={`text-${f.color}-400`} size={20} />
+                </div>
+                <h3 className="text-white font-bold mb-1">{f.title}</h3>
+                <p className="text-gray-500 text-xs leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ FAQ ═══════════ */}
+      <section className="relative z-10 py-24 bg-gray-900/30 px-4">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Questions Frequentes</h2>
+            <p className="text-gray-400">Tout ce que vous devez savoir avant de commencer.</p>
+          </div>
+          <div className="space-y-3">
+            {faqs.map((faq, idx) => (
+              <div key={idx} className="border border-gray-800 rounded-2xl bg-gray-900/50 overflow-hidden hover:border-gray-700 transition-colors">
+                <button onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)} className="w-full flex items-center justify-between p-6 text-left text-white font-semibold hover:bg-gray-800/30 transition-colors">
+                  {faq.q}
+                  <ChevronDown className={`transform transition-transform duration-300 shrink-0 ml-4 text-gray-400 ${openFaqIndex === idx ? "rotate-180" : ""}`} size={20} />
+                </button>
+                <div className={`grid transition-all duration-300 ${openFaqIndex === idx ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+                  <div className="overflow-hidden">
+                    <div className="px-6 pb-6 text-gray-400 leading-relaxed">{faq.a}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ CTA FINAL ═══════════ */}
+      <section className="relative z-10 py-28 px-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="relative overflow-hidden rounded-[2rem]">
+            {/* Gradient background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent_60%)]" />
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 h-80 w-80 rounded-full bg-white opacity-10 blur-3xl animate-pulse" />
+            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 h-80 w-80 rounded-full bg-white opacity-10 blur-3xl" />
+
+            <div className="relative z-10 p-10 md:p-16 text-center">
+              <h2 className="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
+                Ne laissez pas un autre<br className="hidden md:block" /> prendre votre ville
+              </h2>
+              <p className="text-blue-100 text-lg md:text-xl mb-12 max-w-2xl mx-auto font-light">
+                Chaque zone est unique. Une fois reservee, elle n'est plus disponible. Verifiez maintenant.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+                <Link to="/register" className="bg-white text-blue-900 px-10 py-5 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-xl hover:scale-105 hover:shadow-2xl">
+                  Securiser ma zone gratuitement
+                </Link>
+                <Link to="/contact" className="border-2 border-white/30 text-white px-10 py-5 rounded-xl font-bold text-lg hover:bg-white/10 transition-all backdrop-blur-sm">
+                  Nous contacter
+                </Link>
+              </div>
+              <p className="text-blue-200/80 text-sm flex items-center justify-center gap-2">
+                <Shield size={14} /> Garantie satisfait ou rembourse 30 jours  -  Sans engagement
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <FooterHome />
     </div>
   );

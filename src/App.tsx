@@ -29,6 +29,7 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import AdminStatistics from "./pages/admin/AdminStatistics";
 import AdminUserLeads from "./pages/admin/leads/AdminUserLeads";
 import AdminShowLead from "./pages/admin/leads/AdminShowLead";
+import AdminContacts from "./pages/admin/AdminContacts";
 
 // Auth
 import ProtectedRoute from './components/ProtectedRoute';
@@ -38,6 +39,8 @@ import { SidebarProvider } from './contexts/SidebarContext';
 //public
 import AboutPage from "./pages/home/about";
 import Tarifs from "./pages/home/tarifs ";
+import Fonctionnalites from "./pages/home/fonctionnalites";
+import Contact from "./pages/home/contact";
 import VerifyEmail from "./pages/auth/VerifyEmail"
 // client
 import ClientSearchZone from "./pages/client/ClientSearchZone";
@@ -66,6 +69,8 @@ const App = () => (
               <Route path="/logout" element={<Logout />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/tarifs" element={<Tarifs />} />
+              <Route path="/fonctionnalites" element={<Fonctionnalites />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               {/* PORTAIL ADMIN - Regroupé pour plus de clarté */}
               <Route path="/admin">
@@ -87,6 +92,11 @@ const App = () => (
                 <Route path="statistics" element={
                   <ProtectedRoute allowedRoles={['admin']}>
                     <AdminStatistics />
+                  </ProtectedRoute>
+                } />
+                <Route path="contacts" element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminContacts />
                   </ProtectedRoute>
                 } />
                 <Route path="settings" element={

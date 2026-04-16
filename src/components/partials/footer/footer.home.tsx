@@ -1,35 +1,74 @@
-import { Link } from "react-router-dom"
-import { MapPin } from "lucide-react"
-const FooterHome = () => {
-    return (
-        <div>
-            <footer className="relative z-10 px-4 py-8 border-t border-gray-800">
-                <div className="max-w-6xl mx-auto">
-                    <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                        <div className="flex items-center space-x-2">
-                            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                                <MapPin className="text-white" size={16} />
-                            </div>
-                            <span className="text-white font-bold">ImmoScout</span>
-                        </div>
-                        <div className="text-gray-400 text-sm">
-                            <p>&copy; 2026 ImmoScout. Tous droits réservés.</p>
-                        </div>
-                        <div className="flex space-x-6">
-                                <Link to="/" className="text-gray-400 hover:text-white transition-colors text-sm">
-                                    Accueil
-                                </Link>
-                                <a href="#problem" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Le Problème</a>
-                                <a href="#solution" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">La Solution</a>
-                                <a href="#concession" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Exclusivité</a>
-                                <Link to="/tarifs" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Tarifs</Link>
-                                <div className="h-4 w-px bg-gray-700"></div>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-        </div>
-    )
-}
+import { Link } from "react-router-dom";
+import { MapPin, Mail, ArrowRight } from "lucide-react";
 
-export default FooterHome
+const FooterHome = () => {
+  return (
+    <footer className="relative z-10 border-t border-gray-800 bg-gray-950">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
+          {/* Brand */}
+          <div className="md:col-span-1">
+            <Link to="/" className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <MapPin className="text-white" size={20} />
+              </div>
+              <span className="text-xl font-bold text-white">ImmoScout</span>
+            </Link>
+            <p className="text-gray-500 text-sm leading-relaxed">
+              La plateforme d'automatisation immobilière qui travaille pour vous 24/7.
+            </p>
+          </div>
+
+          {/* Navigation */}
+          <div>
+            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Navigation</h4>
+            <ul className="space-y-3">
+              <li><Link to="/" className="text-gray-400 hover:text-white transition-colors text-sm">Accueil</Link></li>
+              <li><Link to="/fonctionnalites" className="text-gray-400 hover:text-white transition-colors text-sm">Fonctionnalites</Link></li>
+              <li><Link to="/tarifs" className="text-gray-400 hover:text-white transition-colors text-sm">Tarifs</Link></li>
+              <li><Link to="/about" className="text-gray-400 hover:text-white transition-colors text-sm">A propos</Link></li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Compte</h4>
+            <ul className="space-y-3">
+              <li><Link to="/login" className="text-gray-400 hover:text-white transition-colors text-sm">Connexion</Link></li>
+              <li><Link to="/register" className="text-gray-400 hover:text-white transition-colors text-sm">Inscription</Link></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors text-sm">Contact</Link></li>
+            </ul>
+          </div>
+
+          {/* CTA */}
+          <div>
+            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Commencer</h4>
+            <p className="text-gray-500 text-sm mb-4">Reservez votre zone exclusive des maintenant.</p>
+            <Link
+              to="/register"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-600/25"
+            >
+              Essai Gratuit <ArrowRight size={14} />
+            </Link>
+            <div className="flex items-center gap-2 mt-4 text-gray-500 text-xs">
+              <Mail size={12} />
+              <span>contact@immoscout.com</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-gray-500 text-sm">&copy; 2026 ImmoScout. Tous droits reserves.</p>
+          <div className="flex gap-6">
+            <Link to="/about" className="text-gray-500 hover:text-gray-300 transition-colors text-xs">Mentions legales</Link>
+            <Link to="/about" className="text-gray-500 hover:text-gray-300 transition-colors text-xs">Politique de confidentialite</Link>
+            <Link to="/about" className="text-gray-500 hover:text-gray-300 transition-colors text-xs">CGV</Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default FooterHome;

@@ -21,6 +21,7 @@ const navItems: NavItem[] = [
   { icon: <Map className="w-5 h-5" />, label: "Zones", href: "/admin/zones" },
   { icon: <UserIcon className="w-5 h-5" />, label: "User", href: "/admin/user" },
   { icon: <BarChart3 className="w-5 h-5" />, label: "Statistiques", href: "/admin/statistics" },
+  { icon: <Mail className="w-5 h-5" />, label: "Messages", href: "/admin/contacts" },
   { icon: <Settings className="w-5 h-5" />, label: "Paramètres", href: "/admin/settings" },
 ];
 

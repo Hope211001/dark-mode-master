@@ -258,18 +258,20 @@ const ShowLead = () => {
                                     <Badge className={cn("border text-[10px] uppercase font-bold", status.className)}>
                                         {status.label}
                                     </Badge>
-                                    {lead.categorie_scraping === "pap.fr" && (
-                                        <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-500/30 bg-sky-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-sky-400">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
-                                            PAP.fr
-                                        </span>
-                                    )}
-                                    {lead.categorie_scraping === "leboncoin" && (
-                                        <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-500/30 bg-orange-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-orange-400">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-orange-400" />
-                                            Leboncoin
-                                        </span>
-                                    )}
+                                    {lead.categorie_scraping && (() => {
+                                        const catConfig: Record<string, { label: string; className: string; dot: string }> = {
+                                            "leboncoin": { label: "Leboncoin", className: "border-orange-500/30 bg-orange-500/10 text-orange-400", dot: "bg-orange-400" },
+                                            "pap.fr": { label: "PAP.fr", className: "border-sky-500/30 bg-sky-500/10 text-sky-400", dot: "bg-sky-400" },
+                                            "seloger": { label: "SeLoger", className: "border-rose-500/30 bg-rose-500/10 text-rose-400", dot: "bg-rose-400" },
+                                        };
+                                        const cat = catConfig[lead.categorie_scraping] || { label: lead.categorie_scraping, className: "border-violet-500/30 bg-violet-500/10 text-violet-400", dot: "bg-violet-400" };
+                                        return (
+                                            <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold", cat.className)}>
+                                                <span className={cn("h-1.5 w-1.5 rounded-full", cat.dot)} />
+                                                {cat.label}
+                                            </span>
+                                        );
+                                    })()}
                                 </div>
                                 <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground leading-tight max-w-2xl">
                                     {lead.titre}
