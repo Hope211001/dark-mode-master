@@ -119,52 +119,52 @@ const ClientDashboard = () => {
       value: stats.totalLeads,
       subtitle: "tous statuts confondus",
       icon: BarChart3,
-      gradient: "from-primary/20 via-slate-900/90 to-slate-900/90",
-      border: "border-primary/30",
-      shadow: "shadow-primary/10 hover:shadow-primary/20",
-      iconBg: "bg-primary/10 border-primary/30",
-      iconColor: "text-primary",
-      glow: "bg-primary/30",
-      badgeColor: "text-primary bg-primary/10",
+      gradient: "from-emerald-50 to-white",
+      border: "border-emerald-200",
+      shadow: "shadow-sm hover:shadow-md",
+      iconBg: "bg-emerald-50 border-emerald-200",
+      iconColor: "text-emerald-600",
+      glow: "bg-emerald-500/20",
+      badgeColor: "text-emerald-600 bg-emerald-50",
     },
     {
       label: "Nouveaux",
       value: stats.newLeads,
       subtitle: "en attente de contact",
       icon: Sparkles,
-      gradient: "from-amber-500/20 via-slate-900/90 to-slate-900/90",
-      border: "border-amber-500/30",
-      shadow: "shadow-amber-500/10 hover:shadow-amber-500/20",
-      iconBg: "bg-amber-500/10 border-amber-500/30",
-      iconColor: "text-amber-400",
-      glow: "bg-amber-500/30",
-      badgeColor: "text-amber-400 bg-amber-500/10",
+      gradient: "from-amber-50 to-white",
+      border: "border-amber-200",
+      shadow: "shadow-sm hover:shadow-md",
+      iconBg: "bg-amber-50 border-amber-200",
+      iconColor: "text-amber-600",
+      glow: "bg-amber-500/20",
+      badgeColor: "text-amber-600 bg-amber-50",
     },
     {
       label: "Contactés",
       value: stats.contactedLeads,
       subtitle: "messages envoyés",
       icon: Mail,
-      gradient: "from-violet-500/20 via-slate-900/90 to-slate-900/90",
-      border: "border-violet-500/30",
-      shadow: "shadow-violet-500/10 hover:shadow-violet-500/20",
-      iconBg: "bg-violet-500/10 border-violet-500/30",
-      iconColor: "text-violet-400",
-      glow: "bg-violet-500/30",
-      badgeColor: "text-violet-400 bg-violet-500/10",
+      gradient: "from-violet-50 to-white",
+      border: "border-violet-200",
+      shadow: "shadow-sm hover:shadow-md",
+      iconBg: "bg-violet-50 border-violet-200",
+      iconColor: "text-violet-600",
+      glow: "bg-violet-500/20",
+      badgeColor: "text-violet-600 bg-violet-50",
     },
     {
       label: "Mes Zones",
       value: stats.zonesCount,
       subtitle: "zones actives",
       icon: MapPin,
-      gradient: "from-emerald-500/20 via-slate-900/90 to-slate-900/90",
-      border: "border-emerald-500/30",
-      shadow: "shadow-emerald-500/10 hover:shadow-emerald-500/20",
-      iconBg: "bg-emerald-500/10 border-emerald-500/30",
-      iconColor: "text-emerald-400",
-      glow: "bg-emerald-500/30",
-      badgeColor: "text-emerald-400 bg-emerald-500/10",
+      gradient: "from-cyan-50 to-white",
+      border: "border-cyan-200",
+      shadow: "shadow-sm hover:shadow-md",
+      iconBg: "bg-cyan-50 border-cyan-200",
+      iconColor: "text-cyan-600",
+      glow: "bg-cyan-500/20",
+      badgeColor: "text-cyan-600 bg-cyan-50",
     },
   ];
 
@@ -197,15 +197,14 @@ const ClientDashboard = () => {
                 key={s.label}
                 className={`relative overflow-hidden bg-gradient-to-br ${s.gradient} backdrop-blur-xl border ${s.border} shadow-2xl ${s.shadow} transition-all duration-300 group`}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <CardContent className="relative p-4 md:p-5">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
-                      <p className="text-[11px] md:text-xs font-medium text-slate-400 uppercase tracking-wide">{s.label}</p>
-                      <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight mt-1">
+                      <p className="text-[11px] md:text-xs font-medium text-gray-500 uppercase tracking-wide">{s.label}</p>
+                      <h3 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight mt-1">
                         {loading ? ".." : s.value}
                       </h3>
-                      <p className="text-[10px] md:text-xs text-slate-500 mt-1 truncate">{s.subtitle}</p>
+                      <p className="text-[10px] md:text-xs text-gray-400 mt-1 truncate">{s.subtitle}</p>
                     </div>
                     <div className="relative shrink-0 ml-2">
                       <div className={`absolute inset-0 ${s.glow} rounded-xl blur-xl animate-pulse`} />

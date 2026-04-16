@@ -256,8 +256,8 @@ const ZonesManagement = () => {
                       <TableCell>
                         <Badge variant="outline" className={
                           zone.statut_market === 'VENDU'
-                            ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
-                            : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                            : "bg-emerald-50 text-emerald-700 border-emerald-200"
                         }>
                           {zone.statut_market || 'LIBRE'}
                         </Badge>
@@ -265,16 +265,16 @@ const ZonesManagement = () => {
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           {zone.statut_market !== 'VENDU' && (
-                            <Button size="sm" variant="ghost" className="gap-1.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 h-7 text-xs" onClick={() => handleBuy(zone.id)}>
+                            <Button size="sm" variant="ghost" className="gap-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 h-7 text-xs" onClick={() => handleBuy(zone.id)}>
                               <MapPin className="h-3.5 w-3.5" />
                               Acheter
                             </Button>
                           )}
-                          <Button size="sm" variant="ghost" className="gap-1.5 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 h-7 text-xs" onClick={() => openEditModal(zone)}>
+                          <Button size="sm" variant="ghost" className="gap-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 h-7 text-xs" onClick={() => openEditModal(zone)}>
                             <Edit className="h-3.5 w-3.5" />
                             Modifier
                           </Button>
-                          <Button size="sm" variant="ghost" className="gap-1.5 bg-red-500/10 text-red-500 hover:bg-red-500/20 h-7 text-xs" onClick={() => handleDelete(zone.id)}>
+                          <Button size="sm" variant="ghost" className="gap-1.5 bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 h-7 text-xs" onClick={() => handleDelete(zone.id)}>
                             <Trash2 className="h-3.5 w-3.5" />
                             Supprimer
                           </Button>

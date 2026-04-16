@@ -3,82 +3,54 @@ import { useNavigate } from "react-router-dom";
 import { ClientSidebar } from "@/components/client/ClientSidebar";
 import { ClientHeader } from "@/components/client/ClientHeader";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  CheckCheck,
-  Loader2,
-  Clock,
-  Bell,
-  Search,
-  AlertCircle,
-  Inbox
+  CheckCheck, Loader2, Bell, AlertCircle, Inbox
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-
-// Import de ton service
 import { notificationService, NotificationItem } from "@/services/notification.service";
 
 const NotificationsPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "unread">("all");
 
-  // --- 1. Charger les notifications ---
   const fetchNotifications = async () => {
     try {
       setLoading(true);
       const data = await notificationService.getAll();
-      // On s'assure que c'est bien un tableau
       setNotifications(data.notifications || []);
     } catch (error) {
       console.error(error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les notifications.",
-        variant: "destructive"
-      });
+      toast({ title: "Erreur", description: "Impossible de charger les notifications.", variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  // --- 2. Actions ---
+  useEffect(() => { fetchNotifications(); }, []);
 
   const handleMarkAllRead = async () => {
     try {
       await notificationService.markAllAsRead();
-      // Mise à jour locale optimiste
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
-      toast({ title: "Succès", description: "Toutes les notifications ont été marquées comme lues." });
-    } catch (error) {
+      toast({ title: "Succes", description: "Toutes les notifications ont ete marquees comme lues." });
+    } catch {
       toast({ title: "Erreur", description: "Une erreur est survenue.", variant: "destructive" });
     }
   };
 
   const handleNotificationClick = async (notif: NotificationItem) => {
-    // 1. Marquer comme lu si nécessaire
     if (!notif.is_read) {
       try {
         await notificationService.markAsRead(notif.id);
         setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, is_read: true } : n));
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) { console.error(e); }
     }
-    // 2. Naviguer vers le lead
     navigate(`/client/showLead/${notif.id}`);
   };
-
-  // --- 3. Utilitaires ---
 
   const timeAgo = (dateStr: string) => {
     if (!dateStr) return "";
@@ -93,10 +65,9 @@ const NotificationsPage = () => {
     if (interval > 1) return Math.floor(interval) + " h";
     interval = seconds / 60;
     if (interval > 1) return Math.floor(interval) + " min";
-    return "À l'instant";
+    return "A l'instant";
   };
 
-  // Filtrage des données affichées
   const filteredNotifications = notifications.filter(n => {
     if (filter === "unread") return !n.is_read;
     return true;
@@ -105,33 +76,25 @@ const NotificationsPage = () => {
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return (
-    <div className="min-h-screen bg-slate-950 font-sans text-slate-200">
+    <div className="min-h-screen bg-background font-sans text-foreground">
       <ClientSidebar />
 
       <main className="md:ml-64 transition-[margin] duration-300 min-h-screen flex flex-col">
-        <ClientHeader
-          title="Notifications"
-          subtitle="Gérez vos alertes et opportunités détectées."
-        />
+        <ClientHeader title="Notifications" subtitle="Gerez vos alertes et opportunites detectees." />
 
-        {/* 
-           - Supprimé 'mx-auto' pour ne plus centrer au milieu de l'écran 
-           - 'max-w-4xl' limite la largeur pour que ce ne soit pas trop large sur grand écran
-           - 'w-full' et 'p-8' pour l'alignement standard dashboard
-        */}
-        <div className="p-10 max-w-4xl w-full space-y-8">
+        <div className="p-6 md:p-10 max-w-4xl w-full space-y-8">
 
-          {/* BARRE D'OUTILS ALIGNÉE À GAUCHE */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-900 pb-6">
+          {/* Toolbar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-border pb-6">
             <Tabs defaultValue="all" className="w-auto" onValueChange={(val) => setFilter(val as any)}>
-              <TabsList className="bg-slate-900 border border-slate-800 p-1">
-                <TabsTrigger value="all" className="px-5 data-[state=active]:bg-slate-800">
+              <TabsList className="bg-muted border border-border p-1">
+                <TabsTrigger value="all" className="px-5 data-[state=active]:bg-background data-[state=active]:shadow-sm">
                   Toutes
                 </TabsTrigger>
-                <TabsTrigger value="unread" className="px-5 data-[state=active]:bg-slate-800">
+                <TabsTrigger value="unread" className="px-5 data-[state=active]:bg-background data-[state=active]:shadow-sm">
                   Non lues
                   {unreadCount > 0 && (
-                    <span className="ml-2 bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                    <span className="ml-2 bg-emerald-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
                       {unreadCount}
                     </span>
                   )}
@@ -140,29 +103,24 @@ const NotificationsPage = () => {
             </Tabs>
 
             {unreadCount > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleMarkAllRead}
-                className="text-slate-500 hover:text-white text-xs"
-              >
+              <Button variant="ghost" size="sm" onClick={handleMarkAllRead} className="text-muted-foreground hover:text-foreground text-xs">
                 <CheckCheck className="mr-2 h-4 w-4" />
                 Tout marquer comme lu
               </Button>
             )}
           </div>
 
-          {/* LISTE DES NOTIFICATIONS */}
+          {/* List */}
           <div className="space-y-2">
             {loading ? (
-              <div className="flex flex-col items-start py-20 opacity-50 text-slate-500">
+              <div className="flex flex-col items-start py-20 text-muted-foreground">
                 <Loader2 className="h-8 w-8 animate-spin mb-4" />
                 <p className="text-sm italic">Synchronisation...</p>
               </div>
             ) : filteredNotifications.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 bg-slate-900/20 rounded-3xl border border-dashed border-slate-800">
-                <Inbox className="h-10 w-10 text-slate-800 mb-4" />
-                <p className="text-slate-500 text-sm italic">Aucune notification à afficher.</p>
+              <div className="flex flex-col items-center justify-center py-20 bg-muted/30 rounded-3xl border-2 border-dashed border-border">
+                <Inbox className="h-10 w-10 text-muted-foreground/40 mb-4" />
+                <p className="text-muted-foreground text-sm italic">Aucune notification a afficher.</p>
               </div>
             ) : (
               <div className="grid gap-2">
@@ -173,21 +131,19 @@ const NotificationsPage = () => {
                     className={`
                       group relative flex items-start gap-4 p-4 rounded-xl transition-all duration-200 cursor-pointer border
                       ${!notif.is_read
-                        ? 'bg-slate-900 border-blue-500/20 hover:border-blue-500/40 shadow-lg shadow-blue-500/5'
-                        : 'bg-transparent border-transparent hover:bg-slate-900/50'}
+                        ? 'bg-emerald-50/50 border-emerald-200 hover:border-emerald-300 shadow-sm'
+                        : 'bg-transparent border-transparent hover:bg-muted/50'}
                     `}
                   >
-                    {/* INDICATEUR NON-LU (Point bleu brillant) */}
                     {!notif.is_read && (
-                      <span className="absolute left-1.5 top-1/2 -translate-y-1/2 h-1.5 w-1.5 bg-blue-500 rounded-full" />
+                      <span className="absolute left-1.5 top-1/2 -translate-y-1/2 h-1.5 w-1.5 bg-emerald-500 rounded-full" />
                     )}
 
-                    {/* ICÔNE */}
                     <div className={`
                       flex-shrink-0 h-10 w-10 rounded-lg flex items-center justify-center border
                       ${!notif.is_read
-                        ? 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-                        : 'bg-slate-900/50 text-slate-600 border-slate-800'}
+                        ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
+                        : 'bg-muted/50 text-muted-foreground border-border'}
                     `}>
                       {notif.titre.toLowerCase().includes('score') ? (
                         <AlertCircle className="h-5 w-5" />
@@ -196,30 +152,26 @@ const NotificationsPage = () => {
                       )}
                     </div>
 
-                    {/* CONTENU TEXTUEL : Gestion intelligente des couleurs Lu/Non-lu */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2 mb-1">
                         <h4 className={`text-sm truncate transition-colors ${!notif.is_read
-                            ? 'font-bold text-slate-100' // Blanc pour Nouveau
-                            : 'font-medium text-slate-500' // Gris pour Lu
+                            ? 'font-bold text-gray-900'
+                            : 'font-medium text-muted-foreground'
                           }`}>
                           {notif.titre || "Notification"}
                         </h4>
-                        <span className="flex-shrink-0 text-[11px] font-medium text-slate-600">
+                        <span className="flex-shrink-0 text-[11px] font-medium text-muted-foreground">
                           {timeAgo(notif.date_detection)}
                         </span>
                       </div>
-
-                      <p className={`text-sm line-clamp-1 transition-colors ${!notif.is_read ? 'text-slate-400' : 'text-slate-600'
-                        }`}>
-                        Opportunité détectée avec un score de : <span className={!notif.is_read ? 'text-blue-400 font-bold' : 'text-slate-700'}>{notif.score}/10</span>
+                      <p className={`text-sm line-clamp-1 transition-colors ${!notif.is_read ? 'text-gray-600' : 'text-muted-foreground'}`}>
+                        Opportunite detectee avec un score de : <span className={!notif.is_read ? 'text-emerald-600 font-bold' : 'text-muted-foreground'}>{notif.score}/10</span>
                       </p>
                     </div>
 
-                    {/* BADGE "NEW" */}
                     {!notif.is_read && (
                       <div className="self-center ml-2 hidden sm:block">
-                        <div className="bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 rounded shadow-sm shadow-blue-500/20 uppercase">
+                        <div className="bg-emerald-600 text-white text-[9px] font-black px-2 py-0.5 rounded shadow-sm uppercase">
                           New
                         </div>
                       </div>

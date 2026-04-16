@@ -195,18 +195,6 @@ const ClientLeads = () => {
               </SelectContent>
             </Select>
 
-            <Select value={categorieFilter} onValueChange={setCategorieFilter}>
-              <SelectTrigger className="w-52 bg-secondary/30">
-                <Tag className="h-4 w-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {categorieFilters.map((f) => (
-                  <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
             <Select value={phoneFilter} onValueChange={setPhoneFilter}>
               <SelectTrigger className="w-48 bg-secondary/30">
                 <Phone className="h-4 w-4 mr-2" />
@@ -226,6 +214,18 @@ const ClientLeads = () => {
               </SelectTrigger>
               <SelectContent>
                 {sortOptions.map((f) => (
+                  <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={categorieFilter} onValueChange={setCategorieFilter}>
+              <SelectTrigger className="w-60 bg-secondary/30">
+                <Tag className="h-4 w-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {categorieFilters.map((f) => (
                   <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
                 ))}
               </SelectContent>

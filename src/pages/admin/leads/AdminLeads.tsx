@@ -31,20 +31,20 @@ const sortOptions = [
 ];
 
 const statusConfig: Record<string, { label: string; className: string }> = {
-  new: { label: "Nouveau", className: "bg-blue-500/15 text-blue-500 border-blue-500/20" },
-  contacted: { label: "Contacté", className: "bg-amber-500/15 text-amber-500 border-amber-500/20" },
-  replied: { label: "Répondu", className: "bg-emerald-500/15 text-emerald-500 border-emerald-500/20" },
-  rejected: { label: "Refusé", className: "bg-red-500/15 text-red-500 border-red-500/20" },
-  unreachable: { label: "Injoignable", className: "bg-gray-500/15 text-gray-400 border-gray-500/20" },
+  new: { label: "Nouveau", className: "bg-blue-50 text-blue-700 border-blue-200" },
+  contacted: { label: "Contacte", className: "bg-amber-50 text-amber-700 border-amber-200" },
+  replied: { label: "Repondu", className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  rejected: { label: "Refuse", className: "bg-red-50 text-red-700 border-red-200" },
+  unreachable: { label: "Injoignable", className: "bg-gray-50 text-gray-600 border-gray-200" },
 };
 
 const categorieConfig: Record<string, { label: string; className: string }> = {
-  "leboncoin": { label: "Leboncoin", className: "bg-orange-500/15 text-orange-500 border-orange-500/30" },
-  "pap.fr": { label: "PAP.fr", className: "bg-sky-500/15 text-sky-400 border-sky-500/30" },
-  "seloger": { label: "SeLoger", className: "bg-rose-500/15 text-rose-400 border-rose-500/30" },
+  "leboncoin": { label: "Leboncoin", className: "bg-orange-50 text-orange-700 border-orange-200" },
+  "pap.fr": { label: "PAP.fr", className: "bg-sky-50 text-sky-700 border-sky-200" },
+  "seloger": { label: "SeLoger", className: "bg-rose-50 text-rose-700 border-rose-200" },
 };
 
-const defaultCategorieStyle = "bg-violet-500/15 text-violet-400 border-violet-500/30";
+const defaultCategorieStyle = "bg-violet-50 text-violet-700 border-violet-200";
 
 const DEBOUNCE_MS = 400;
 
@@ -195,19 +195,6 @@ const AdminLeads = () => {
             </SelectContent>
           </Select>
 
-          <Select value={categorieFilter} onValueChange={setCategorieFilter}>
-            <SelectTrigger className="w-[220px]">
-              <Tag className="h-4 w-4 mr-2" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Toutes catégories</SelectItem>
-              {categories.map((c) => (
-                <SelectItem key={c} value={c}>{c}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
           <Button
             variant="outline"
             className="gap-2"
@@ -277,7 +264,7 @@ const AdminLeads = () => {
                     <TableCell className="font-mono text-foreground">{lead.prix?.toLocaleString()}€</TableCell>
                     <TableCell className="text-muted-foreground">{lead.surface}m²</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="font-mono font-semibold border-primary/20 bg-primary/5 text-primary">
+                      <Badge variant="outline" className="font-mono font-semibold border-emerald-200 bg-emerald-50 text-emerald-700">
                         {lead.score?.toFixed(1) || "0.0"}
                       </Badge>
                     </TableCell>

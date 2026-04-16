@@ -93,12 +93,12 @@ export function Sidebar() {
           <div className="p-6 border-b border-sidebar-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
                   <MapPin className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h1 className="font-semibold text-foreground bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">ImmoScout</h1>
-                  <p className="text-xs text-muted-foreground">Mini-SaaS Immobilier</p>
+                  <h1 className="font-semibold text-foreground">Immo<span className="text-emerald-600">Scout</span></h1>
+                  <p className="text-xs text-muted-foreground">Admin</p>
                 </div>
               </div>
               <Button

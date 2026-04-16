@@ -13,36 +13,32 @@ interface Stats {
 }
 
 const statCards = [
-  { key: "totalLeads" as keyof Stats, label: "Total Leads", subtitle: "tous les leads détectés", icon: TrendingUp, gradient: "from-primary/20 via-slate-900/90 to-slate-900/90", border: "border-primary/30", shadow: "shadow-primary/10 hover:shadow-primary/20", iconBg: "bg-primary/10 border-primary/30", iconColor: "text-primary", glow: "bg-primary/30" },
-  { key: "newLeads" as keyof Stats, label: "Nouveaux", subtitle: "en attente de contact", icon: Sparkles, gradient: "from-amber-500/20 via-slate-900/90 to-slate-900/90", border: "border-amber-500/30", shadow: "shadow-amber-500/10 hover:shadow-amber-500/20", iconBg: "bg-amber-500/10 border-amber-500/30", iconColor: "text-amber-400", glow: "bg-amber-500/30" },
-  { key: "contactedLeads" as keyof Stats, label: "Contactés", subtitle: "messages envoyés", icon: Mail, gradient: "from-violet-500/20 via-slate-900/90 to-slate-900/90", border: "border-violet-500/30", shadow: "shadow-violet-500/10 hover:shadow-violet-500/20", iconBg: "bg-violet-500/10 border-violet-500/30", iconColor: "text-violet-400", glow: "bg-violet-500/30" },
-  { key: "totalZones" as keyof Stats, label: "Total Zones", subtitle: "villes couvertes", icon: Map, gradient: "from-cyan-500/20 via-slate-900/90 to-slate-900/90", border: "border-cyan-500/30", shadow: "shadow-cyan-500/10 hover:shadow-cyan-500/20", iconBg: "bg-cyan-500/10 border-cyan-500/30", iconColor: "text-cyan-400", glow: "bg-cyan-500/30" },
-  { key: "zonesVendues" as keyof Stats, label: "Zones vendues", subtitle: "sous contrat", icon: MapPin, gradient: "from-emerald-500/20 via-slate-900/90 to-slate-900/90", border: "border-emerald-500/30", shadow: "shadow-emerald-500/10 hover:shadow-emerald-500/20", iconBg: "bg-emerald-500/10 border-emerald-500/30", iconColor: "text-emerald-400", glow: "bg-emerald-500/30" },
-  { key: "zonesLibres" as keyof Stats, label: "Zones libres", subtitle: "disponibles", icon: MapPinOff, gradient: "from-rose-500/20 via-slate-900/90 to-slate-900/90", border: "border-rose-500/30", shadow: "shadow-rose-500/10 hover:shadow-rose-500/20", iconBg: "bg-rose-500/10 border-rose-500/30", iconColor: "text-rose-400", glow: "bg-rose-500/30" },
+  { key: "totalLeads" as keyof Stats, label: "Total Leads", subtitle: "tous les leads detectes", icon: TrendingUp, bg: "bg-emerald-50", border: "border-emerald-200", iconBg: "bg-emerald-100", iconColor: "text-emerald-600" },
+  { key: "newLeads" as keyof Stats, label: "Nouveaux", subtitle: "en attente de contact", icon: Sparkles, bg: "bg-amber-50", border: "border-amber-200", iconBg: "bg-amber-100", iconColor: "text-amber-600" },
+  { key: "contactedLeads" as keyof Stats, label: "Contactes", subtitle: "messages envoyes", icon: Mail, bg: "bg-violet-50", border: "border-violet-200", iconBg: "bg-violet-100", iconColor: "text-violet-600" },
+  { key: "totalZones" as keyof Stats, label: "Total Zones", subtitle: "villes couvertes", icon: Map, bg: "bg-cyan-50", border: "border-cyan-200", iconBg: "bg-cyan-100", iconColor: "text-cyan-600" },
+  { key: "zonesVendues" as keyof Stats, label: "Zones vendues", subtitle: "sous contrat", icon: MapPin, bg: "bg-blue-50", border: "border-blue-200", iconBg: "bg-blue-100", iconColor: "text-blue-600" },
+  { key: "zonesLibres" as keyof Stats, label: "Zones libres", subtitle: "disponibles", icon: MapPinOff, bg: "bg-rose-50", border: "border-rose-200", iconBg: "bg-rose-100", iconColor: "text-rose-600" },
 ];
 
 export function StatsOverview({ stats, loading }: { stats: Stats; loading: boolean }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
       {statCards.map((s) => (
-        <Card key={s.key} className={`relative overflow-hidden bg-gradient-to-br ${s.gradient} backdrop-blur-xl border ${s.border} shadow-2xl ${s.shadow} transition-all duration-300 group`}>
-          <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <Card key={s.key} className={`relative overflow-hidden ${s.bg} border ${s.border} shadow-sm hover:shadow-md transition-all duration-300 group`}>
           <CardContent className="relative p-4">
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] md:text-xs font-medium text-slate-400 uppercase tracking-wide leading-tight">{s.label}</p>
-                <div className="relative shrink-0">
-                  <div className={`absolute inset-0 ${s.glow} rounded-lg blur-xl animate-pulse`} />
-                  <div className={`relative p-2 ${s.iconBg} rounded-lg border`}>
-                    <s.icon className={`h-3.5 w-3.5 md:h-4 md:w-4 ${s.iconColor}`} />
-                  </div>
+                <p className="text-[10px] md:text-xs font-medium text-gray-500 uppercase tracking-wide leading-tight">{s.label}</p>
+                <div className={`p-2 ${s.iconBg} rounded-lg`}>
+                  <s.icon className={`h-3.5 w-3.5 md:h-4 md:w-4 ${s.iconColor}`} />
                 </div>
               </div>
               <div>
-                <h3 className="text-xl md:text-2xl font-black text-white tracking-tight">
-                  {loading ? <Loader2 className="h-6 w-6 animate-spin text-slate-500" /> : stats[s.key]}
+                <h3 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">
+                  {loading ? <Loader2 className="h-6 w-6 animate-spin text-gray-400" /> : stats[s.key]}
                 </h3>
-                <p className="text-[10px] md:text-xs text-slate-500 mt-0.5">{s.subtitle}</p>
+                <p className="text-[10px] md:text-xs text-gray-400 mt-0.5">{s.subtitle}</p>
               </div>
             </div>
           </CardContent>

@@ -127,10 +127,13 @@ const AdminContacts = () => {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="gap-1.5" asChild>
-                          <a href={`mailto:${selected.email}?subject=Re: ${selected.subject}`}>
-                            <Mail className="h-3.5 w-3.5" /> Repondre
-                          </a>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-1.5"
+                          onClick={() => window.open(`mailto:${selected.email}?subject=${encodeURIComponent('Re: ' + selected.subject)}`, '_self')}
+                        >
+                          <Mail className="h-3.5 w-3.5" /> Repondre
                         </Button>
                         <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:bg-destructive/10" onClick={() => handleDelete(selected.id)}>
                           <Trash2 className="h-3.5 w-3.5" /> Supprimer

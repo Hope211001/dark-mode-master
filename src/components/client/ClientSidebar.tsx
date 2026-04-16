@@ -176,11 +176,11 @@ export function ClientSidebar() {
           <Link to="/">
           <div className="flex h-16 items-center justify-between border-b border-border px-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-                <MapPin className="h-5 w-5 text-primary-foreground" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-600 to-teal-600 shadow-lg shadow-emerald-500/20">
+                <MapPin className="h-5 w-5 text-white" />
               </div>
               <div className="flex flex-col">
-                <span className="text-lg font-semibold text-foreground">ImmoScout</span>
+                <span className="text-lg font-semibold text-foreground">Immo<span className="text-emerald-600">Scout</span></span>
                 <span className="text-xs text-muted-foreground">Espace Client</span>
               </div>
             </div>

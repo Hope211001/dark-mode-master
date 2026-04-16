@@ -1,67 +1,67 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Dark mode as default - Deep blue-black theme */
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
+    /* Light theme - Clean white + Emerald accent */
+    --background: 210 20% 98%;
+    --foreground: 220 20% 14%;
 
-    --card: 222 47% 8%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 14%;
 
-    --popover: 222 47% 8%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 14%;
 
-    --primary: 187 92% 48%;
-    --primary-foreground: 222 47% 6%;
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 222 47% 12%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 210 16% 93%;
+    --secondary-foreground: 220 20% 14%;
 
-    --muted: 222 47% 14%;
-    --muted-foreground: 215 20% 55%;
+    --muted: 210 16% 93%;
+    --muted-foreground: 220 10% 46%;
 
-    --accent: 187 92% 48%;
-    --accent-foreground: 222 47% 6%;
+    --accent: 160 84% 39%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
 
     --success: 160 84% 39%;
-    --success-foreground: 210 40% 98%;
+    --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 222 47% 6%;
+    --warning: 45 93% 50%;
+    --warning-foreground: 220 20% 14%;
 
-    --border: 222 47% 16%;
-    --input: 222 47% 14%;
-    --ring: 187 92% 48%;
+    --border: 220 13% 90%;
+    --input: 220 13% 90%;
+    --ring: 160 84% 39%;
 
     --radius: 0.75rem;
 
     /* Custom gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(187 92% 48%) 0%, hsl(199 89% 48%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(222 47% 10%) 0%, hsl(222 47% 8%) 100%);
-    --gradient-glow: radial-gradient(ellipse at center, hsl(187 92% 48% / 0.15) 0%, transparent 70%);
+    --gradient-primary: linear-gradient(135deg, hsl(160 84% 39%) 0%, hsl(172 78% 35%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 20% 98%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(160 84% 39% / 0.08) 0%, transparent 70%);
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px hsl(222 47% 6% / 0.5);
-    --shadow-md: 0 4px 12px hsl(222 47% 6% / 0.6);
-    --shadow-lg: 0 10px 30px hsl(222 47% 6% / 0.7);
-    --shadow-glow: 0 0 40px hsl(187 92% 48% / 0.2);
+    --shadow-sm: 0 1px 2px hsl(220 20% 14% / 0.04);
+    --shadow-md: 0 4px 12px hsl(220 20% 14% / 0.06);
+    --shadow-lg: 0 10px 30px hsl(220 20% 14% / 0.08);
+    --shadow-glow: 0 0 40px hsl(160 84% 39% / 0.1);
 
     /* Sidebar */
-    --sidebar-background: 222 47% 5%;
-    --sidebar-foreground: 210 40% 85%;
-    --sidebar-primary: 187 92% 48%;
-    --sidebar-primary-foreground: 222 47% 6%;
-    --sidebar-accent: 222 47% 12%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 222 47% 12%;
-    --sidebar-ring: 187 92% 48%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 20% 30%;
+    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 16% 95%;
+    --sidebar-accent-foreground: 220 20% 14%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 160 84% 39%;
   }
 }
 
@@ -72,7 +72,7 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
   }
 
   /* Custom scrollbar */
@@ -97,8 +97,7 @@
 
 @layer components {
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50;
-    box-shadow: var(--shadow-md);
+    @apply bg-card/90 backdrop-blur-xl border border-border/60 shadow-sm;
   }
 
   .glow-effect {
@@ -111,7 +110,7 @@
   }
 
   .mono {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Fira Code', monospace;
   }
 }
 
@@ -122,10 +121,10 @@
 
   @keyframes pulse-glow {
     0%, 100% {
-      box-shadow: 0 0 20px hsl(187 92% 48% / 0.2);
+      box-shadow: 0 0 20px hsl(160 84% 39% / 0.08);
     }
     50% {
-      box-shadow: 0 0 40px hsl(187 92% 48% / 0.4);
+      box-shadow: 0 0 40px hsl(160 84% 39% / 0.15);
     }
   }
 
