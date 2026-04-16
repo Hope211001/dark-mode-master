@@ -30,6 +30,7 @@ const categorieFilters = [
   { value: "all", label: "Toutes les catégories" },
   { value: "leboncoin", label: "Leboncoin" },
   { value: "pap.fr", label: "PAP.fr" },
+  { value: "seloger", label: "SeLoger" },
 ];
 
 const sortOptions = [

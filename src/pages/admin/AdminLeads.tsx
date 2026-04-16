@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Filter, Phone, Loader2, ArrowUpDown, ExternalLink, Clock, MapPin, RefreshCw, Rows3 } from "lucide-react";
+import { Search, Filter, Phone, Loader2, ArrowUpDown, ExternalLink, Clock, MapPin, RefreshCw, Rows3, Tag } from "lucide-react";
 import { Pagination } from "@/components/Pagination";
 import { leadsService, Lead, LeadsFilters } from "@/services/leads.service";
 import { useToast } from "@/components/ui/use-toast";
@@ -44,6 +44,14 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   unreachable: { label: "Injoignable", className: "bg-gray-500/15 text-gray-400 border-gray-500/20" },
 };
 
+const categorieConfig: Record<string, { label: string; className: string }> = {
+  "leboncoin": { label: "Leboncoin", className: "bg-orange-500/15 text-orange-500 border-orange-500/30" },
+  "pap.fr": { label: "PAP.fr", className: "bg-sky-500/15 text-sky-400 border-sky-500/30" },
+  "seloger": { label: "SeLoger", className: "bg-rose-500/15 text-rose-400 border-rose-500/30" },
+};
+
+const defaultCategorieStyle = "bg-violet-500/15 text-violet-400 border-violet-500/30";
+
 const DEBOUNCE_MS = 400;
 
 const AdminLeads = () => {
@@ -63,10 +71,13 @@ const AdminLeads = () => {
   const [totalCount, setTotalCount] = useState(0);
 
   const [villes, setVilles] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [categorieFilter, setCategorieFilter] = useState("all");
 
-  // Charger les villes distinctes au montage
+  // Charger les villes et catégories distinctes au montage
   useEffect(() => {
     leadsService.getDistinctVilles().then(setVilles).catch(() => {});
+    leadsService.getDistinctCategories().then(setCategories).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -76,11 +87,11 @@ const AdminLeads = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearch, statusFilter, phoneFilter, villeFilter, sortOrder, limit]);
+  }, [debouncedSearch, statusFilter, phoneFilter, villeFilter, categorieFilter, sortOrder, limit]);
 
   useEffect(() => {
     fetchLeads();
-  }, [currentPage, debouncedSearch, statusFilter, phoneFilter, villeFilter, sortOrder, limit]);
+  }, [currentPage, debouncedSearch, statusFilter, phoneFilter, villeFilter, categorieFilter, sortOrder, limit]);
 
   const fetchLeads = async () => {
     try {
@@ -92,6 +103,7 @@ const AdminLeads = () => {
         statut: statusFilter,
         phone: phoneFilter,
         ville: villeFilter,
+        categorie: categorieFilter,
         sort: sortOrder,
       };
       const res = await leadsService.getAll(filters);
@@ -111,6 +123,7 @@ const AdminLeads = () => {
     setStatusFilter("all");
     setPhoneFilter("all");
     setVilleFilter("all");
+    setCategorieFilter("all");
     setSortOrder("desc");
     setLimit("25");
     setCurrentPage(1);
@@ -201,6 +214,19 @@ const AdminLeads = () => {
             </SelectContent>
           </Select>
 
+          <Select value={categorieFilter} onValueChange={setCategorieFilter}>
+            <SelectTrigger className="w-[220px]">
+              <Tag className="h-4 w-4 mr-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes catégories</SelectItem>
+              {categories.map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           <Button
             variant="outline"
             className="gap-2"
@@ -218,6 +244,7 @@ const AdminLeads = () => {
             <TableHeader className="bg-muted/50">
               <TableRow className="hover:bg-transparent border-border">
                 <TableHead className="text-muted-foreground font-bold">Titre</TableHead>
+                <TableHead className="text-muted-foreground font-bold">Catégorie</TableHead>
                 <TableHead className="text-muted-foreground font-bold">Ville</TableHead>
                 <TableHead className="text-muted-foreground font-bold">Prix</TableHead>
                 <TableHead className="text-muted-foreground font-bold">Surface</TableHead>
@@ -230,14 +257,14 @@ const AdminLeads = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-20">
+                  <TableCell colSpan={9} className="text-center py-20">
                     <Loader2 className="animate-spin mx-auto text-primary h-8 w-8" />
                     <p className="text-sm text-muted-foreground mt-2">Chargement...</p>
                   </TableCell>
                 </TableRow>
               ) : leads.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-20 text-muted-foreground">
+                  <TableCell colSpan={9} className="text-center py-20 text-muted-foreground">
                     Aucun lead trouvé.
                   </TableCell>
                 </TableRow>
@@ -248,6 +275,15 @@ const AdminLeads = () => {
                       <span className="font-semibold text-foreground line-clamp-1 max-w-[250px]">
                         {lead.titre}
                       </span>
+                    </TableCell>
+                    <TableCell>
+                      {lead.categorie_scraping ? (
+                        <Badge variant="outline" className={`text-xs ${categorieConfig[lead.categorie_scraping]?.className || defaultCategorieStyle}`}>
+                          {categorieConfig[lead.categorie_scraping]?.label || lead.categorie_scraping}
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">—</span>
+                      )}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       <div className="flex items-center gap-1.5">
