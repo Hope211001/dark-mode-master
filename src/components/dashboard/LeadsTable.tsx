@@ -6,6 +6,14 @@ import { cn } from "@/lib/utils";
 import { leadsService, Lead } from "@/services/leads.service";
 import { useToast } from "@/components/ui/use-toast";
 
+const categorieConfig: Record<string, { label: string; className: string }> = {
+  "leboncoin": { label: "Leboncoin", className: "bg-orange-500/20 text-orange-400" },
+  "pap.fr": { label: "PAP.fr", className: "bg-sky-500/20 text-sky-400" },
+  "seloger": { label: "SeLoger", className: "bg-rose-500/20 text-rose-400" },
+};
+
+const defaultCategorieStyle = "bg-violet-500/20 text-violet-400";
+
 // Configuration des statuts basée sur ton backend (statut_prospection)
 const statusConfig: Record<string, { label: string; className: string }> = {
   "NOUVEAU": { label: "Nouveau", className: "bg-primary/20 text-primary" },
@@ -87,6 +95,7 @@ export function LeadsTable() {
           <thead>
             <tr className="border-b border-border bg-muted/30">
               <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Annonce</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Catégorie</th>
               <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Score</th>
               <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Loyer</th>
               <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-4">Date</th>
@@ -97,7 +106,7 @@ export function LeadsTable() {
           <tbody className="divide-y divide-border">
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-6 py-10 text-center">
+                <td colSpan={7} className="px-6 py-10 text-center">
                   <div className="flex flex-col items-center gap-2">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                     <p className="text-sm text-muted-foreground">Chargement des leads...</p>
@@ -106,7 +115,7 @@ export function LeadsTable() {
               </tr>
             ) : leads.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">
+                <td colSpan={7} className="px-6 py-10 text-center text-muted-foreground">
                   Aucun lead trouvé.
                 </td>
               </tr>
@@ -134,6 +143,18 @@ export function LeadsTable() {
                           </span>
                         </div>
                       </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {lead.categorie_scraping ? (
+                        <span className={cn(
+                          "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium",
+                          categorieConfig[lead.categorie_scraping]?.className || defaultCategorieStyle
+                        )}>
+                          {categorieConfig[lead.categorie_scraping]?.label || lead.categorie_scraping}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       <ScoreBadge score={lead.score} />
