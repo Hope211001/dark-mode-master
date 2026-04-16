@@ -23,10 +23,12 @@ import NotificationsPage from "./pages/client/NotificationsPage";
 // Admin Pages
 import AdminDashboard from "./pages/admin/dashbord";
 import ZonesManagement from "./pages/admin/zones/zone.liste";
-import ListUser from "./pages/admin/user";
-import AdminLeads from "./pages/admin/AdminLeads";
+import ListUser from "./pages/admin/users/user";
+import AdminLeads from "./pages/admin/leads/AdminLeads";
 import AdminSettings from "./pages/admin/AdminSettings";
-import AdminUserLeads from "./pages/admin/AdminUserLeads";
+import AdminStatistics from "./pages/admin/AdminStatistics";
+import AdminUserLeads from "./pages/admin/leads/AdminUserLeads";
+import AdminShowLead from "./pages/admin/leads/AdminShowLead";
 
 // Auth
 import ProtectedRoute from './components/ProtectedRoute';
@@ -82,9 +84,19 @@ const App = () => (
                     <ZonesManagement />
                   </ProtectedRoute>
                 } />
+                <Route path="statistics" element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminStatistics />
+                  </ProtectedRoute>
+                } />
                 <Route path="settings" element={
                   <ProtectedRoute allowedRoles={['admin']}>
                     <AdminSettings />
+                  </ProtectedRoute>
+                } />
+                <Route path="leads/:id" element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminShowLead />
                   </ProtectedRoute>
                 } />
                 <Route path="user/:userId/leads" element={

@@ -1,4 +1,4 @@
-import { Home, Map, Mail, Settings, Bell, TrendingUp, Filter, Users as UserIcon, LogOut, MapPin, X } from "lucide-react";
+import { Home, Map, Mail, Settings, Bell, TrendingUp, Filter, Users as UserIcon, LogOut, MapPin, X, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,6 +20,7 @@ const navItems: NavItem[] = [
   { icon: <TrendingUp className="w-5 h-5" />, label: "Tous les Leads", href: "/admin/leads" },
   { icon: <Map className="w-5 h-5" />, label: "Zones", href: "/admin/zones" },
   { icon: <UserIcon className="w-5 h-5" />, label: "User", href: "/admin/user" },
+  { icon: <BarChart3 className="w-5 h-5" />, label: "Statistiques", href: "/admin/statistics" },
   { icon: <Settings className="w-5 h-5" />, label: "Paramètres", href: "/admin/settings" },
 ];
 

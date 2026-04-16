@@ -86,6 +86,26 @@ export const leadsService = {
     return response.data;
   },
 
+  getStats: async (): Promise<{ daily: any[]; monthly: any[] }> => {
+    const response = await apiClient.get('/leads/stats');
+    return response.data;
+  },
+
+  getStatsByVille: async (): Promise<{ ville: string; count: number }[]> => {
+    const response = await apiClient.get('/leads/stats/villes');
+    return response.data;
+  },
+
+  getStatsByPhone: async (): Promise<{ daily: any[]; monthly: any[] }> => {
+    const response = await apiClient.get('/leads/stats/phone');
+    return response.data;
+  },
+
+  getStatsByUser: async (): Promise<{ id: string; name: string; email: string; count: number }[]> => {
+    const response = await apiClient.get('/leads/stats/users');
+    return response.data;
+  },
+
   getLeadsByUser: async (userId: string, filters: LeadsFilters = {}): Promise<LeadsResponse> => {
     const { page = 1, limit = 10, search, statut, phone, sort, ville } = filters;
     const params = new URLSearchParams({ page: String(page), limit: String(limit) });
@@ -114,6 +134,11 @@ export const leadsService = {
   
   getById: async (id: number | string): Promise<Lead> => {
     const res = await apiClient.get<Lead>(`/leads/my/${id}`);
+    return res.data;
+  },
+
+  getByIdAdmin: async (id: number | string): Promise<any> => {
+    const res = await apiClient.get(`/leads/show/${id}`);
     return res.data;
   },
 

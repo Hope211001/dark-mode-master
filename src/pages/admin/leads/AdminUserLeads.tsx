@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams, useSearchParams, Link } from "react-router-dom";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/dashboard/Header";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Filter, Phone, Loader2, ArrowUpDown, ExternalLink, Clock, MapPin, RefreshCw, Rows3, Tag } from "lucide-react";
+import { Search, Filter, Phone, Loader2, ArrowUpDown, ExternalLink, Clock, MapPin, RefreshCw, ArrowLeft } from "lucide-react";
 import { Pagination } from "@/components/Pagination";
 import { leadsService, Lead, LeadsFilters } from "@/services/leads.service";
 import { useToast } from "@/components/ui/use-toast";
@@ -29,13 +30,6 @@ const sortOptions = [
   { value: "asc", label: "Plus anciens" },
 ];
 
-const limitOptions = [
-  { value: "10", label: "10 / page" },
-  { value: "25", label: "25 / page" },
-  { value: "50", label: "50 / page" },
-  { value: "100", label: "100 / page" },
-];
-
 const statusConfig: Record<string, { label: string; className: string }> = {
   new: { label: "Nouveau", className: "bg-blue-500/15 text-blue-500 border-blue-500/20" },
   contacted: { label: "Contacté", className: "bg-amber-500/15 text-amber-500 border-amber-500/20" },
@@ -44,17 +38,13 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   unreachable: { label: "Injoignable", className: "bg-gray-500/15 text-gray-400 border-gray-500/20" },
 };
 
-const categorieConfig: Record<string, { label: string; className: string }> = {
-  "leboncoin": { label: "Leboncoin", className: "bg-orange-500/15 text-orange-500 border-orange-500/30" },
-  "pap.fr": { label: "PAP.fr", className: "bg-sky-500/15 text-sky-400 border-sky-500/30" },
-  "seloger": { label: "SeLoger", className: "bg-rose-500/15 text-rose-400 border-rose-500/30" },
-};
-
-const defaultCategorieStyle = "bg-violet-500/15 text-violet-400 border-violet-500/30";
-
 const DEBOUNCE_MS = 400;
 
-const AdminLeads = () => {
+const AdminUserLeads = () => {
+  const { userId } = useParams<{ userId: string }>();
+  const [searchParams] = useSearchParams();
+  const userName = searchParams.get("name") || "Utilisateur";
+
   const { toast } = useToast();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +52,6 @@ const AdminLeads = () => {
   const [phoneFilter, setPhoneFilter] = useState("all");
   const [villeFilter, setVilleFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState("desc");
-  const [limit, setLimit] = useState("25");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
@@ -71,13 +60,9 @@ const AdminLeads = () => {
   const [totalCount, setTotalCount] = useState(0);
 
   const [villes, setVilles] = useState<string[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [categorieFilter, setCategorieFilter] = useState("all");
 
-  // Charger les villes et catégories distinctes au montage
   useEffect(() => {
     leadsService.getDistinctVilles().then(setVilles).catch(() => {});
-    leadsService.getDistinctCategories().then(setCategories).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -87,26 +72,26 @@ const AdminLeads = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearch, statusFilter, phoneFilter, villeFilter, categorieFilter, sortOrder, limit]);
+  }, [debouncedSearch, statusFilter, phoneFilter, villeFilter, sortOrder]);
 
   useEffect(() => {
-    fetchLeads();
-  }, [currentPage, debouncedSearch, statusFilter, phoneFilter, villeFilter, categorieFilter, sortOrder, limit]);
+    if (userId) fetchLeads();
+  }, [currentPage, debouncedSearch, statusFilter, phoneFilter, villeFilter, sortOrder, limit, userId]);
 
   const fetchLeads = async () => {
+    if (!userId) return;
     try {
       setLoading(true);
       const filters: LeadsFilters = {
         page: currentPage,
-        limit: parseInt(limit),
+        limit: 25,
         search: debouncedSearch || undefined,
         statut: statusFilter,
         phone: phoneFilter,
         ville: villeFilter,
-        categorie: categorieFilter,
         sort: sortOrder,
       };
-      const res = await leadsService.getAll(filters);
+      const res = await leadsService.getLeadsByUser(userId, filters);
       setLeads(res.data);
       setTotalPages(res.totalPages);
       setTotalCount(res.totalCount);
@@ -123,9 +108,7 @@ const AdminLeads = () => {
     setStatusFilter("all");
     setPhoneFilter("all");
     setVilleFilter("all");
-    setCategorieFilter("all");
     setSortOrder("desc");
-    setLimit("25");
     setCurrentPage(1);
   };
 
@@ -139,7 +122,20 @@ const AdminLeads = () => {
     <div className="flex min-h-screen bg-background">
       <Sidebar />
       <main className="flex-1 md:ml-64 transition-[margin] duration-300 p-4 md:p-6 space-y-6">
-        <Header title="Tous les Leads" subtitle="Gestion de tous les leads de la plateforme" />
+        <Header title={`Leads de ${userName}`} subtitle="Leads assignés à cet utilisateur" />
+
+        {/* Retour + compteur */}
+        <div className="flex items-center justify-between">
+          <Link to="/admin/user">
+            <Button variant="outline" size="sm" className="gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Retour aux utilisateurs
+            </Button>
+          </Link>
+          <Badge variant="outline" className="text-sm px-3 py-1">
+            {totalCount} leads
+          </Badge>
+        </div>
 
         {/* Filters */}
         <div className="flex flex-wrap gap-3 bg-card p-4 rounded-xl border shadow-sm">
@@ -202,37 +198,7 @@ const AdminLeads = () => {
             </SelectContent>
           </Select>
 
-          <Select value={limit} onValueChange={setLimit}>
-            <SelectTrigger className="w-[140px]">
-              <Rows3 className="h-4 w-4 mr-2" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {limitOptions.map((f) => (
-                <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={categorieFilter} onValueChange={setCategorieFilter}>
-            <SelectTrigger className="w-[220px]">
-              <Tag className="h-4 w-4 mr-2" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Toutes catégories</SelectItem>
-              {categories.map((c) => (
-                <SelectItem key={c} value={c}>{c}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Button
-            variant="outline"
-            className="gap-2"
-            onClick={handleReset}
-            disabled={loading}
-          >
+          <Button variant="outline" className="gap-2" onClick={handleReset} disabled={loading}>
             <RefreshCw className="h-4 w-4" />
             Réinitialiser
           </Button>
@@ -244,7 +210,6 @@ const AdminLeads = () => {
             <TableHeader className="bg-muted/50">
               <TableRow className="hover:bg-transparent border-border">
                 <TableHead className="text-muted-foreground font-bold">Titre</TableHead>
-                <TableHead className="text-muted-foreground font-bold">Catégorie</TableHead>
                 <TableHead className="text-muted-foreground font-bold">Ville</TableHead>
                 <TableHead className="text-muted-foreground font-bold">Prix</TableHead>
                 <TableHead className="text-muted-foreground font-bold">Surface</TableHead>
@@ -257,15 +222,15 @@ const AdminLeads = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-20">
+                  <TableCell colSpan={8} className="text-center py-20">
                     <Loader2 className="animate-spin mx-auto text-primary h-8 w-8" />
                     <p className="text-sm text-muted-foreground mt-2">Chargement...</p>
                   </TableCell>
                 </TableRow>
               ) : leads.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-20 text-muted-foreground">
-                    Aucun lead trouvé.
+                  <TableCell colSpan={8} className="text-center py-20 text-muted-foreground">
+                    Aucun lead trouvé pour cet utilisateur.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -275,15 +240,6 @@ const AdminLeads = () => {
                       <span className="font-semibold text-foreground line-clamp-1 max-w-[250px]">
                         {lead.titre}
                       </span>
-                    </TableCell>
-                    <TableCell>
-                      {lead.categorie_scraping ? (
-                        <Badge variant="outline" className={`text-xs ${categorieConfig[lead.categorie_scraping]?.className || defaultCategorieStyle}`}>
-                          {categorieConfig[lead.categorie_scraping]?.label || lead.categorie_scraping}
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground text-xs">—</span>
-                      )}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       <div className="flex items-center gap-1.5">
@@ -342,4 +298,4 @@ const AdminLeads = () => {
   );
 };
 
-export default AdminLeads;
+export default AdminUserLeads;
