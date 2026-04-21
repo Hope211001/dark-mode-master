@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ClientSidebar } from "@/components/client/ClientSidebar";
 import { ClientHeader } from "@/components/client/ClientHeader";
 import { ZoneCard } from "@/components/client/ZoneCard";
+import MapExplorer from "@/components/Map/MapExplorer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -164,19 +165,17 @@ const ClientZones = () => {
               </div>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="h-48 bg-secondary/10 flex items-center justify-center border-t border-border/50">
-                <div className="text-center">
-                  <MapPin className="h-10 w-10 text-primary/20 mx-auto mb-2" />
-                  <p className="text-muted-foreground font-medium">Carte de vos concessions</p>
-                  <div className="flex gap-2 justify-center mt-2">
-                    {zones.slice(0, 3).map(z => (
-                      <Badge key={z.id} variant="outline" className="text-[10px] bg-background/50">
-                        {z.nom}
-                      </Badge>
-                    ))}
-                    {zones.length > 3 && <span className="text-[10px] text-muted-foreground">+{zones.length - 3} de plus</span>}
+              <div className="h-[400px] border-t border-border/50">
+                {exclusiveZones.length === 0 ? (
+                  <div className="h-full bg-secondary/10 flex items-center justify-center">
+                    <div className="text-center">
+                      <MapPin className="h-10 w-10 text-primary/20 mx-auto mb-2" />
+                      <p className="text-muted-foreground font-medium">Aucune zone à afficher sur la carte</p>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <MapExplorer zonesData={exclusiveZones} searchPos={null} />
+                )}
               </div>
             </CardContent>
           </Card>
@@ -219,15 +218,16 @@ const ClientZones = () => {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {exclusiveZones.map((zone) => (
-                      <ZoneCard 
-                        key={zone.id} 
+                      <ZoneCard
+                        key={zone.id}
                         id={zone.id.toString()}
-                        nom={zone.nom} 
+                        nom={zone.nom}
                         codes_postaux={zone.codes_postaux}
                         leadsCount={0} // À synchroniser avec votre table 'leads' plus tard
                         leadsThisMonth={0}
                         status="active"
                         price = {zone.price}
+                        onCanceled={() => { fetchMyZones(); loadAllData(); }}
                       />
                     ))}
                   </div>

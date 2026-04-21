@@ -1,4 +1,4 @@
-import { MapPin, TrendingUp, Eye, Settings, Lock, Hash, Mail, Loader2 } from "lucide-react";
+import { MapPin, TrendingUp, Eye, Settings, Lock, Hash, Mail, Loader2, XCircle, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { subscriptionService, Subscription } from "@/services/subscription";
 import { toast } from "sonner";
+import Swal from "sweetalert2";
 
 interface ZoneCardProps {
   id: string;
@@ -16,6 +17,7 @@ interface ZoneCardProps {
   leadsThisMonth?: number;
   price?: number;
   status?: "active" | "paused" | "expired";
+  onCanceled?: () => void;
 }
 
 const statusConfig = {
@@ -32,10 +34,61 @@ export function ZoneCard({
   leadsThisMonth = 0,
   price = 0,
   status = "active",
+  onCanceled,
 }: ZoneCardProps) {
 
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [fetching, setFetching] = useState(true);
+  const [canceling, setCanceling] = useState(false);
+
+  const handleCancel = async () => {
+    const result = await Swal.fire({
+      icon: 'warning',
+      title: `Annuler l'abonnement à ${nom} ?`,
+      html: `
+        <p>L'abonnement sera <strong>annulé à la fin du cycle en cours</strong>.</p>
+        <p class="mt-2 text-sm opacity-80">Vous gardez l'accès jusqu'à la prochaine date de renouvellement.</p>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Oui, annuler',
+      cancelButtonText: 'Garder',
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#475569',
+      background: '#0f172a',
+      color: '#fff',
+      reverseButtons: true,
+    });
+    if (!result.isConfirmed) return;
+
+    try {
+      setCanceling(true);
+      const res = await subscriptionService.cancelByZone(id);
+      const cancelDate = res.cancel_at ? new Date(res.cancel_at).toLocaleDateString('fr-FR') : 'fin du cycle';
+      // Refresh local pour cacher le bouton tout de suite
+      await fetchSubscription();
+      await Swal.fire({
+        icon: 'success',
+        title: 'Annulation programmée',
+        text: `L'abonnement prendra fin le ${cancelDate}.`,
+        background: '#0f172a',
+        color: '#fff',
+        confirmButtonColor: '#059669',
+      });
+      onCanceled?.();
+    } catch (error: any) {
+      const msg = error?.response?.data?.error || "Impossible d'annuler l'abonnement.";
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: msg,
+        background: '#0f172a',
+        color: '#fff',
+        confirmButtonColor: '#dc2626',
+      });
+    } finally {
+      setCanceling(false);
+    }
+  };
 
   useEffect(() => {
     if (id) {
@@ -133,6 +186,19 @@ export function ZoneCard({
           </div>
         </div>
 
+        {/* Badge "Annulation programmée" — visible si cancel_at set */}
+        {subscription?.cancel_at && (
+          <div className="flex items-center gap-2 p-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10">
+            <Clock className="h-4 w-4 text-amber-400 shrink-0" />
+            <span className="text-xs text-amber-200 font-medium">
+              Annulation programmée le{" "}
+              <span className="font-bold">
+                {new Date(subscription.cancel_at).toLocaleDateString('fr-FR')}
+              </span>
+            </span>
+          </div>
+        )}
+
         <div className="flex items-center gap-2 pt-2 border-t border-border/50">
           <Link to={`/client/leads?zone=${id}`} className="flex-1">
             <Button size="sm" variant="default" className="w-full h-9 font-bold bg-primary hover:bg-primary/90">
@@ -141,10 +207,22 @@ export function ZoneCard({
             </Button>
           </Link>
           <Link to={`/client/zone-setting/${id}`}>
-            <Button size="sm" variant="outline" className="h-9 w-9 p-0">
+            <Button size="sm" variant="outline" className="h-9 w-9 p-0" title="Paramètres">
               <Settings className="h-4 w-4" />
             </Button>
           </Link>
+          {!subscription?.cancel_at && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleCancel}
+              disabled={canceling}
+              className="h-9 w-9 p-0 border-red-500/40 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/60"
+              title="Annuler l'abonnement"
+            >
+              {canceling ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

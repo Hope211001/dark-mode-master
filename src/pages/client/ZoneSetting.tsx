@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import { ClientSidebar } from "@/components/client/ClientSidebar";
 import { ClientHeader } from "@/components/client/ClientHeader";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,9 @@ import {
     Settings2,
     Layers,
     MapPin,
-    MessageSquare
+    MessageSquare,
+    XCircle,
+    Clock
 } from "lucide-react";
 import { subscriptionService, Subscription } from '@/services/subscription';
 import ErrorAlert from "@/components/alert/error";
@@ -34,11 +37,63 @@ import SuccessAlert from "@/components/alert/success";
 
 const ZoneSetting = () => {
     const { zoneId } = useParams<{ zoneId: string }>();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [canceling, setCanceling] = useState(false);
     const [fetching, setFetching] = useState(true);
     const [config, setConfig] = useState<Subscription | null>(null);
     const [errorAlert, setErrorAlert] = useState({ visible: false, message: "" });
     const [successAlert, setSuccessAlert] = useState({ visible: false, message: "" });
+
+    const handleCancelSubscription = async () => {
+        if (!zoneId) return;
+
+        const result = await Swal.fire({
+            icon: 'warning',
+            title: 'Annuler l\'abonnement ?',
+            html: `
+                <p>L'abonnement sera <strong>annulé à la fin du cycle en cours</strong>.</p>
+                <p class="mt-2 text-sm opacity-80">Vous gardez l'accès à la zone et à ses leads jusqu'à la prochaine date de renouvellement, puis la zone sera libérée.</p>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Oui, annuler',
+            cancelButtonText: 'Non, garder',
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#475569',
+            background: '#0f172a',
+            color: '#fff',
+            reverseButtons: true,
+        });
+        if (!result.isConfirmed) return;
+
+        try {
+            setCanceling(true);
+            const res = await subscriptionService.cancelByZone(zoneId);
+            const cancelDate = res.cancel_at ? new Date(res.cancel_at).toLocaleDateString('fr-FR') : 'fin du cycle';
+            // Refresh local pour afficher le badge "Annulation programmée"
+            await fetchConfig();
+            await Swal.fire({
+                icon: 'success',
+                title: 'Annulation programmée',
+                text: `Votre abonnement prendra fin le ${cancelDate}.`,
+                background: '#0f172a',
+                color: '#fff',
+                confirmButtonColor: '#059669',
+            });
+        } catch (error: any) {
+            const msg = error?.response?.data?.error || 'Impossible d\'annuler l\'abonnement.';
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: msg,
+                background: '#0f172a',
+                color: '#fff',
+                confirmButtonColor: '#dc2626',
+            });
+        } finally {
+            setCanceling(false);
+        }
+    };
 
     // 1. Chargement des données au montage du composant
     useEffect(() => {
@@ -289,6 +344,46 @@ const ZoneSetting = () => {
                                     {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
                                     Sauvegarder la configuration
                                 </Button>
+                            </div>
+
+                            {/* SECTION DANGER — Annulation d'abonnement (ou statut si déjà annulé) */}
+                            <div className="mt-8 pt-6 border-t border-white/5">
+                                {config?.cancel_at ? (
+                                    <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-5 flex items-start gap-3">
+                                        <Clock className="h-5 w-5 text-amber-400 mt-0.5 shrink-0" />
+                                        <div>
+                                            <h3 className="text-amber-200 font-semibold">Annulation programmée</h3>
+                                            <p className="text-sm text-slate-400 mt-1">
+                                                Votre abonnement sera résilié le{" "}
+                                                <span className="text-amber-200 font-bold">
+                                                    {new Date(config.cancel_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                                </span>
+                                                . Vous gardez l'accès à la zone jusqu'à cette date.
+                                            </p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="rounded-xl border border-red-500/30 bg-red-950/20 p-5 space-y-3">
+                                        <div className="flex items-start gap-3">
+                                            <XCircle className="h-5 w-5 text-red-400 mt-0.5 shrink-0" />
+                                            <div>
+                                                <h3 className="text-red-200 font-semibold">Annuler l'abonnement</h3>
+                                                <p className="text-sm text-slate-400 mt-1">
+                                                    L'abonnement reste actif jusqu'à la fin du cycle en cours. Aucun nouveau prélèvement ne sera effectué.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <Button
+                                            onClick={handleCancelSubscription}
+                                            disabled={canceling}
+                                            variant="outline"
+                                            className="w-full border-red-500/40 bg-transparent text-red-300 hover:bg-red-500/10 hover:text-red-200 hover:border-red-500/60"
+                                        >
+                                            {canceling ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <XCircle className="h-4 w-4 mr-2" />}
+                                            Annuler mon abonnement
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
