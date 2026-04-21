@@ -96,6 +96,22 @@ class AuthService {
     return response.data;
   }
 
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const response = await apiClient.post<{ message: string }>(
+      `${this.BASE_PATH}/forgot-password`,
+      { email }
+    );
+    return response.data;
+  }
+
+  async resetPassword(token: string, id: string, newPassword: string): Promise<{ message: string }> {
+    const response = await apiClient.post<{ message: string }>(
+      `${this.BASE_PATH}/reset-password`,
+      { token, id, newPassword }
+    );
+    return response.data;
+  }
+
   async logout(): Promise<void> {
     try {
       await apiClient.post(`${this.BASE_PATH}/logout`);

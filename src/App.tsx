@@ -42,6 +42,8 @@ import Tarifs from "./pages/home/tarifs ";
 import Fonctionnalites from "./pages/home/fonctionnalites";
 import Contact from "./pages/home/contact";
 import VerifyEmail from "./pages/auth/VerifyEmail"
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 // client
 import ClientSearchZone from "./pages/client/ClientSearchZone";
 import ShowLead from "./pages/client/ShowLead";
@@ -72,6 +74,8 @@ const App = () => (
               <Route path="/fonctionnalites" element={<Fonctionnalites />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               {/* PORTAIL ADMIN - Regroupé pour plus de clarté */}
               <Route path="/admin">
                 <Route index element={

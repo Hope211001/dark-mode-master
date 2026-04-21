@@ -99,6 +99,11 @@ const Login: React.FC = () => {
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
+            <div className="text-right pt-1">
+              <Link to="/forgot-password" className="text-[12px] text-emerald-600 hover:text-emerald-700 font-medium transition-colors">
+                Mot de passe oublié ?
+              </Link>
+            </div>
           </div>
 
           <button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 mt-2 shadow-lg shadow-emerald-600/20 active:scale-95 disabled:opacity-50 text-sm">

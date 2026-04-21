@@ -7,13 +7,32 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Camera, Mail, Phone, MapPin, TrendingUp, Save } from "lucide-react";
+import { Camera, Mail, Phone, MapPin, TrendingUp, Save, CreditCard, ExternalLink, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { authService } from '@/services/auth.service';
+import { stripeService } from '@/services/stripe.service';
+import Swal from 'sweetalert2';
 
 const ClientProfile = () => {
   const [loading, setLoading] = useState(false);
+  const [openingPortal, setOpeningPortal] = useState(false);
   const [joinedDate, setJoinedDate] = useState(''); // Pour stocker la date d'inscription
+
+  const handleOpenPortal = async () => {
+    try {
+      setOpeningPortal(true);
+      const { url } = await stripeService.openCustomerPortal();
+      window.location.href = url;
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: error?.response?.data?.error || "Impossible d'ouvrir le portail de facturation.",
+        confirmButtonColor: '#dc2626',
+      });
+      setOpeningPortal(false);
+    }
+  };
   
   // State pour les données du formulaire
   const [formData, setFormData] = useState({
@@ -233,6 +252,29 @@ const ClientProfile = () => {
                     <span className="text-sm text-muted-foreground">Emails envoyés</span>
                     <span className="text-sm font-medium text-foreground mono">342</span>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Facturation Stripe */}
+              <Card className="glass-card border-primary/20">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <CreditCard className="h-4 w-4 text-primary" />
+                    Facturation
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Gérez votre carte bancaire, téléchargez vos factures et suivez vos abonnements.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button
+                    onClick={handleOpenPortal}
+                    disabled={openingPortal}
+                    className="w-full gap-2"
+                  >
+                    {openingPortal ? <Loader2 className="h-4 w-4 animate-spin" /> : <ExternalLink className="h-4 w-4" />}
+                    Ouvrir le portail de facturation
+                  </Button>
                 </CardContent>
               </Card>
 
