@@ -11,6 +11,7 @@ export interface User {
   name?: string;
   role: 'client' | 'admin';
   created_at: string;
+  is_verified?: boolean;
 }
 
 export interface RegisterData {

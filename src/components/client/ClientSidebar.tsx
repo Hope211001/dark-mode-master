@@ -18,6 +18,7 @@ import { NavLink } from "@/components/NavLink";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { OnboardingChecklist } from "@/components/client/OnboardingChecklist";
 
 import { authService, User } from "@/services/auth.service";
 import { notificationService } from "@/services/notification.service"; // <--- AJOUT SERVICE
@@ -261,18 +262,13 @@ export function ClientSidebar() {
           ))}
         </nav>
 
-        {/* Subscription & Logout */}
-        <div className="border-t border-border p-4">
-          {/* <div className="rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 p-3 mb-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-muted-foreground">Rôle</span>
-              <Badge className="bg-primary text-primary-foreground text-xs uppercase">{user?.role || '...'}</Badge>
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              Membre depuis : {user?.created_at ? new Date(user.created_at).toLocaleDateString('fr-FR') : '...'}
-            </div>
-          </div> */}
+        {/* Onboarding guide — au-dessus du bouton Logout, masquable */}
+        <div className="border-t border-border pt-3">
+          <OnboardingChecklist user={user} />
+        </div>
 
+        {/* Logout */}
+        <div className="px-4 pb-4">
           <Button
             onClick={handleLogout}
             variant="ghost"
