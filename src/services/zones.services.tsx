@@ -16,6 +16,8 @@ export interface Zone {
   statut_market: 'LIBRE' | 'VENDU';
 
   codes_postaux: string[];
+  codes_postaux_originaux?: string[];
+  type?: 'ville' | 'departement' | 'arrondissement';
   owner_id: string | null; // UUID de l'utilisateur ou null
   created_at?: string;     // Optionnel
   auto_contact_enabled?: boolean;
@@ -29,6 +31,8 @@ export interface CreateZoneDTO {
   lat_center: number;
   lng_center: number;
   codes_postaux: string[];
+  codes_postaux_originaux?: string[];
+  type?: 'ville' | 'departement' | 'arrondissement';
 }
 
 // 3. Le type pour la mise à jour (Tous les champs sont optionnels)
