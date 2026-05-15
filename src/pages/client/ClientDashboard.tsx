@@ -303,7 +303,7 @@ const ClientDashboard = () => {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="space-y-3">
                 {recentLeads.map((lead) => (
                   <LeadCard
                     key={lead.id}

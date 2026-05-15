@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, Phone, Grid3X3, List, Download, Loader2, RefreshCw, ArrowUpDown, MapPin, Tag } from "lucide-react";
+import { Search, Filter, Phone, Download, Loader2, RefreshCw, ArrowUpDown, MapPin, Tag } from "lucide-react";
 import { Pagination } from "@/components/Pagination";
 import { leadsService, Lead, LeadsFilters } from "@/services/leads.service";
 import { zoneService, Zone } from "@/services/zones.services";
@@ -47,7 +47,6 @@ const ClientLeads = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [statusFilter, setStatusFilter] = useState("all");
   const [phoneFilter, setPhoneFilter] = useState("all");
   const [categorieFilter, setCategorieFilter] = useState("all");
@@ -231,15 +230,6 @@ const ClientLeads = () => {
               </SelectContent>
             </Select>
 
-            <div className="flex items-center gap-1 bg-secondary/50 rounded-lg p-1">
-              <Button variant={viewMode === "grid" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("grid")} className="h-8 w-10 p-0">
-                <Grid3X3 className="h-4 w-4" />
-              </Button>
-              <Button variant={viewMode === "list" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("list")} className="h-8 w-10 p-0">
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
-
             <Button variant="outline" className="gap-2" onClick={handleExport} disabled={exporting}>
               {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
               Exporter
@@ -289,10 +279,7 @@ const ClientLeads = () => {
               <p className="text-muted-foreground">Aucun lead trouvé.</p>
             </div>
           ) : (
-            <div className={viewMode === "grid"
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-              : "space-y-3"
-            }>
+            <div className="space-y-3">
               {filteredLeads.map((lead) => (
                 <LeadCard
                   key={lead.id}

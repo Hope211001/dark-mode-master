@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import { ClientSidebar } from "@/components/client/ClientSidebar";
 import { ClientHeader } from "@/components/client/ClientHeader";
 import { Button } from "@/components/ui/button";
@@ -8,10 +7,17 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  Search, MapPin, Euro, Maximize, Calendar, Grid3X3, List,
-  Loader2, RefreshCw, ArrowUpDown,
-  Archive, Phone, ExternalLink, RotateCcw
+  Search, MapPin, Euro, Maximize, Calendar as CalendarIcon,
+  Loader2, RefreshCw, ArrowUpDown, TrendingUp,
+  Archive, Phone, RotateCcw
 } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const sourceConfig: Record<string, { label: string; className: string; dot: string }> = {
+  "leboncoin": { label: "Leboncoin", className: "bg-orange-500 text-white border-orange-600 shadow-sm shadow-orange-500/30", dot: "bg-white" },
+  "pap.fr":    { label: "PAP.fr",    className: "bg-sky-500 text-white border-sky-600 shadow-sm shadow-sky-500/30",       dot: "bg-white" },
+  "seloger":   { label: "SeLoger",   className: "bg-rose-500 text-white border-rose-600 shadow-sm shadow-rose-500/30",     dot: "bg-white" },
+};
 import { Pagination } from "@/components/Pagination";
 import { leadsService, Lead, LeadsFilters } from "@/services/leads.service";
 import { zoneService, Zone } from "@/services/zones.services";
@@ -25,108 +31,133 @@ const sortOptions = [
 
 const DEBOUNCE_MS = 400;
 
-// ── Card archive ──
+// ── Card archive (meme layout que LeadCard, accent rouge) ──
 function ArchivedLeadCard({ lead, onRestore, onAlert }: {
   lead: Lead;
   onRestore: () => void;
   onAlert: (type: "success" | "error", message: string) => void;
 }) {
-  const navigate = useNavigate();
   const [restoring, setRestoring] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [isDescOverflow, setIsDescOverflow] = useState(false);
+  const descRef = useRef<HTMLParagraphElement>(null);
 
-  const handleRestore = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const { id, titre, ville, surface, prix = 0, date_detection, phone, description, categorie_scraping } = lead;
+  const source = categorie_scraping ? sourceConfig[categorie_scraping] : null;
+
+  const formattedDate = date_detection
+    ? new Date(date_detection).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
+    : null;
+
+  const prixM2 = surface > 0 ? Math.round(prix / surface) : 0;
+  const descText = description || "";
+
+  useEffect(() => {
+    const el = descRef.current;
+    if (!el || expanded) return;
+    setIsDescOverflow(el.scrollHeight > el.clientHeight + 1);
+  }, [descText, expanded]);
+
+  const handleRestore = async () => {
     try {
       setRestoring(true);
-      await leadsService.updateStatus(lead.id, 'new');
-      onAlert("success", "Lead restauré avec succès !");
+      await leadsService.updateStatus(id, 'new');
+      onAlert("success", "Lead desarchive avec succes !");
       onRestore();
     } catch {
-      onAlert("error", "Erreur lors de la restauration.");
+      onAlert("error", "Erreur lors du desarchivage.");
     } finally {
       setRestoring(false);
     }
   };
 
-  const formattedDate = new Date(lead.date_detection).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
-
   return (
-    <Card
-      className="overflow-hidden transition-all duration-300 hover:border-destructive/30 hover:shadow-lg group border-border/50 cursor-pointer opacity-80 hover:opacity-100"
-      onClick={() => navigate(`/client/showLead/${lead.id}`)}
-    >
-      <div className="relative h-24 bg-destructive/5 overflow-hidden flex items-center justify-center">
-        <div className="text-destructive/15 group-hover:scale-110 transition-transform duration-500">
-          <Archive size={48} />
-        </div>
-        <div className="absolute top-3 left-3">
-          <Badge className="border text-[10px] uppercase font-bold bg-destructive/20 text-destructive border-destructive/30">
-            Rejeté
-          </Badge>
-        </div>
-        {lead.phone && (
-          <Badge variant="outline" className="absolute top-3 right-3 border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold gap-1">
-            <Phone className="h-2.5 w-2.5" />
-            Tél
-          </Badge>
-        )}
-      </div>
+    <Card className="bg-white border-l-4 border-l-red-500 border-gray-200 hover:border-red-300 hover:shadow-lg transition-all duration-300 rounded-xl">
+      <CardContent className="p-4">
+        <div className="flex items-start gap-4">
+          {/* Main content */}
+          <div className="flex-1 min-w-0 space-y-2">
+            {/* Top row: archived badge + source */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <Badge className="border text-[9px] uppercase font-bold bg-red-50 text-red-700 border-red-200 gap-1">
+                <Archive className="h-2.5 w-2.5" /> Archive
+              </Badge>
+              {source && (
+                <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em]", source.className)}>
+                  <span className={cn("h-1.5 w-1.5 rounded-full", source.dot)} />
+                  {source.label}
+                </span>
+              )}
+            </div>
 
-      <CardContent className="p-4 space-y-3">
-        <div className="min-h-[40px]">
-          <h3 className="font-bold text-foreground leading-tight line-clamp-2 text-sm group-hover:text-destructive transition-colors">
-            {lead.titre}
-          </h3>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-            <MapPin className="h-3 w-3" />
-            <span className="truncate">{lead.ville}</span>
-          </div>
-        </div>
+            {/* Titre */}
+            <h3 className="font-bold text-gray-900 leading-snug text-base md:text-lg">{titre}</h3>
 
-        <div className="grid grid-cols-2 gap-2 border-y border-border/30 py-2.5">
-          <div className="flex items-center gap-1.5 text-xs">
-            <Maximize className="h-3 w-3 text-muted-foreground" />
-            <span className="text-foreground font-semibold">{lead.surface} m²</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-xs">
-            <Euro className="h-3 w-3 text-muted-foreground" />
-            <span className="text-foreground font-semibold">{lead.prix?.toLocaleString()} €</span>
-          </div>
-        </div>
+            {/* Info pills */}
+            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+              <span title="Localisation" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-800 font-semibold">
+                <MapPin className="h-3 w-3 text-gray-500" />{ville}
+              </span>
+              <span title="Surface" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-800 font-semibold">
+                <Maximize className="h-3 w-3 text-gray-500" />{surface} m&sup2;
+              </span>
+              <span title="Prix" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-red-50 text-red-700 font-bold border border-red-100">
+                <Euro className="h-3 w-3" />{prix.toLocaleString()} &euro;
+              </span>
+              {prixM2 > 0 && (
+                <span title="Prix par m&sup2;" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-800 font-semibold">
+                  <TrendingUp className="h-3 w-3 text-gray-500" />{prixM2.toLocaleString()} &euro;/m&sup2;
+                </span>
+              )}
+              {formattedDate && (
+                <span title="Date de detection" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-700 font-medium">
+                  <CalendarIcon className="h-3 w-3 text-gray-500" />{formattedDate}
+                </span>
+              )}
+              {phone && (
+                <span title="Telephone" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-red-50 text-red-700 font-bold border border-red-100">
+                  <Phone className="h-3 w-3" />{phone}
+                </span>
+              )}
+            </div>
 
-        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <Calendar className="h-3 w-3" />
-            <span>{formattedDate}</span>
-          </div>
-        </div>
+            {/* Description */}
+            {descText ? (
+              <div>
+                <p
+                  ref={descRef}
+                  className={cn("text-sm text-gray-800 leading-relaxed", !expanded && "line-clamp-3")}
+                >
+                  {descText}
+                </p>
+                {(isDescOverflow || expanded) && (
+                  <button
+                    type="button"
+                    className="mt-1.5 text-sm text-emerald-600 hover:text-emerald-700 hover:underline font-semibold"
+                    onClick={() => setExpanded((v) => !v)}
+                  >
+                    {expanded ? "lire moins" : "lire plus"}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 italic">Aucune description</p>
+            )}
 
-        <div className="flex items-center gap-2 pt-1" onClick={(e) => e.stopPropagation()}>
-          <Button
-            size="sm"
-            variant="outline"
-            className="flex-1 font-bold text-xs h-9 gap-2 hover:bg-primary/10 hover:text-primary hover:border-primary/30"
-            onClick={handleRestore}
-            disabled={restoring}
-          >
-            {restoring ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />}
-            Restaurer
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-9 w-9 p-0"
-            onClick={(e) => {
-              e.stopPropagation();
-              window.open(lead.url, '_blank');
-            }}
-          >
-            <ExternalLink className="h-3.5 w-3.5" />
-          </Button>
+          </div>
+
+          {/* Actions column (right) - Desarchiver */}
+          <div className="flex flex-col gap-2 w-44 shrink-0">
+            <Button
+              size="sm"
+              className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-[11px] h-9 rounded-lg shadow-sm shadow-emerald-600/30 hover:shadow-emerald-600/50 transition-all"
+              onClick={handleRestore}
+              disabled={restoring}
+            >
+              {restoring ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5 mr-1.5" />}
+              D&eacute;sarchiver
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -137,7 +168,6 @@ function ArchivedLeadCard({ lead, onRestore, onAlert }: {
 const ArchiveLeads = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortOrder, setSortOrder] = useState("desc");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -253,15 +283,6 @@ const ArchiveLeads = () => {
               </SelectContent>
             </Select>
 
-            <div className="flex items-center gap-1 bg-secondary/50 rounded-lg p-1">
-              <Button variant={viewMode === "grid" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("grid")} className="h-8 w-10 p-0">
-                <Grid3X3 className="h-4 w-4" />
-              </Button>
-              <Button variant={viewMode === "list" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("list")} className="h-8 w-10 p-0">
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
-
             <Button
               variant="outline"
               className="gap-2"
@@ -304,10 +325,7 @@ const ArchiveLeads = () => {
               <p className="text-xs text-muted-foreground/60 mt-1">Les leads que vous rejetez apparaîtront ici</p>
             </div>
           ) : (
-            <div className={viewMode === "grid"
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-              : "space-y-3"
-            }>
+            <div className="space-y-3">
               {leads.map((lead) => (
                 <ArchivedLeadCard
                   key={lead.id}

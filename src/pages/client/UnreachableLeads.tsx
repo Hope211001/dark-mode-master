@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  Search, MapPin, Euro, Maximize, Calendar, Grid3X3, List,
+  Search, MapPin, Euro, Maximize, Calendar,
   Loader2, RefreshCw, ArrowUpDown,
   PhoneOff, Phone, ExternalLink, RotateCcw
 } from "lucide-react";
@@ -135,7 +135,6 @@ function UnreachableLeadCard({ lead, onRestore, onAlert }: {
 const UnreachableLeads = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortOrder, setSortOrder] = useState("desc");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -250,15 +249,6 @@ const UnreachableLeads = () => {
               </SelectContent>
             </Select>
 
-            <div className="flex items-center gap-1 bg-secondary/50 rounded-lg p-1">
-              <Button variant={viewMode === "grid" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("grid")} className="h-8 w-10 p-0">
-                <Grid3X3 className="h-4 w-4" />
-              </Button>
-              <Button variant={viewMode === "list" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("list")} className="h-8 w-10 p-0">
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
-
             <Button
               variant="outline"
               className="gap-2"
@@ -288,10 +278,7 @@ const UnreachableLeads = () => {
               <p className="text-xs text-muted-foreground/60 mt-1">Les leads marqués injoignables apparaîtront ici</p>
             </div>
           ) : (
-            <div className={viewMode === "grid"
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-              : "space-y-3"
-            }>
+            <div className="space-y-3">
               {leads.map((lead) => (
                 <UnreachableLeadCard
                   key={lead.id}

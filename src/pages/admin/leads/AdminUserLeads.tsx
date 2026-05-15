@@ -1,16 +1,20 @@
-import { useEffect, useState } from "react";
-import { useParams, useSearchParams, Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams, useSearchParams, Link } from "react-router-dom";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/dashboard/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Filter, Phone, Loader2, ArrowUpDown, ExternalLink, Clock, MapPin, RefreshCw, ArrowLeft } from "lucide-react";
+import {
+  Search, Filter, Phone, Loader2, ArrowUpDown, ExternalLink, MapPin, RefreshCw, ArrowLeft,
+  Eye, Maximize, Euro, Calendar as CalendarIcon, TrendingUp,
+} from "lucide-react";
 import { Pagination } from "@/components/Pagination";
 import { leadsService, Lead, LeadsFilters } from "@/services/leads.service";
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 const statusFilters = [
   { value: "all", label: "Tous les statuts" },
@@ -31,14 +35,157 @@ const sortOptions = [
 ];
 
 const statusConfig: Record<string, { label: string; className: string }> = {
-  new: { label: "Nouveau", className: "bg-blue-500/15 text-blue-500 border-blue-500/20" },
-  contacted: { label: "Contacté", className: "bg-amber-500/15 text-amber-500 border-amber-500/20" },
-  replied: { label: "Répondu", className: "bg-emerald-500/15 text-emerald-500 border-emerald-500/20" },
-  rejected: { label: "Refusé", className: "bg-red-500/15 text-red-500 border-red-500/20" },
-  unreachable: { label: "Injoignable", className: "bg-gray-500/15 text-gray-400 border-gray-500/20" },
+  new: { label: "Nouveau", className: "bg-blue-50 text-blue-700 border-blue-200" },
+  contacted: { label: "Contacte", className: "bg-amber-50 text-amber-700 border-amber-200" },
+  replied: { label: "Repondu", className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  rejected: { label: "Refuse", className: "bg-red-50 text-red-700 border-red-200" },
+  unreachable: { label: "Injoignable", className: "bg-gray-50 text-gray-600 border-gray-200" },
+};
+
+const sourceConfig: Record<string, { label: string; className: string; dot: string }> = {
+  "leboncoin": { label: "Leboncoin", className: "bg-orange-500 text-white border-orange-600 shadow-sm shadow-orange-500/30", dot: "bg-white" },
+  "pap.fr":    { label: "PAP.fr",    className: "bg-sky-500 text-white border-sky-600 shadow-sm shadow-sky-500/30",       dot: "bg-white" },
+  "seloger":   { label: "SeLoger",   className: "bg-rose-500 text-white border-rose-600 shadow-sm shadow-rose-500/30",     dot: "bg-white" },
 };
 
 const DEBOUNCE_MS = 400;
+
+// ── Carte lead admin (meme layout que LeadCard, sans actions de contact) ──
+function AdminLeadCard({ lead }: { lead: Lead }) {
+  const navigate = useNavigate();
+  const [expanded, setExpanded] = useState(false);
+  const [isDescOverflow, setIsDescOverflow] = useState(false);
+  const descRef = useRef<HTMLParagraphElement>(null);
+
+  const { id, titre, ville, surface, prix = 0, statut, date_detection, phone, url, score, description, categorie_scraping } = lead;
+  const currentStatus = statut || "new";
+  const st = statusConfig[currentStatus] || statusConfig.new;
+  const source = categorie_scraping ? sourceConfig[categorie_scraping] : null;
+
+  const displayScore = score != null ? (score <= 10 ? score * 10 : score) : null;
+  const scoreColor = displayScore != null
+    ? displayScore >= 80 ? "text-emerald-700 border-emerald-200 bg-emerald-50"
+    : displayScore >= 60 ? "text-amber-700 border-amber-200 bg-amber-50"
+    : "text-gray-500 border-gray-200 bg-gray-50"
+    : "";
+
+  const formattedDate = date_detection
+    ? new Date(date_detection).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
+    : null;
+
+  const prixM2 = surface > 0 ? Math.round(prix / surface) : 0;
+  const descText = description || "";
+
+  useEffect(() => {
+    const el = descRef.current;
+    if (!el || expanded) return;
+    setIsDescOverflow(el.scrollHeight > el.clientHeight + 1);
+  }, [descText, expanded]);
+
+  return (
+    <Card className="bg-white border-gray-200 hover:border-emerald-300 hover:shadow-lg transition-all duration-300 rounded-xl">
+      <CardContent className="p-4">
+        <div className="flex items-start gap-4">
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <Badge className={cn("border text-[9px] uppercase font-bold", st.className)}>{st.label}</Badge>
+              {displayScore != null && (
+                <Badge variant="outline" className={cn("font-mono font-bold text-[10px]", scoreColor)}>{displayScore}%</Badge>
+              )}
+              {source && (
+                <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em]", source.className)}>
+                  <span className={cn("h-1.5 w-1.5 rounded-full", source.dot)} />
+                  {source.label}
+                </span>
+              )}
+            </div>
+
+            <h3 className="font-bold text-gray-900 leading-snug text-base md:text-lg">{titre}</h3>
+
+            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+              <span title="Localisation" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-800 font-semibold">
+                <MapPin className="h-3 w-3 text-gray-500" />{ville}
+              </span>
+              <span title="Surface" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-800 font-semibold">
+                <Maximize className="h-3 w-3 text-gray-500" />{surface} m&sup2;
+              </span>
+              <span title="Prix" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 font-bold border border-emerald-100">
+                <Euro className="h-3 w-3" />{prix.toLocaleString()} &euro;
+              </span>
+              {prixM2 > 0 && (
+                <span title="Prix par m&sup2;" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-800 font-semibold">
+                  <TrendingUp className="h-3 w-3 text-gray-500" />{prixM2.toLocaleString()} &euro;/m&sup2;
+                </span>
+              )}
+              {formattedDate && (
+                <span title="Detecte le" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-700 font-medium">
+                  <CalendarIcon className="h-3 w-3 text-gray-500" />{formattedDate}
+                </span>
+              )}
+              {phone && (
+                <span title="Telephone" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 font-bold border border-emerald-100">
+                  <Phone className="h-3 w-3" />{phone}
+                </span>
+              )}
+            </div>
+
+            {descText ? (
+              <div>
+                <p
+                  ref={descRef}
+                  className={cn("text-sm text-gray-800 leading-relaxed", !expanded && "line-clamp-3")}
+                >
+                  {descText}
+                </p>
+                {(isDescOverflow || expanded) && (
+                  <button
+                    type="button"
+                    className="mt-1.5 text-sm text-emerald-600 hover:text-emerald-700 hover:underline font-semibold"
+                    onClick={() => setExpanded((v) => !v)}
+                  >
+                    {expanded ? "lire moins" : "lire plus"}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 italic">Aucune description</p>
+            )}
+
+            {url && (
+              <div className="pt-1">
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white hover:bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:text-emerald-700 border border-gray-300 hover:border-emerald-400 shadow-sm transition-all"
+                >
+                  Voir sur {source?.label || "l'annonce"}
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-2 w-44 shrink-0">
+            <button
+              type="button"
+              className="group/btn flex items-center gap-2.5 h-12 px-3 rounded-xl bg-white border-2 border-emerald-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
+              onClick={() => navigate(`/admin/leads/${id}`)}
+            >
+              <span className="h-8 w-8 rounded-lg bg-emerald-600 flex items-center justify-center shrink-0 shadow-sm shadow-emerald-600/40">
+                <Eye className="h-4 w-4 text-white" />
+              </span>
+              <span className="flex flex-col items-start min-w-0 leading-tight">
+                <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Ouvrir</span>
+                <span className="text-sm font-bold text-gray-800 group-hover/btn:text-emerald-700 transition-colors">Voir d&eacute;tail</span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 const AdminUserLeads = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -76,7 +223,7 @@ const AdminUserLeads = () => {
 
   useEffect(() => {
     if (userId) fetchLeads();
-  }, [currentPage, debouncedSearch, statusFilter, phoneFilter, villeFilter, sortOrder, limit, userId]);
+  }, [currentPage, debouncedSearch, statusFilter, phoneFilter, villeFilter, sortOrder, userId]);
 
   const fetchLeads = async () => {
     if (!userId) return;
@@ -110,12 +257,6 @@ const AdminUserLeads = () => {
     setVilleFilter("all");
     setSortOrder("desc");
     setCurrentPage(1);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("fr-FR", {
-      day: "2-digit", month: "short", year: "numeric",
-    });
   };
 
   return (
@@ -204,95 +345,32 @@ const AdminUserLeads = () => {
           </Button>
         </div>
 
-        {/* Table */}
-        <div className="border rounded-xl bg-card/50 backdrop-blur-sm overflow-hidden shadow-lg border-border">
-          <Table>
-            <TableHeader className="bg-muted/50">
-              <TableRow className="hover:bg-transparent border-border">
-                <TableHead className="text-muted-foreground font-bold">Titre</TableHead>
-                <TableHead className="text-muted-foreground font-bold">Ville</TableHead>
-                <TableHead className="text-muted-foreground font-bold">Prix</TableHead>
-                <TableHead className="text-muted-foreground font-bold">Surface</TableHead>
-                <TableHead className="text-muted-foreground font-bold">Score</TableHead>
-                <TableHead className="text-muted-foreground font-bold">Statut</TableHead>
-                <TableHead className="text-muted-foreground font-bold">Date</TableHead>
-                <TableHead className="text-right text-muted-foreground font-bold">Lien</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-20">
-                    <Loader2 className="animate-spin mx-auto text-primary h-8 w-8" />
-                    <p className="text-sm text-muted-foreground mt-2">Chargement...</p>
-                  </TableCell>
-                </TableRow>
-              ) : leads.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-20 text-muted-foreground">
-                    Aucun lead trouvé pour cet utilisateur.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                leads.map((lead) => (
-                  <TableRow key={lead.id} className="hover:bg-muted/40 transition-colors border-border">
-                    <TableCell>
-                      <span className="font-semibold text-foreground line-clamp-1 max-w-[250px]">
-                        {lead.titre}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      <div className="flex items-center gap-1.5">
-                        {lead.ville}
-                        {lead.phone && lead.phone.trim() !== "" && (
-                          <Phone className="h-3.5 w-3.5 text-emerald-500" title={lead.phone} />
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-mono text-foreground">{lead.prix?.toLocaleString()}€</TableCell>
-                    <TableCell className="text-muted-foreground">{lead.surface}m²</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="font-mono font-semibold border-primary/20 bg-primary/5 text-primary">
-                        {lead.score?.toFixed(1) || "0.0"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={(statusConfig[lead.statut || "new"] || statusConfig.new).className}>
-                        {(statusConfig[lead.statut || "new"] || statusConfig.new).label}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {formatDate(lead.date_detection)}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {lead.url && (
-                        <a href={lead.url} target="_blank" rel="noopener noreferrer">
-                          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary">
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                        </a>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-
-          <div className="bg-muted/30 p-4 border-t border-border">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalCount={totalCount}
-              onPageChange={setCurrentPage}
-              loading={loading}
-              label="lead"
-            />
+        {/* Leads cards */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+            <p className="text-muted-foreground">Chargement des leads...</p>
           </div>
-        </div>
+        ) : leads.length === 0 ? (
+          <div className="text-center py-20 border-2 border-dashed rounded-2xl">
+            <p className="text-muted-foreground">Aucun lead trouv&eacute; pour cet utilisateur.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {leads.map((lead) => (
+              <AdminLeadCard key={lead.id} lead={lead} />
+            ))}
+          </div>
+        )}
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalCount={totalCount}
+          onPageChange={setCurrentPage}
+          loading={loading}
+          label="lead"
+        />
       </main>
     </div>
   );

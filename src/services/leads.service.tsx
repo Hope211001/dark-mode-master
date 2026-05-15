@@ -41,6 +41,10 @@ export interface Lead {
   statut?: string;
   description?: string;
   categorie_scraping?: string;
+
+  // Suivi du contact (rempli apres envoi)
+  message1?: string;
+  date_envoie1?: string;
 }
 
 interface LeadsResponse {
