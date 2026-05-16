@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     Select,
     SelectContent,
@@ -29,8 +30,16 @@ import {
     MapPin,
     MessageSquare,
     XCircle,
-    Clock
+    Clock,
+    Globe
 } from "lucide-react";
+
+const SOURCES_OPTIONS = [
+    { value: "pap.fr",          label: "PAP.fr",        hint: "Particuliers" },
+    { value: "leboncoin.fr",    label: "Leboncoin",     hint: "Particuliers + pros" },
+    { value: "seloger.com",     label: "SeLoger",       hint: "Surtout agences" },
+    { value: "logic-immo.com",  label: "Logic-Immo",    hint: "Surtout agences" },
+] as const;
 import { subscriptionService, Subscription } from '@/services/subscription';
 import ErrorAlert from "@/components/alert/error";
 import SuccessAlert from "@/components/alert/success";
@@ -169,6 +178,7 @@ const ZoneSetting = () => {
                 category_id: config.category_id,
                 radius: config.radius,
                 template_message: config.template_message,
+                sources_allowed: Array.isArray(config.sources_allowed) ? config.sources_allowed : [],
             });
             setSuccessAlert({ visible: true, message: "Configuration mise à jour avec succès !" });
         } catch (error) {
@@ -183,6 +193,16 @@ const ZoneSetting = () => {
         if (['.', ',', '-', 'e', 'E'].includes(e.key)) {
             e.preventDefault();
         }
+    };
+
+    // Toggle d'une source dans sources_allowed
+    const toggleSource = (source: string, checked: boolean) => {
+        if (!config) return;
+        const current = Array.isArray(config.sources_allowed) ? config.sources_allowed : [];
+        const next = checked
+            ? Array.from(new Set([...current, source]))
+            : current.filter(s => s !== source);
+        setConfig({ ...config, sources_allowed: next });
     };
 
     if (fetching) return (
@@ -319,6 +339,43 @@ const ZoneSetting = () => {
                                         onKeyDown={blockInvalidChar}
                                         className="bg-[#1e293b]/50 border-white/10 text-white h-12 rounded-xl"
                                     />
+                                </div>
+                            </div>
+
+                            {/* SECTION SOURCES (portails) */}
+                            <div className="space-y-3 pt-6 border-t border-white/5">
+                                <Label className="text-slate-300 flex items-center gap-2 font-semibold text-base">
+                                    <Globe className="h-4 w-4 text-indigo-400" /> Sources d'annonces
+                                </Label>
+                                <p className="text-xs text-slate-500">
+                                    Cochez les portails sur lesquels vous voulez recevoir des leads.
+                                    Aucune coche = <span className="text-indigo-300 font-medium">toutes les sources</span> sont autorisées.
+                                </p>
+                                <div className="grid grid-cols-2 gap-3 pt-2">
+                                    {SOURCES_OPTIONS.map(({ value, label, hint }) => {
+                                        const current = Array.isArray(config?.sources_allowed) ? config!.sources_allowed : [];
+                                        const isChecked = current.includes(value);
+                                        return (
+                                            <label
+                                                key={value}
+                                                className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
+                                                    isChecked
+                                                        ? "bg-indigo-500/10 border-indigo-500/40"
+                                                        : "bg-[#1e293b]/30 border-white/10 hover:border-white/20"
+                                                }`}
+                                            >
+                                                <Checkbox
+                                                    checked={isChecked}
+                                                    onCheckedChange={(val) => toggleSource(value, val === true)}
+                                                    className="mt-0.5 border-white/30 data-[state=checked]:bg-indigo-500 data-[state=checked]:border-indigo-500"
+                                                />
+                                                <div className="space-y-0.5">
+                                                    <div className="text-sm font-semibold text-white">{label}</div>
+                                                    <div className="text-[11px] text-slate-400">{hint}</div>
+                                                </div>
+                                            </label>
+                                        );
+                                    })}
                                 </div>
                             </div>
 

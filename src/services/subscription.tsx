@@ -12,6 +12,7 @@ export interface Subscription {
   category_id: number | null;
   radius: number | null;
   template_message: string | null;
+  sources_allowed: string[];
   // Champs venant de la table subscriptions (joints côté backend)
   is_active?: boolean | null;
   status?: string | null;
