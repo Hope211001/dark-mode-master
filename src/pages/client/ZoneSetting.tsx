@@ -206,13 +206,13 @@ const ZoneSetting = () => {
     };
 
     if (fetching) return (
-        <div className="flex h-screen items-center justify-center bg-[#020617]">
-            <Loader2 className="h-10 w-10 animate-spin text-indigo-500" />
+        <div className="flex h-screen items-center justify-center bg-background">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-[#020617] text-slate-200">
+        <div className="min-h-screen bg-background">
             <ErrorAlert
                 message={errorAlert.message}
                 visible={errorAlert.visible}
@@ -227,223 +227,228 @@ const ZoneSetting = () => {
             <main className="md:ml-64 transition-[margin] duration-300">
                 <ClientHeader title="Configuration Zone" subtitle="Automatisation et filtres" />
 
-                <div className="max-w-4xl mx-auto mt-8 p-4 md:p-8">
-                    <Link to="/client/zones" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-400 mb-8 transition-colors group">
-                        <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-                        Retour
-                    </Link>
+                <div className="p-4 md:p-6 lg:p-8">
+                    <div className="max-w-5xl">
+                        <Link to="/client/zones" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6 transition-colors group">
+                            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                            Retour
+                        </Link>
 
-                    <Card className="bg-[#0f172a]/50 border-white/5 backdrop-blur-xl shadow-2xl">
-                        <CardHeader className="border-b border-white/5 pb-8">
-                            <div className="flex items-center gap-3">
-                                <Settings2 className="h-6 w-6 text-indigo-500" />
-                                <CardTitle className="text-white text-xl font-bold">Paramètres de la Zone</CardTitle>
-                            </div>
-                        </CardHeader>
-
-                        <CardContent className="pt-8 space-y-8">
-
-                            {/* SWITCH AUTO CONTACT */}
-                            <div className="p-6 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 flex items-center justify-between transition-colors hover:bg-indigo-500/10">
-                                <div className="space-y-1">
-                                    <h3 className="font-bold text-white flex items-center gap-2">
-                                        <Zap className="h-4 w-4 text-indigo-400" /> Auto-contact
-                                    </h3>
-                                    <p className="text-sm text-slate-400">Automatisation des réponses SMS/Email.</p>
-                                </div>
-                                <Switch
-                                    checked={config?.auto_contact_enabled || false}
-                                    onCheckedChange={(val) => setConfig(prev => prev ? { ...prev, auto_contact_enabled: val } : null)}
-                                    className="data-[state=checked]:bg-indigo-500"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-                                {/* CATÉGORIE - SELECT */}
-                                <div className="space-y-2">
-                                    <Label className="text-slate-300 flex items-center gap-2"><Layers className="h-4 w-4 text-indigo-400" /> Type d'offre <span className="text-red-400">*</span></Label>
-                                    <Select
-                                        // On force le passage en string pour le composant Select
-                                        value={config?.category_id?.toString() || ""}
-                                        onValueChange={(val) => setConfig(prev => prev ? { ...prev, category_id: parseInt(val) } : null)}
-                                    >
-                                        <SelectTrigger className="bg-[#1e293b]/50 border-white/10 text-white h-12 rounded-xl focus:ring-indigo-500">
-                                            <SelectValue placeholder="Choisir un type" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-[#0f172a] border-white/10 text-white">
-                                            <SelectItem value="10">Locations</SelectItem>
-                                            <SelectItem value="11">Locations Saisonnières</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                {/* SEARCH QUERY */}
-                                <div className="space-y-2">
-                                    <Label className="text-slate-300 flex items-center gap-2"><Search className="h-4 w-4 text-indigo-400" /> Mot-clé de recherche <span className="text-red-400">*</span></Label>
-                                    <Input
-                                        value={config?.searchQuery || ""}
-                                        onChange={(e) => setConfig(prev => prev ? { ...prev, searchQuery: e.target.value } : null)}
-                                        className="bg-[#1e293b]/50 border-white/10 text-white h-12 rounded-xl focus:border-indigo-500"
-                                        placeholder="Ex: Appartement, villa..."
-                                    />
-                                </div>
-
-                                {/* SURFACE MIN */}
-                                <div className="space-y-2">
-                                    <Label className="text-slate-300 flex items-center gap-2"><Maximize className="h-4 w-4 text-indigo-400" /> Surface Minimum (m²)</Label>
-                                    <Input
-                                        type="number"
-                                        min="0"
-                                        value={config?.surface_min_filter ?? ""}
-                                        onChange={(e) => handleIntChange('surface_min_filter', e.target.value)}
-                                        onKeyDown={blockInvalidChar}
-                                        className="bg-[#1e293b]/50 border-white/10 text-white h-12 rounded-xl"
-                                    />
-                                </div>
-
-                                {/* RADIUS (RAYON) */}
-                                <div className="space-y-2">
-                                    <Label className="text-slate-300 flex items-center gap-2"><MapPin className="h-4 w-4 text-indigo-400" /> Rayon (km)</Label>
-                                    <Input
-                                        type="number"
-                                        min="0"
-                                        value={config?.radius ?? ""}
-                                        onChange={(e) => handleIntChange('radius', e.target.value)}
-                                        onKeyDown={blockInvalidChar}
-                                        className="bg-[#1e293b]/50 border-white/10 text-white h-12 rounded-xl"
-                                    />
-                                </div>
-
-                                {/* PRIX MIN */}
-                                <div className="space-y-2">
-                                    <Label className="text-slate-300 flex items-center gap-2"><Euro className="h-4 w-4 text-indigo-400" /> Budget Minimum (€)</Label>
-                                    <Input
-                                        type="number"
-                                        min="0"
-                                        value={config?.price_min_filter ?? ""}
-                                        onChange={(e) => handleIntChange('price_min_filter', e.target.value)}
-                                        onKeyDown={blockInvalidChar}
-                                        className="bg-[#1e293b]/50 border-white/10 text-white h-12 rounded-xl"
-                                    />
-                                </div>
-
-                                {/* PRIX MAX */}
-                                <div className="space-y-2">
-                                    <Label className="text-slate-300 flex items-center gap-2"><Euro className="h-4 w-4 text-indigo-400" /> Budget Maximum (€)</Label>
-                                    <Input
-                                        type="number"
-                                        min="0"
-                                        value={config?.price_max_filter ?? ""}
-                                        onChange={(e) => handleIntChange('price_max_filter', e.target.value)}
-                                        onKeyDown={blockInvalidChar}
-                                        className="bg-[#1e293b]/50 border-white/10 text-white h-12 rounded-xl"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* SECTION SOURCES (portails) */}
-                            <div className="space-y-3 pt-6 border-t border-white/5">
-                                <Label className="text-slate-300 flex items-center gap-2 font-semibold text-base">
-                                    <Globe className="h-4 w-4 text-indigo-400" /> Sources d'annonces
-                                </Label>
-                                <p className="text-xs text-slate-500">
-                                    Cochez les portails sur lesquels vous voulez recevoir des leads.
-                                    Aucune coche = <span className="text-indigo-300 font-medium">toutes les sources</span> sont autorisées.
-                                </p>
-                                <div className="grid grid-cols-2 gap-3 pt-2">
-                                    {SOURCES_OPTIONS.map(({ value, label, hint }) => {
-                                        const current = Array.isArray(config?.sources_allowed) ? config!.sources_allowed : [];
-                                        const isChecked = current.includes(value);
-                                        return (
-                                            <label
-                                                key={value}
-                                                className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
-                                                    isChecked
-                                                        ? "bg-indigo-500/10 border-indigo-500/40"
-                                                        : "bg-[#1e293b]/30 border-white/10 hover:border-white/20"
-                                                }`}
-                                            >
-                                                <Checkbox
-                                                    checked={isChecked}
-                                                    onCheckedChange={(val) => toggleSource(value, val === true)}
-                                                    className="mt-0.5 border-white/30 data-[state=checked]:bg-indigo-500 data-[state=checked]:border-indigo-500"
-                                                />
-                                                <div className="space-y-0.5">
-                                                    <div className="text-sm font-semibold text-white">{label}</div>
-                                                    <div className="text-[11px] text-slate-400">{hint}</div>
-                                                </div>
-                                            </label>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            {/* SECTION MESSAGE */}
-                            <div className="space-y-3 pt-6 border-t border-white/5">
-                                <Label className="text-slate-300 flex items-center gap-2 font-semibold text-base">
-                                    <MessageSquare className="h-4 w-4 text-indigo-400" /> Message automatique
-                                </Label>
-                                <Textarea
-                                    value={config?.template_message || ""}
-                                    onChange={(e) => setConfig(prev => prev ? { ...prev, template_message: e.target.value } : null)}
-                                    className="bg-[#1e293b]/50 border-white/10 text-white min-h-[140px] rounded-xl focus:ring-indigo-500 placeholder:text-slate-600"
-                                    placeholder="Bonjour, je suis très intéressé par votre annonce..."
-                                />
-                            </div>
-
-                            <div className="pt-4">
-                                <Button
-                                    onClick={handleSave}
-                                    className="w-full h-14 gap-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/10 transition-all active:scale-95"
-                                    disabled={loading}
-                                >
-                                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
-                                    Sauvegarder la configuration
-                                </Button>
-                            </div>
-
-                            {/* SECTION DANGER — Annulation d'abonnement (ou statut si déjà annulé) */}
-                            <div className="mt-8 pt-6 border-t border-white/5">
-                                {config?.cancel_at ? (
-                                    <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-5 flex items-start gap-3">
-                                        <Clock className="h-5 w-5 text-amber-400 mt-0.5 shrink-0" />
-                                        <div>
-                                            <h3 className="text-amber-200 font-semibold">Annulation programmée</h3>
-                                            <p className="text-sm text-slate-400 mt-1">
-                                                Votre abonnement sera résilié le{" "}
-                                                <span className="text-amber-200 font-bold">
-                                                    {new Date(config.cancel_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                                                </span>
-                                                . Vous gardez l'accès à la zone jusqu'à cette date.
-                                            </p>
-                                        </div>
+                        <Card className="border-border bg-card">
+                            <CardHeader className="border-b border-border/50 pb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-primary/10 rounded-lg border border-primary/20">
+                                        <Settings2 className="h-5 w-5 text-primary" />
                                     </div>
-                                ) : (
-                                    <div className="rounded-xl border border-red-500/30 bg-red-950/20 p-5 space-y-3">
-                                        <div className="flex items-start gap-3">
-                                            <XCircle className="h-5 w-5 text-red-400 mt-0.5 shrink-0" />
+                                    <div>
+                                        <CardTitle className="text-base font-bold">Paramètres de la Zone</CardTitle>
+                                        <p className="text-xs text-muted-foreground mt-0.5">Automatisation, filtres et sources</p>
+                                    </div>
+                                </div>
+                            </CardHeader>
+
+                            <CardContent className="pt-6 space-y-6">
+
+                                {/* SWITCH AUTO CONTACT */}
+                                <div className="p-4 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-between">
+                                    <div className="space-y-0.5">
+                                        <h3 className="font-semibold text-foreground flex items-center gap-2 text-sm">
+                                            <Zap className="h-4 w-4 text-primary" /> Auto-contact
+                                        </h3>
+                                        <p className="text-xs text-muted-foreground">Automatisation des réponses SMS/Email.</p>
+                                    </div>
+                                    <Switch
+                                        checked={config?.auto_contact_enabled || false}
+                                        onCheckedChange={(val) => setConfig(prev => prev ? { ...prev, auto_contact_enabled: val } : null)}
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                                    {/* CATÉGORIE - SELECT */}
+                                    <div className="space-y-2">
+                                        <Label className="flex items-center gap-2 text-sm"><Layers className="h-4 w-4 text-primary" /> Type d'offre <span className="text-destructive">*</span></Label>
+                                        <Select
+                                            value={config?.category_id?.toString() || ""}
+                                            onValueChange={(val) => setConfig(prev => prev ? { ...prev, category_id: parseInt(val) } : null)}
+                                        >
+                                            <SelectTrigger className="bg-secondary/30">
+                                                <SelectValue placeholder="Choisir un type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="10">Locations</SelectItem>
+                                                <SelectItem value="11">Locations Saisonnières</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    {/* SEARCH QUERY */}
+                                    <div className="space-y-2">
+                                        <Label className="flex items-center gap-2 text-sm"><Search className="h-4 w-4 text-primary" /> Mot-clé de recherche <span className="text-destructive">*</span></Label>
+                                        <Input
+                                            value={config?.searchQuery || ""}
+                                            onChange={(e) => setConfig(prev => prev ? { ...prev, searchQuery: e.target.value } : null)}
+                                            className="bg-secondary/30"
+                                            placeholder="Ex: Appartement, villa..."
+                                        />
+                                    </div>
+
+                                    {/* SURFACE MIN */}
+                                    <div className="space-y-2">
+                                        <Label className="flex items-center gap-2 text-sm"><Maximize className="h-4 w-4 text-primary" /> Surface Minimum (m²)</Label>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            value={config?.surface_min_filter ?? ""}
+                                            onChange={(e) => handleIntChange('surface_min_filter', e.target.value)}
+                                            onKeyDown={blockInvalidChar}
+                                            className="bg-secondary/30"
+                                        />
+                                    </div>
+
+                                    {/* RADIUS (RAYON) */}
+                                    <div className="space-y-2">
+                                        <Label className="flex items-center gap-2 text-sm"><MapPin className="h-4 w-4 text-primary" /> Rayon (km)</Label>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            value={config?.radius ?? ""}
+                                            onChange={(e) => handleIntChange('radius', e.target.value)}
+                                            onKeyDown={blockInvalidChar}
+                                            className="bg-secondary/30"
+                                        />
+                                    </div>
+
+                                    {/* PRIX MIN */}
+                                    <div className="space-y-2">
+                                        <Label className="flex items-center gap-2 text-sm"><Euro className="h-4 w-4 text-primary" /> Budget Minimum (€)</Label>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            value={config?.price_min_filter ?? ""}
+                                            onChange={(e) => handleIntChange('price_min_filter', e.target.value)}
+                                            onKeyDown={blockInvalidChar}
+                                            className="bg-secondary/30"
+                                        />
+                                    </div>
+
+                                    {/* PRIX MAX */}
+                                    <div className="space-y-2">
+                                        <Label className="flex items-center gap-2 text-sm"><Euro className="h-4 w-4 text-primary" /> Budget Maximum (€)</Label>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            value={config?.price_max_filter ?? ""}
+                                            onChange={(e) => handleIntChange('price_max_filter', e.target.value)}
+                                            onKeyDown={blockInvalidChar}
+                                            className="bg-secondary/30"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* SECTION SOURCES (portails) */}
+                                <div className="space-y-3 pt-4 border-t border-border/50">
+                                    <Label className="flex items-center gap-2 font-semibold text-sm">
+                                        <Globe className="h-4 w-4 text-primary" /> Sources d'annonces
+                                    </Label>
+                                    <p className="text-xs text-muted-foreground">
+                                        Cochez les portails sur lesquels vous voulez recevoir des leads.
+                                        Aucune coche = <span className="text-primary font-medium">toutes les sources</span> sont autorisées.
+                                    </p>
+                                    <div className="grid grid-cols-2 gap-2 pt-1">
+                                        {SOURCES_OPTIONS.map(({ value, label, hint }) => {
+                                            const current = Array.isArray(config?.sources_allowed) ? config!.sources_allowed : [];
+                                            const isChecked = current.includes(value);
+                                            return (
+                                                <label
+                                                    key={value}
+                                                    className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                                                        isChecked
+                                                            ? "bg-primary/10 border-primary/40"
+                                                            : "bg-secondary/30 border-border hover:border-border/80"
+                                                    }`}
+                                                >
+                                                    <Checkbox
+                                                        checked={isChecked}
+                                                        onCheckedChange={(val) => toggleSource(value, val === true)}
+                                                        className="mt-0.5"
+                                                    />
+                                                    <div className="space-y-0.5">
+                                                        <div className="text-sm font-semibold text-foreground">{label}</div>
+                                                        <div className="text-[11px] text-muted-foreground">{hint}</div>
+                                                    </div>
+                                                </label>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* SECTION MESSAGE */}
+                                <div className="space-y-2 pt-4 border-t border-border/50">
+                                    <Label className="flex items-center gap-2 font-semibold text-sm">
+                                        <MessageSquare className="h-4 w-4 text-primary" /> Message automatique
+                                    </Label>
+                                    <Textarea
+                                        value={config?.template_message || ""}
+                                        onChange={(e) => setConfig(prev => prev ? { ...prev, template_message: e.target.value } : null)}
+                                        className="bg-secondary/30 min-h-[120px]"
+                                        placeholder="Bonjour, je suis très intéressé par votre annonce..."
+                                    />
+                                </div>
+
+                                <div className="pt-2">
+                                    <Button
+                                        onClick={handleSave}
+                                        className="w-full gap-2"
+                                        disabled={loading}
+                                    >
+                                        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                                        Sauvegarder la configuration
+                                    </Button>
+                                </div>
+
+                                {/* SECTION DANGER — Annulation d'abonnement (ou statut si déjà annulé) */}
+                                <div className="pt-4 border-t border-border/50">
+                                    {config?.cancel_at ? (
+                                        <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
+                                            <Clock className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
                                             <div>
-                                                <h3 className="text-red-200 font-semibold">Annuler l'abonnement</h3>
-                                                <p className="text-sm text-slate-400 mt-1">
-                                                    L'abonnement reste actif jusqu'à la fin du cycle en cours. Aucun nouveau prélèvement ne sera effectué.
+                                                <h3 className="text-amber-500 font-semibold text-sm">Annulation programmée</h3>
+                                                <p className="text-xs text-muted-foreground mt-1">
+                                                    Votre abonnement sera résilié le{" "}
+                                                    <span className="text-amber-500 font-bold">
+                                                        {new Date(config.cancel_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                                    </span>
+                                                    . Vous gardez l'accès à la zone jusqu'à cette date.
                                                 </p>
                                             </div>
                                         </div>
-                                        <Button
-                                            onClick={handleCancelSubscription}
-                                            disabled={canceling}
-                                            variant="outline"
-                                            className="w-full border-red-500/40 bg-transparent text-red-300 hover:bg-red-500/10 hover:text-red-200 hover:border-red-500/60"
-                                        >
-                                            {canceling ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <XCircle className="h-4 w-4 mr-2" />}
-                                            Annuler mon abonnement
-                                        </Button>
-                                    </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
+                                    ) : (
+                                        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 space-y-3">
+                                            <div className="flex items-start gap-3">
+                                                <XCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+                                                <div>
+                                                    <h3 className="text-destructive font-semibold text-sm">Annuler l'abonnement</h3>
+                                                    <p className="text-xs text-muted-foreground mt-1">
+                                                        L'abonnement reste actif jusqu'à la fin du cycle en cours. Aucun nouveau prélèvement ne sera effectué.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <Button
+                                                onClick={handleCancelSubscription}
+                                                disabled={canceling}
+                                                variant="outline"
+                                                className="w-full border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                            >
+                                                {canceling ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <XCircle className="h-4 w-4 mr-2" />}
+                                                Annuler mon abonnement
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             </main>
         </div>
