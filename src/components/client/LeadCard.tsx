@@ -23,7 +23,7 @@ interface LeadCardProps {
 }
 
 const statusConfig: Record<string, { label: string; className: string }> = {
-  new:       { label: "Nouveau",   className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  new:       { label: "Nouveau",   className: "bg-clay-50 text-clay-700 border-clay-200" },
   contacted: { label: "Contacte",  className: "bg-amber-50 text-amber-700 border-amber-200" },
   replied:   { label: "Repondu",   className: "bg-blue-50 text-blue-700 border-blue-200" },
   rejected:  { label: "Rejete",    className: "bg-red-50 text-red-600 border-red-200" },
@@ -67,7 +67,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
 
   const displayScore = score != null ? (score <= 10 ? score * 10 : score) : null;
   const scoreColor = displayScore != null
-    ? displayScore >= 80 ? "text-emerald-700 border-emerald-200 bg-emerald-50"
+    ? displayScore >= 80 ? "text-clay-700 border-clay-200 bg-clay-50"
     : displayScore >= 60 ? "text-amber-700 border-amber-200 bg-amber-50"
     : "text-gray-500 border-gray-200 bg-gray-50"
     : "";
@@ -212,14 +212,14 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
         <div className="fixed inset-0 z-[60] flex items-center justify-center px-4" onClick={(e) => e.stopPropagation()}>
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowContactModal(false)} />
           <div className="relative animate-in zoom-in-95 fade-in duration-200 bg-white border border-gray-200 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
-            <div className={cn("relative px-6 py-5 border-b", contactMode === "whatsapp" ? "bg-emerald-50 border-emerald-100" : "bg-orange-50 border-orange-100")}>
+            <div className={cn("relative px-6 py-5 border-b", contactMode === "whatsapp" ? "bg-clay-50 border-clay-100" : "bg-orange-50 border-orange-100")}>
               <button onClick={() => setShowContactModal(false)} className="absolute top-4 right-4 h-8 w-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all">
                 <X className="h-4 w-4" />
               </button>
               <div className="flex items-center gap-3">
-                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center", contactMode === "whatsapp" ? "bg-emerald-100" : "bg-orange-100")}>
+                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center", contactMode === "whatsapp" ? "bg-clay-100" : "bg-orange-100")}>
                   {contactMode === "whatsapp"
-                    ? <MessageCircle className="h-5 w-5 text-emerald-600" />
+                    ? <MessageCircle className="h-5 w-5 text-clay-600" />
                     : <MessageSquare className="h-5 w-5 text-orange-600" />}
                 </div>
                 <div>
@@ -236,15 +236,15 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
             </div>
             <div className="px-6 pt-4">
               <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                <div className="h-9 w-9 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0 mt-0.5">
-                  <TrendingUp className="h-4 w-4 text-emerald-600" />
+                <div className="h-9 w-9 rounded-lg bg-clay-50 flex items-center justify-center shrink-0 mt-0.5">
+                  <TrendingUp className="h-4 w-4 text-clay-600" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-gray-900 truncate">{titre}</p>
                   <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
                     <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{ville}</span>
                     <span className="flex items-center gap-1"><Euro className="h-3 w-3" />{prix.toLocaleString()} EUR</span>
-                    {phone && <span className="flex items-center gap-1 text-emerald-600"><Phone className="h-3 w-3" />{phone}</span>}
+                    {phone && <span className="flex items-center gap-1 text-clay-600"><Phone className="h-3 w-3" />{phone}</span>}
                   </div>
                 </div>
               </div>
@@ -266,7 +266,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                 value={contactMessage}
                 onChange={(e) => setContactMessage(e.target.value)}
                 placeholder="Bonjour, je suis tres interesse par votre bien..."
-                className="bg-gray-50 border-gray-200 text-gray-900 min-h-[120px] rounded-xl focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-gray-400 resize-none"
+                className="bg-gray-50 border-gray-200 text-gray-900 min-h-[120px] rounded-xl focus:ring-clay-500 focus:border-clay-500 placeholder:text-gray-400 resize-none"
                 autoFocus
               />
               <p className="text-[10px] text-gray-400 mt-1.5 text-right">{contactMessage.length} caractere{contactMessage.length > 1 ? "s" : ""}</p>
@@ -279,7 +279,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                 onClick={handleConfirmContact}
                 className={cn(
                   "flex-1 rounded-xl text-white font-bold h-11 gap-2",
-                  contactMode === "whatsapp" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-orange-500 hover:bg-orange-600"
+                  contactMode === "whatsapp" ? "bg-clay-600 hover:bg-clay-700" : "bg-orange-500 hover:bg-orange-600"
                 )}
                 disabled={contacting || !contactMessage.trim()}
               >
@@ -296,7 +296,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
         <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowSentModal(false)} />
           <div className="relative animate-in zoom-in-95 fade-in duration-200 bg-white border border-gray-200 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-            <div className="relative bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-4">
+            <div className="relative bg-gradient-to-r from-clay-600 to-clay-700 px-6 py-4">
               <button onClick={() => setShowSentModal(false)} className="absolute top-3 right-3 h-8 w-8 rounded-lg flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all">
                 <X className="h-4 w-4" />
               </button>
@@ -306,7 +306,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-base leading-tight">Message envoy&eacute;</h3>
-                  <p className="text-[11px] text-emerald-100/90 mt-0.5">Contact via WhatsApp</p>
+                  <p className="text-[11px] text-clay-100/90 mt-0.5">Contact via WhatsApp</p>
                 </div>
               </div>
             </div>
@@ -326,7 +326,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
               </div>
             </div>
             <div className="px-6 pb-4">
-              <Button onClick={() => setShowSentModal(false)} className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10">
+              <Button onClick={() => setShowSentModal(false)} className="w-full rounded-xl bg-clay-600 hover:bg-clay-700 text-white font-bold h-10">
                 Fermer
               </Button>
             </div>
@@ -335,7 +335,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
       )}
 
       {/* Card */}
-      <Card className="bg-white border-gray-200 hover:border-emerald-300 hover:shadow-lg transition-all duration-300 rounded-xl">
+      <Card className="bg-white border-gray-200 hover:border-clay-300 hover:shadow-lg transition-all duration-300 rounded-xl">
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
             {/* Main content */}
@@ -365,7 +365,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                 <span title="Surface" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-800 font-semibold">
                   <Maximize className="h-3 w-3 text-gray-500" />{surface} m&sup2;
                 </span>
-                <span title="Prix" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 font-bold border border-emerald-100">
+                <span title="Prix" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-clay-50 text-clay-700 font-bold border border-clay-100">
                   <Euro className="h-3 w-3" />{prix.toLocaleString()} &euro;
                 </span>
                 {prixM2 > 0 && (
@@ -379,7 +379,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                   </span>
                 )}
                 {phone && (
-                  <span title="T&eacute;l&eacute;phone" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 font-bold border border-emerald-100">
+                  <span title="T&eacute;l&eacute;phone" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-clay-50 text-clay-700 font-bold border border-clay-100">
                     <Phone className="h-3 w-3" />{phone}
                   </span>
                 )}
@@ -397,7 +397,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                   {(isDescOverflow || expanded) && (
                     <button
                       type="button"
-                      className="mt-1.5 text-sm text-emerald-600 hover:text-emerald-700 hover:underline font-semibold"
+                      className="mt-1.5 text-sm text-clay-600 hover:text-clay-700 hover:underline font-semibold"
                       onClick={(e) => { e.stopPropagation(); setExpanded((v) => !v); }}
                     >
                       {expanded ? "lire moins" : "lire plus"}
@@ -415,7 +415,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-full bg-white hover:bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:text-emerald-700 border border-gray-300 hover:border-emerald-400 shadow-sm transition-all"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white hover:bg-clay-50 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:text-clay-700 border border-gray-300 hover:border-clay-400 shadow-sm transition-all"
                   >
                     Voir sur {source?.label || "l'annonce"}
                     <ExternalLink className="h-3.5 w-3.5" />
@@ -424,7 +424,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                 <button
                   type="button"
                   onClick={() => navigate(`/client/showLead/${id}`)}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white border border-emerald-600 hover:border-emerald-700 shadow-sm shadow-emerald-600/30 hover:shadow-emerald-600/50 transition-all"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-clay-600 hover:bg-clay-700 px-3 py-1.5 text-xs font-semibold text-white border border-clay-600 hover:border-clay-700 shadow-sm shadow-clay-600/30 hover:shadow-clay-600/50 transition-all"
                 >
                   <Eye className="h-3.5 w-3.5" />
                   Voir détail
@@ -455,13 +455,13 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                     type="button"
                     onClick={() => setShowSentModal(true)}
                     aria-label="Voir le message envoy&eacute;"
-                    className="group/sent relative flex items-center gap-2.5 h-12 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-md shadow-emerald-600/30 hover:shadow-lg hover:shadow-emerald-600/40 hover:-translate-y-0.5 transition-all text-left w-full"
+                    className="group/sent relative flex items-center gap-2.5 h-12 px-3 rounded-xl bg-gradient-to-r from-clay-600 to-clay-700 shadow-md shadow-clay-600/30 hover:shadow-lg hover:shadow-clay-600/40 hover:-translate-y-0.5 transition-all text-left w-full"
                   >
                     <span className="h-8 w-8 rounded-lg bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0 ring-1 ring-white/30">
                       <CheckCircle2 className="h-4 w-4 text-white" />
                     </span>
                     <span className="flex flex-col items-start min-w-0 leading-tight flex-1">
-                      <span className="text-[10px] font-bold text-emerald-100/90 uppercase tracking-wider">Contact&eacute;</span>
+                      <span className="text-[10px] font-bold text-clay-100/90 uppercase tracking-wider">Contact&eacute;</span>
                       <span className="text-sm font-extrabold text-white">Sur WhatsApp</span>
                     </span>
                     <Eye className="h-4 w-4 text-white/80 group-hover/sent:text-white shrink-0" />
@@ -469,7 +469,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                 ) : (
                   <button
                     type="button"
-                    className="group/btn flex items-center gap-2.5 h-12 px-3 rounded-xl bg-white border-2 border-emerald-200 hover:border-[#25D366] hover:bg-emerald-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                    className="group/btn flex items-center gap-2.5 h-12 px-3 rounded-xl bg-white border-2 border-clay-200 hover:border-[#25D366] hover:bg-clay-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
                     onClick={() => handleOpenContact("whatsapp")}
                   >
                     <span className="h-8 w-8 rounded-lg bg-[#25D366] flex items-center justify-center shrink-0 shadow-sm shadow-[#25D366]/40">
@@ -477,7 +477,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                     </span>
                     <span className="flex flex-col items-start min-w-0 leading-tight">
                       <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Envoyer message</span>
-                      <span className="text-sm font-bold text-gray-800 group-hover/btn:text-emerald-700 transition-colors">Via WhatsApp</span>
+                      <span className="text-sm font-bold text-gray-800 group-hover/btn:text-clay-700 transition-colors">Via WhatsApp</span>
                     </span>
                   </button>
                 )

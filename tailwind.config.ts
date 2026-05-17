@@ -20,10 +20,24 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Space Grotesk', 'system-ui', 'sans-serif'],
-        mono: ['Fira Code', 'monospace'],
+        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       colors: {
+        // Palette clay MÉRIDIEN — utilisée pour remplacer les anciennes
+        // utilities `emerald-*` et `teal-*` héritées du portail original.
+        clay: {
+          50:  "#FCF1E8",
+          100: "#FAE6D8",
+          200: "#F4D9C4",
+          300: "#EAB698",
+          400: "#E08C5C",
+          500: "#D45F2A",
+          600: "#B34B1F",
+          700: "#923D17",
+          800: "#6D2D11",
+          900: "#4A1E0B",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

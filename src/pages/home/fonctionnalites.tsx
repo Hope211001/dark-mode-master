@@ -31,21 +31,21 @@ const Fonctionnalites = () => {
   return (
     <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[10%] -right-[10%] w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[120px]" />
-        <div className="absolute top-[50%] -left-[10%] w-[500px] h-[500px] bg-teal-500/5 rounded-full blur-[120px]" />
+        <div className="absolute -top-[10%] -right-[10%] w-[600px] h-[600px] bg-clay-500/5 rounded-full blur-[120px]" />
+        <div className="absolute top-[50%] -left-[10%] w-[500px] h-[500px] bg-clay-500/5 rounded-full blur-[120px]" />
       </div>
 
       <HeaderHome />
 
       <section className="relative z-10 pt-32 pb-16 md:pt-44 md:pb-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200 mb-8">
-            <Zap size={14} className="text-emerald-600" />
-            <span className="text-xs md:text-sm font-medium text-emerald-700 uppercase tracking-wide">Comment ca marche</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-clay-50 border border-clay-200 mb-8">
+            <Zap size={14} className="text-clay-600" />
+            <span className="text-xs md:text-sm font-medium text-clay-700 uppercase tracking-wide">Comment ca marche</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-[1.1]">
             L'IA qui travaille <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500">pendant que vous dormez</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-clay-600 via-clay-500 to-cyan-500">pendant que vous dormez</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
             Deux workflows n8n puissants tournent en arriere-plan toutes les 15 minutes.
@@ -80,7 +80,7 @@ const Fonctionnalites = () => {
             <p className="text-gray-500 max-w-2xl mx-auto">Le systeme fait tout. Vous recoltez les resultats.</p>
           </div>
           <div className="relative">
-            <div className="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-emerald-100 via-teal-100 to-cyan-100 -translate-y-1/2 z-0" />
+            <div className="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-clay-100 via-clay-100 to-cyan-100 -translate-y-1/2 z-0" />
             <div className="grid md:grid-cols-3 gap-8 relative z-10">
               {steps.map((step) => (
                 <div key={step.num} className={`group relative bg-white border border-gray-200 rounded-2xl p-8 hover:-translate-y-2 transition-all duration-300 hover:shadow-xl hover:border-${step.color}-200`}>
@@ -104,7 +104,7 @@ const Fonctionnalites = () => {
         </div>
       </section>
 
-      <section className="relative z-10 py-24 bg-gradient-to-br from-emerald-600 to-teal-700">
+      <section className="relative z-10 py-24 bg-gradient-to-br from-clay-600 to-clay-700">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div className="relative order-2 md:order-1">
@@ -123,12 +123,12 @@ const Fonctionnalites = () => {
                       <div className="flex items-center gap-3">
                         <div className={`w-2 h-2 rounded-full ${z.libre ? "bg-white" : "bg-red-300"}`} />
                         <div>
-                          <span className={`font-mono block text-sm ${z.libre ? "text-white font-bold" : "text-emerald-100"}`}>Zone: {z.ville}</span>
-                          <span className={`text-xs ${z.libre ? "text-white/80" : "text-emerald-200/60"}`}>{z.libre ? "Statut: DISPONIBLE" : `Utilisateur: ${z.user}`}</span>
+                          <span className={`font-mono block text-sm ${z.libre ? "text-white font-bold" : "text-clay-100"}`}>Zone: {z.ville}</span>
+                          <span className={`text-xs ${z.libre ? "text-white/80" : "text-clay-200/60"}`}>{z.libre ? "Statut: DISPONIBLE" : `Utilisateur: ${z.user}`}</span>
                         </div>
                       </div>
                       {z.libre ? (
-                        <button className="text-xs font-bold text-emerald-700 bg-white px-3 py-1 rounded hover:bg-emerald-50 transition-colors">Reserver</button>
+                        <button className="text-xs font-bold text-clay-700 bg-white px-3 py-1 rounded hover:bg-clay-50 transition-colors">Reserver</button>
                       ) : (
                         <Lock size={16} className="text-red-300" />
                       )}
@@ -142,15 +142,15 @@ const Fonctionnalites = () => {
                 Modele Business Unique
               </div>
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">La "Concession" :<br />Fini la concurrence interne.</h2>
-              <p className="text-lg text-emerald-100 mb-8 leading-relaxed">Contrairement aux logiciels classiques, ici nous vendons de l'exclusivite. C'est votre territoire.</p>
+              <p className="text-lg text-clay-100 mb-8 leading-relaxed">Contrairement aux logiciels classiques, ici nous vendons de l'exclusivite. C'est votre territoire.</p>
               <ul className="space-y-6">
                 <li className="flex items-start gap-4">
                   <div className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 mt-1"><Shield className="text-white" size={18} /></div>
-                  <div><h4 className="text-white font-bold text-lg">Zero concurrence</h4><p className="text-emerald-100 text-sm mt-1">Si vous achetez la zone "Lyon", personne d'autre ne recevra les alertes pour Lyon.</p></div>
+                  <div><h4 className="text-white font-bold text-lg">Zero concurrence</h4><p className="text-clay-100 text-sm mt-1">Si vous achetez la zone "Lyon", personne d'autre ne recevra les alertes pour Lyon.</p></div>
                 </li>
                 <li className="flex items-start gap-4">
                   <div className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 mt-1"><Database className="text-white" size={18} /></div>
-                  <div><h4 className="text-white font-bold text-lg">Garantie Technique</h4><p className="text-emerald-100 text-sm mt-1">Notre base de donnees verifie qu'un code postal n'appartient qu'a un seul client actif.</p></div>
+                  <div><h4 className="text-white font-bold text-lg">Garantie Technique</h4><p className="text-clay-100 text-sm mt-1">Notre base de donnees verifie qu'un code postal n'appartient qu'a un seul client actif.</p></div>
                 </li>
               </ul>
               <div className="mt-10">
@@ -171,9 +171,9 @@ const Fonctionnalites = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((f, i) => (
-              <div key={i} className="bg-white border border-gray-200 rounded-xl p-6 hover:border-emerald-200 hover:shadow-md transition-all duration-300 group">
-                <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-emerald-100 transition-colors">
-                  <f.icon className="text-emerald-600" size={24} />
+              <div key={i} className="bg-white border border-gray-200 rounded-xl p-6 hover:border-clay-200 hover:shadow-md transition-all duration-300 group">
+                <div className="w-12 h-12 bg-clay-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-clay-100 transition-colors">
+                  <f.icon className="text-clay-600" size={24} />
                 </div>
                 <h3 className="text-gray-900 font-bold text-lg mb-2">{f.title}</h3>
                 <p className="text-gray-500 text-sm">{f.desc}</p>
@@ -185,11 +185,11 @@ const Fonctionnalites = () => {
 
       <section className="relative z-10 py-24 px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 p-8 md:p-12 text-center shadow-2xl">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-clay-600 to-clay-700 p-8 md:p-12 text-center shadow-2xl">
             <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl animate-pulse" />
             <h2 className="relative z-10 text-3xl md:text-5xl font-bold text-white mb-6">Pret a automatiser ?</h2>
-            <p className="relative z-10 text-emerald-100 text-lg mb-10 max-w-2xl mx-auto">Commencez gratuitement et voyez les premiers leads arriver en quelques heures.</p>
-            <Link to="/register" className="relative z-10 inline-block bg-white text-emerald-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-emerald-50 transition-all shadow-xl hover:scale-105">
+            <p className="relative z-10 text-clay-100 text-lg mb-10 max-w-2xl mx-auto">Commencez gratuitement et voyez les premiers leads arriver en quelques heures.</p>
+            <Link to="/register" className="relative z-10 inline-block bg-white text-clay-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-clay-50 transition-all shadow-xl hover:scale-105">
               Commencer maintenant
             </Link>
           </div>

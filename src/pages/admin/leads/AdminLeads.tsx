@@ -37,7 +37,7 @@ const sortOptions = [
 const statusConfig: Record<string, { label: string; className: string }> = {
   new: { label: "Nouveau", className: "bg-blue-50 text-blue-700 border-blue-200" },
   contacted: { label: "Contacte", className: "bg-amber-50 text-amber-700 border-amber-200" },
-  replied: { label: "Repondu", className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  replied: { label: "Repondu", className: "bg-clay-50 text-clay-700 border-clay-200" },
   rejected: { label: "Refuse", className: "bg-red-50 text-red-700 border-red-200" },
   unreachable: { label: "Injoignable", className: "bg-gray-50 text-gray-600 border-gray-200" },
 };
@@ -64,7 +64,7 @@ function AdminLeadCard({ lead }: { lead: Lead }) {
 
   const displayScore = score != null ? (score <= 10 ? score * 10 : score) : null;
   const scoreColor = displayScore != null
-    ? displayScore >= 80 ? "text-emerald-700 border-emerald-200 bg-emerald-50"
+    ? displayScore >= 80 ? "text-clay-700 border-clay-200 bg-clay-50"
     : displayScore >= 60 ? "text-amber-700 border-amber-200 bg-amber-50"
     : "text-gray-500 border-gray-200 bg-gray-50"
     : "";
@@ -83,7 +83,7 @@ function AdminLeadCard({ lead }: { lead: Lead }) {
   }, [descText, expanded]);
 
   return (
-    <Card className="bg-white border-gray-200 hover:border-emerald-300 hover:shadow-lg transition-all duration-300 rounded-xl">
+    <Card className="bg-white border-gray-200 hover:border-clay-300 hover:shadow-lg transition-all duration-300 rounded-xl">
       <CardContent className="p-4">
         <div className="flex items-start gap-4">
           {/* Main content */}
@@ -113,7 +113,7 @@ function AdminLeadCard({ lead }: { lead: Lead }) {
               <span title="Surface" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-800 font-semibold">
                 <Maximize className="h-3 w-3 text-gray-500" />{surface} m&sup2;
               </span>
-              <span title="Prix" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 font-bold border border-emerald-100">
+              <span title="Prix" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-clay-50 text-clay-700 font-bold border border-clay-100">
                 <Euro className="h-3 w-3" />{prix.toLocaleString()} &euro;
               </span>
               {prixM2 > 0 && (
@@ -127,7 +127,7 @@ function AdminLeadCard({ lead }: { lead: Lead }) {
                 </span>
               )}
               {phone && (
-                <span title="Telephone" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 font-bold border border-emerald-100">
+                <span title="Telephone" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-clay-50 text-clay-700 font-bold border border-clay-100">
                   <Phone className="h-3 w-3" />{phone}
                 </span>
               )}
@@ -145,7 +145,7 @@ function AdminLeadCard({ lead }: { lead: Lead }) {
                 {(isDescOverflow || expanded) && (
                   <button
                     type="button"
-                    className="mt-1.5 text-sm text-emerald-600 hover:text-emerald-700 hover:underline font-semibold"
+                    className="mt-1.5 text-sm text-clay-600 hover:text-clay-700 hover:underline font-semibold"
                     onClick={() => setExpanded((v) => !v)}
                   >
                     {expanded ? "lire moins" : "lire plus"}
@@ -163,7 +163,7 @@ function AdminLeadCard({ lead }: { lead: Lead }) {
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-white hover:bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:text-emerald-700 border border-gray-300 hover:border-emerald-400 shadow-sm transition-all"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white hover:bg-clay-50 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:text-clay-700 border border-gray-300 hover:border-clay-400 shadow-sm transition-all"
                 >
                   Voir sur {source?.label || "l'annonce"}
                   <ExternalLink className="h-3.5 w-3.5" />
@@ -176,15 +176,15 @@ function AdminLeadCard({ lead }: { lead: Lead }) {
           <div className="flex flex-col gap-2 w-44 shrink-0">
             <button
               type="button"
-              className="group/btn flex items-center gap-2.5 h-12 px-3 rounded-xl bg-white border-2 border-emerald-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
+              className="group/btn flex items-center gap-2.5 h-12 px-3 rounded-xl bg-white border-2 border-clay-200 hover:border-clay-500 hover:bg-clay-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
               onClick={() => navigate(`/admin/leads/${id}`)}
             >
-              <span className="h-8 w-8 rounded-lg bg-emerald-600 flex items-center justify-center shrink-0 shadow-sm shadow-emerald-600/40">
+              <span className="h-8 w-8 rounded-lg bg-clay-600 flex items-center justify-center shrink-0 shadow-sm shadow-clay-600/40">
                 <Eye className="h-4 w-4 text-white" />
               </span>
               <span className="flex flex-col items-start min-w-0 leading-tight">
                 <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Ouvrir</span>
-                <span className="text-sm font-bold text-gray-800 group-hover/btn:text-emerald-700 transition-colors">Voir d&eacute;tail</span>
+                <span className="text-sm font-bold text-gray-800 group-hover/btn:text-clay-700 transition-colors">Voir d&eacute;tail</span>
               </span>
             </button>
           </div>

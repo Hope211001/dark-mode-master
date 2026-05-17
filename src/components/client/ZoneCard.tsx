@@ -165,20 +165,20 @@ export function ZoneCard({
             fetching 
               ? "bg-secondary/10 border-border" 
               : subscription?.auto_contact_enabled 
-                ? "bg-emerald-500/10 border-emerald-500/20" 
+                ? "bg-clay-500/10 border-clay-500/20" 
                 : "bg-slate-500/10 border-slate-500/20"
         )}>
           <div className="flex items-center gap-2">
             {fetching ? (
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
             ) : (
-              <Mail className={cn("h-4 w-4", subscription?.auto_contact_enabled ? "text-emerald-500" : "text-slate-400")} />
+              <Mail className={cn("h-4 w-4", subscription?.auto_contact_enabled ? "text-clay-500" : "text-slate-400")} />
             )}
             <span className="text-xs text-muted-foreground font-medium">
               Auto-contact : 
               <span className={cn(
                 "ml-1 font-bold",
-                subscription?.auto_contact_enabled ? "text-emerald-500" : "text-slate-500"
+                subscription?.auto_contact_enabled ? "text-clay-500" : "text-slate-500"
               )}>
                 {fetching ? "Chargement..." : (subscription?.auto_contact_enabled ? "Activé" : "Désactivé")}
               </span>

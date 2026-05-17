@@ -28,7 +28,7 @@ import SuccessAlert from "@/components/alert/success";
 const statusConfig: Record<string, { label: string; className: string }> = {
     new:        { label: "Nouveau",    className: "bg-primary/20 text-primary border-primary/30" },
     contacted:  { label: "Contacté",   className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-    replied:    { label: "Répondu",    className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
+    replied:    { label: "Répondu",    className: "bg-clay-500/20 text-clay-400 border-clay-500/30" },
     rejected:   { label: "Rejeté",     className: "bg-destructive/20 text-destructive border-destructive/30" },
 };
 
@@ -36,12 +36,12 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 function ScoreGauge({ score }: { score: number }) {
     const display = score <= 10 ? score * 10 : score;
     const color = display >= 80
-        ? "text-emerald-400 stroke-emerald-400"
+        ? "text-clay-400 stroke-clay-400"
         : display >= 60
         ? "text-yellow-400 stroke-yellow-400"
         : "text-destructive stroke-destructive";
     const bgColor = display >= 80
-        ? "bg-emerald-500/10 border-emerald-500/20"
+        ? "bg-clay-500/10 border-clay-500/20"
         : display >= 60
         ? "bg-yellow-500/10 border-yellow-500/20"
         : "bg-destructive/10 border-destructive/20";
@@ -85,11 +85,11 @@ function DetailRow({ icon: Icon, label, value, highlight = false, href }: {
                 <span className="truncate">{label}</span>
             </div>
             {href ? (
-                <a href={href} className={cn("font-semibold text-sm text-right truncate max-w-[55%] text-primary hover:underline", highlight && "text-emerald-400")}>
+                <a href={href} className={cn("font-semibold text-sm text-right truncate max-w-[55%] text-primary hover:underline", highlight && "text-clay-400")}>
                     {value}
                 </a>
             ) : (
-                <span className={cn("font-semibold text-sm text-right truncate max-w-[55%]", highlight ? "text-emerald-400" : "text-foreground")}>
+                <span className={cn("font-semibold text-sm text-right truncate max-w-[55%]", highlight ? "text-clay-400" : "text-foreground")}>
                     {value}
                 </span>
             )}
@@ -290,7 +290,7 @@ const ShowLead = () => {
                     <div className="relative animate-in zoom-in-95 fade-in duration-200 bg-[#0f172a] border border-primary/20 rounded-2xl shadow-2xl shadow-primary/5 w-full max-w-lg overflow-hidden">
                         <div className={cn(
                             "relative px-6 py-5 border-b border-white/5",
-                            contactMode === "whatsapp" ? "bg-gradient-to-r from-emerald-500/15 to-transparent" : "bg-gradient-to-r from-orange-500/15 to-transparent"
+                            contactMode === "whatsapp" ? "bg-gradient-to-r from-clay-500/15 to-transparent" : "bg-gradient-to-r from-orange-500/15 to-transparent"
                         )}>
                             <button
                                 onClick={() => setShowContactModal(false)}
@@ -301,10 +301,10 @@ const ShowLead = () => {
                             <div className="flex items-center gap-3">
                                 <div className={cn(
                                     "h-10 w-10 rounded-full flex items-center justify-center",
-                                    contactMode === "whatsapp" ? "bg-emerald-500/20" : "bg-orange-500/20"
+                                    contactMode === "whatsapp" ? "bg-clay-500/20" : "bg-orange-500/20"
                                 )}>
                                     {contactMode === "whatsapp"
-                                        ? <MessageCircle className="h-5 w-5 text-emerald-400" />
+                                        ? <MessageCircle className="h-5 w-5 text-clay-400" />
                                         : <MessageSquare className="h-5 w-5 text-orange-400" />}
                                 </div>
                                 <div>
@@ -374,8 +374,8 @@ const ShowLead = () => {
             {showSentModal && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSentModal(false)} />
-                    <div className="relative animate-in zoom-in-95 fade-in duration-200 bg-[#0f172a] border border-emerald-500/20 rounded-2xl shadow-2xl shadow-emerald-500/10 w-full max-w-md overflow-hidden">
-                        <div className="relative bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-4">
+                    <div className="relative animate-in zoom-in-95 fade-in duration-200 bg-[#0f172a] border border-clay-500/20 rounded-2xl shadow-2xl shadow-clay-500/10 w-full max-w-md overflow-hidden">
+                        <div className="relative bg-gradient-to-r from-clay-600 to-clay-700 px-6 py-4">
                             <button
                                 onClick={() => setShowSentModal(false)}
                                 className="absolute top-3 right-3 h-8 w-8 rounded-lg flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all"
@@ -388,7 +388,7 @@ const ShowLead = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-white font-bold text-base leading-tight">Message envoy&eacute;</h3>
-                                    <p className="text-[11px] text-emerald-100/90 mt-0.5">Contact via WhatsApp</p>
+                                    <p className="text-[11px] text-clay-100/90 mt-0.5">Contact via WhatsApp</p>
                                 </div>
                             </div>
                         </div>
@@ -408,7 +408,7 @@ const ShowLead = () => {
                             </div>
                         </div>
                         <div className="px-6 pb-4">
-                            <Button onClick={() => setShowSentModal(false)} className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10">
+                            <Button onClick={() => setShowSentModal(false)} className="w-full rounded-xl bg-clay-600 hover:bg-clay-700 text-white font-bold h-10">
                                 Fermer
                             </Button>
                         </div>
@@ -513,10 +513,10 @@ const ShowLead = () => {
                                     </p>
                                 </div>
                                 <div className="p-4 bg-card rounded-xl border border-border text-center">
-                                    <TrendingUp className="h-4 w-4 text-emerald-400 mx-auto mb-1.5" />
+                                    <TrendingUp className="h-4 w-4 text-clay-400 mx-auto mb-1.5" />
                                     <p className="text-[10px] text-muted-foreground uppercase font-bold">Score</p>
                                     <p className={cn("text-lg md:text-xl font-black mt-0.5",
-                                        (lead.score <= 10 ? lead.score * 10 : lead.score) >= 80 ? "text-emerald-400" :
+                                        (lead.score <= 10 ? lead.score * 10 : lead.score) >= 80 ? "text-clay-400" :
                                         (lead.score <= 10 ? lead.score * 10 : lead.score) >= 60 ? "text-yellow-400" : "text-destructive"
                                     )}>
                                         {lead.score <= 10 ? lead.score * 10 : lead.score}<span className="text-muted-foreground text-sm font-normal">/100</span>
@@ -600,7 +600,7 @@ const ShowLead = () => {
                                             <Button
                                                 size="lg"
                                                 onClick={() => setShowSentModal(true)}
-                                                className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-bold text-sm h-11 shadow-md shadow-emerald-600/30 hover:shadow-lg gap-2"
+                                                className="w-full bg-gradient-to-r from-clay-600 to-clay-700 hover:from-clay-500 hover:to-clay-600 text-white font-bold text-sm h-11 shadow-md shadow-clay-600/30 hover:shadow-lg gap-2"
                                             >
                                                 <CheckCircle2 className="h-4 w-4" />
                                                 D&eacute;j&agrave; contact&eacute; sur WhatsApp
@@ -633,7 +633,7 @@ const ShowLead = () => {
                             <Card className="border-border bg-card">
                                 <CardHeader className="pb-3 border-b border-border/50">
                                     <CardTitle className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-2">
-                                        <TrendingUp className="h-4 w-4 text-emerald-400" />
+                                        <TrendingUp className="h-4 w-4 text-clay-400" />
                                         Score de rentabilité
                                     </CardTitle>
                                 </CardHeader>
@@ -651,17 +651,17 @@ const ShowLead = () => {
 
                             {/* Revenu potentiel */}
                             {lead.potentiel_revenu && (
-                                <Card className="border-emerald-500/20 bg-emerald-500/5">
+                                <Card className="border-clay-500/20 bg-clay-500/5">
                                     <CardContent className="pt-5 pb-5">
                                         <div className="flex items-center justify-between">
                                             <div>
                                                 <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Revenu potentiel</p>
-                                                <p className="text-2xl font-black text-emerald-400">
+                                                <p className="text-2xl font-black text-clay-400">
                                                     {lead.potentiel_revenu.toLocaleString()} <span className="text-sm font-semibold">€ / mois</span>
                                                 </p>
                                             </div>
-                                            <div className="h-12 w-12 rounded-full bg-emerald-500/15 flex items-center justify-center">
-                                                <Euro className="h-6 w-6 text-emerald-400" />
+                                            <div className="h-12 w-12 rounded-full bg-clay-500/15 flex items-center justify-center">
+                                                <Euro className="h-6 w-6 text-clay-400" />
                                             </div>
                                         </div>
                                     </CardContent>

@@ -19,13 +19,13 @@ const LandingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-emerald-500 selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-clay-500 selection:text-white overflow-x-hidden">
 
       {/* Background effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[10%] -right-[10%] w-[800px] h-[800px] bg-emerald-500/5 rounded-full blur-[150px]" />
-        <div className="absolute top-[30%] -left-[15%] w-[600px] h-[600px] bg-teal-500/5 rounded-full blur-[130px]" />
-        <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] bg-emerald-400/4 rounded-full blur-[120px]" />
+        <div className="absolute -top-[10%] -right-[10%] w-[800px] h-[800px] bg-clay-500/5 rounded-full blur-[150px]" />
+        <div className="absolute top-[30%] -left-[15%] w-[600px] h-[600px] bg-clay-500/5 rounded-full blur-[130px]" />
+        <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] bg-clay-400/4 rounded-full blur-[120px]" />
       </div>
 
       <HeaderHome />
@@ -33,18 +33,18 @@ const LandingPage = () => {
       {/* ═══════════ HERO ═══════════ */}
       <section className="relative z-10 pt-32 pb-20 md:pt-44 md:pb-32 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-50 border border-emerald-200 mb-10">
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-clay-50 border border-clay-200 mb-10">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-clay-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-clay-500" />
             </span>
-            <span className="text-xs md:text-sm font-semibold text-emerald-700 uppercase tracking-wider">Scraping Leboncoin + PAP + SeLoger</span>
+            <span className="text-xs md:text-sm font-semibold text-clay-700 uppercase tracking-wider">Scraping Leboncoin + PAP + SeLoger</span>
           </div>
 
           <h1 className="text-5xl md:text-8xl font-black text-gray-900 mb-8 leading-[1.05] tracking-tight">
             Chassez l'immobilier
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-500">en pilote automatique</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-clay-600 via-clay-500 to-clay-500">en pilote automatique</span>
           </h1>
 
           <p className="text-lg md:text-2xl text-gray-500 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
@@ -56,14 +56,14 @@ const LandingPage = () => {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
             <Link to="/register" className="w-full sm:w-auto relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl blur-lg opacity-40 group-hover:opacity-70 transition-opacity" />
-              <div className="relative bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-10 py-5 rounded-xl font-bold text-lg flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform shadow-lg">
+              <div className="absolute -inset-1 bg-gradient-to-r from-clay-600 to-clay-600 rounded-2xl blur-lg opacity-40 group-hover:opacity-70 transition-opacity" />
+              <div className="relative bg-gradient-to-r from-clay-600 to-clay-600 text-white px-10 py-5 rounded-xl font-bold text-lg flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform shadow-lg">
                 Verifier si ma ville est libre
                 <ArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />
               </div>
             </Link>
             <Link to="/fonctionnalites" className="w-full sm:w-auto bg-gray-50 text-gray-700 px-10 py-5 rounded-xl font-bold text-lg border border-gray-200 hover:bg-gray-100 transition-all flex items-center justify-center gap-3">
-              <Play size={18} className="text-emerald-600" />
+              <Play size={18} className="text-clay-600" />
               Comment ca marche
             </Link>
           </div>
@@ -71,7 +71,7 @@ const LandingPage = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto">
             {[
               { val: "2h/j", label: "Temps economise", icon: Clock, bg: "bg-blue-50", border: "border-blue-100", iconColor: "text-blue-600" },
-              { val: "x3", label: "Rentabilite Airbnb", icon: TrendingUp, bg: "bg-emerald-50", border: "border-emerald-100", iconColor: "text-emerald-600" },
+              { val: "x3", label: "Rentabilite Airbnb", icon: TrendingUp, bg: "bg-clay-50", border: "border-clay-100", iconColor: "text-clay-600" },
               { val: "100%", label: "Exclusivite Zone", icon: Shield, bg: "bg-purple-50", border: "border-purple-100", iconColor: "text-purple-600" },
               { val: "24/7", label: "Scraping Actif", icon: Zap, bg: "bg-amber-50", border: "border-amber-100", iconColor: "text-amber-600" },
             ].map((s) => (
@@ -89,9 +89,9 @@ const LandingPage = () => {
       <section className="relative z-10 py-28 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200 mb-6">
-              <Sparkles size={14} className="text-emerald-600" />
-              <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">Simple et puissant</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-clay-50 border border-clay-200 mb-6">
+              <Sparkles size={14} className="text-clay-600" />
+              <span className="text-xs font-semibold text-clay-700 uppercase tracking-wider">Simple et puissant</span>
             </div>
             <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-6">3 etapes, 0 effort</h2>
             <p className="text-gray-500 max-w-2xl mx-auto text-lg">Le systeme travaille pour vous 24h/24. Vous recoltez les resultats.</p>
@@ -99,8 +99,8 @@ const LandingPage = () => {
 
           <div className="grid md:grid-cols-3 gap-6 md:gap-8 mb-12">
             {[
-              { num: "01", icon: Search, title: "Detection", desc: "Scan automatique de Leboncoin, PAP.fr et SeLoger toutes les 15 minutes. Les nouvelles annonces sont captees instantanement.", gradient: "from-emerald-600 to-emerald-700", bg: "bg-emerald-50", border: "hover:border-emerald-200" },
-              { num: "02", icon: BarChart, title: "Scoring IA", desc: "Analyse de rentabilite basee sur les donnees Airbnb reelles. Chaque lead recoit un score de 0 a 10 base sur le ratio loyer/revenu.", gradient: "from-teal-600 to-teal-700", bg: "bg-teal-50", border: "hover:border-teal-200" },
+              { num: "01", icon: Search, title: "Detection", desc: "Scan automatique de Leboncoin, PAP.fr et SeLoger toutes les 15 minutes. Les nouvelles annonces sont captees instantanement.", gradient: "from-clay-600 to-clay-700", bg: "bg-clay-50", border: "hover:border-clay-200" },
+              { num: "02", icon: BarChart, title: "Scoring IA", desc: "Analyse de rentabilite basee sur les donnees Airbnb reelles. Chaque lead recoit un score de 0 a 10 base sur le ratio loyer/revenu.", gradient: "from-clay-600 to-clay-700", bg: "bg-clay-50", border: "hover:border-clay-200" },
               { num: "03", icon: Mail, title: "Contact auto", desc: "Email personnalise envoye depuis VOTRE adresse. Relance automatique a J+2 si pas de reponse. Le proprietaire vous repond directement.", gradient: "from-cyan-600 to-cyan-700", bg: "bg-cyan-50", border: "hover:border-cyan-200" },
             ].map((step) => (
               <div key={step.num} className={`relative bg-white p-8 md:p-10 rounded-3xl border border-gray-100 ${step.border} transition-all duration-500 group hover:-translate-y-2 hover:shadow-xl`}>
@@ -117,7 +117,7 @@ const LandingPage = () => {
           </div>
 
           <div className="text-center">
-            <Link to="/fonctionnalites" className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold text-lg transition-colors group">
+            <Link to="/fonctionnalites" className="inline-flex items-center gap-2 text-clay-600 hover:text-clay-700 font-semibold text-lg transition-colors group">
               Voir le detail complet <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
@@ -133,7 +133,7 @@ const LandingPage = () => {
           </div>
 
           <div className="relative max-w-5xl mx-auto">
-            <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 rounded-3xl blur-2xl" />
+            <div className="absolute -inset-4 bg-gradient-to-r from-clay-500/10 via-clay-500/10 to-clay-500/10 rounded-3xl blur-2xl" />
             <div className="relative rounded-2xl border border-gray-200 bg-white shadow-2xl overflow-hidden">
               <div className="flex items-center gap-3 border-b border-gray-100 bg-gray-50 px-5 py-3">
                 <div className="flex gap-2">
@@ -146,7 +146,7 @@ const LandingPage = () => {
 
               <div className="p-4 md:p-8 space-y-4">
                 {[
-                  { titre: "T2 Centre Ville - 45m2", ville: "Lyon 2e", prix: "850", score: "9.2", potentiel: "2400", status: "Email envoye", borderColor: "border-l-emerald-500", delay: "10 min", statusBg: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+                  { titre: "T2 Centre Ville - 45m2", ville: "Lyon 2e", prix: "850", score: "9.2", potentiel: "2400", status: "Email envoye", borderColor: "border-l-clay-500", delay: "10 min", statusBg: "bg-clay-50 text-clay-700 border-clay-200" },
                   { titre: "Studio Gare Part-Dieu", ville: "Lyon 3e", prix: "600", score: "7.5", potentiel: "1200", status: "En attente 15m", borderColor: "border-l-amber-500", delay: "45 min", statusBg: "bg-amber-50 text-amber-700 border-amber-200" },
                   { titre: "T3 Renove avec terrasse", ville: "Lyon 6e", prix: "1100", score: "8.8", potentiel: "3100", status: "Reponse recue!", borderColor: "border-l-blue-500", delay: "2h", statusBg: "bg-blue-50 text-blue-700 border-blue-200" },
                 ].map((lead, i) => (
@@ -156,17 +156,17 @@ const LandingPage = () => {
                         <Eye size={18} className="text-gray-400" />
                       </div>
                       <div>
-                        <h4 className="text-gray-900 font-semibold group-hover:text-emerald-700 transition-colors">{lead.titre}</h4>
+                        <h4 className="text-gray-900 font-semibold group-hover:text-clay-700 transition-colors">{lead.titre}</h4>
                         <div className="flex items-center gap-3 text-xs text-gray-400 mt-1">
                           <span>{lead.ville}</span>
                           <span>Loyer: {lead.prix}EUR</span>
-                          <span className="text-emerald-600">Il y a {lead.delay}</span>
+                          <span className="text-clay-600">Il y a {lead.delay}</span>
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-5 w-full md:w-auto justify-between md:justify-end">
                       <div className="text-right">
-                        <div className={`text-xl font-black ${parseFloat(lead.score) >= 8.5 ? "text-emerald-600" : "text-amber-600"}`}>
+                        <div className={`text-xl font-black ${parseFloat(lead.score) >= 8.5 ? "text-clay-600" : "text-amber-600"}`}>
                           {lead.score}/10
                         </div>
                         <p className="text-[10px] text-gray-400 uppercase tracking-wider">Potentiel: {lead.potentiel}EUR/mois</p>
@@ -192,7 +192,7 @@ const LandingPage = () => {
       {/* ═══════════ EXCLUSIVITE ═══════════ */}
       <section className="relative z-10 py-28 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-700 p-8 md:p-16">
+          <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-clay-600 via-clay-700 to-clay-700 p-8 md:p-16">
             <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-[100px] -mr-48 -mt-48" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-[80px] -ml-32 -mb-32" />
 
@@ -205,7 +205,7 @@ const LandingPage = () => {
                 <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight">
                   Votre ville,<br />votre territoire
                 </h2>
-                <p className="text-emerald-100 mb-8 leading-relaxed text-lg">
+                <p className="text-clay-100 mb-8 leading-relaxed text-lg">
                   Quand vous reservez une zone, <span className="text-white font-semibold">personne d'autre ne recoit les leads</span> de cette ville. Zero concurrence.
                 </p>
                 <ul className="space-y-4 mb-10">
@@ -218,11 +218,11 @@ const LandingPage = () => {
                       <div className="w-8 h-8 bg-white/15 rounded-lg flex items-center justify-center shrink-0">
                         <item.icon size={16} className="text-white" />
                       </div>
-                      <span className="text-emerald-50 font-medium">{item.text}</span>
+                      <span className="text-clay-50 font-medium">{item.text}</span>
                     </li>
                   ))}
                 </ul>
-                <Link to="/tarifs" className="inline-flex items-center gap-3 bg-white text-emerald-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-emerald-50 transition-all shadow-lg hover:scale-[1.02]">
+                <Link to="/tarifs" className="inline-flex items-center gap-3 bg-white text-clay-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-clay-50 transition-all shadow-lg hover:scale-[1.02]">
                   Voir les zones disponibles <ArrowRight size={18} />
                 </Link>
               </div>
@@ -239,8 +239,8 @@ const LandingPage = () => {
                     <div className="flex items-center gap-3">
                       <div className={`w-3 h-3 rounded-full ${z.libre ? "bg-white shadow-[0_0_12px_rgba(255,255,255,0.5)]" : "bg-red-300"}`} />
                       <div>
-                        <span className={`font-mono text-sm font-semibold ${z.libre ? "text-white" : "text-emerald-200"}`}>{z.ville}</span>
-                        {!z.libre && <span className="text-[10px] text-emerald-300/60 block">{z.user}</span>}
+                        <span className={`font-mono text-sm font-semibold ${z.libre ? "text-white" : "text-clay-200"}`}>{z.ville}</span>
+                        {!z.libre && <span className="text-[10px] text-clay-300/60 block">{z.user}</span>}
                       </div>
                     </div>
                     <span className={`text-xs font-bold px-4 py-1.5 rounded-full ${z.libre ? "bg-white/25 text-white border border-white/30" : "bg-red-400/20 text-red-200 border border-red-400/20"}`}>
@@ -278,7 +278,7 @@ const LandingPage = () => {
                 </div>
                 <p className="text-gray-600 leading-relaxed mb-8 relative z-10">"{t.text}"</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg">
+                  <div className="w-11 h-11 bg-gradient-to-br from-clay-500 to-clay-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg">
                     {t.avatar}
                   </div>
                   <div>
@@ -302,7 +302,7 @@ const LandingPage = () => {
             {[
               { icon: Search, title: "3 plateformes", desc: "Leboncoin, PAP.fr, SeLoger scannes en continu", bg: "bg-blue-50", iconColor: "text-blue-600" },
               { icon: Zap, title: "Scan / 15 min", desc: "Les nouvelles annonces detectees instantanement", bg: "bg-amber-50", iconColor: "text-amber-600" },
-              { icon: Phone, title: "Telephone inclus", desc: "Numeros des proprietaires recuperes automatiquement", bg: "bg-emerald-50", iconColor: "text-emerald-600" },
+              { icon: Phone, title: "Telephone inclus", desc: "Numeros des proprietaires recuperes automatiquement", bg: "bg-clay-50", iconColor: "text-clay-600" },
               { icon: TrendingUp, title: "Scoring precis", desc: "Basee sur les donnees Airbnb reelles", bg: "bg-purple-50", iconColor: "text-purple-600" },
               { icon: Mail, title: "Email auto", desc: "Envoyes depuis votre propre adresse", bg: "bg-rose-50", iconColor: "text-rose-600" },
               { icon: Shield, title: "Zone exclusive", desc: "Aucune concurrence sur votre ville", bg: "bg-indigo-50", iconColor: "text-indigo-600" },
@@ -350,7 +350,7 @@ const LandingPage = () => {
       <section className="relative z-10 py-28 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="relative overflow-hidden rounded-[2rem]">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700" />
+            <div className="absolute inset-0 bg-gradient-to-br from-clay-600 via-clay-600 to-clay-700" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent_60%)]" />
             <div className="absolute top-0 right-0 -mr-20 -mt-20 h-80 w-80 rounded-full bg-white opacity-10 blur-3xl animate-pulse" />
 
@@ -358,18 +358,18 @@ const LandingPage = () => {
               <h2 className="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
                 Ne laissez pas un autre<br className="hidden md:block" /> prendre votre ville
               </h2>
-              <p className="text-emerald-100 text-lg md:text-xl mb-12 max-w-2xl mx-auto font-light">
+              <p className="text-clay-100 text-lg md:text-xl mb-12 max-w-2xl mx-auto font-light">
                 Chaque zone est unique. Une fois reservee, elle n'est plus disponible. Verifiez maintenant.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-                <Link to="/register" className="bg-white text-emerald-700 px-10 py-5 rounded-xl font-bold text-lg hover:bg-emerald-50 transition-all shadow-xl hover:scale-105">
+                <Link to="/register" className="bg-white text-clay-700 px-10 py-5 rounded-xl font-bold text-lg hover:bg-clay-50 transition-all shadow-xl hover:scale-105">
                   Securiser ma zone gratuitement
                 </Link>
                 <Link to="/contact" className="border-2 border-white/30 text-white px-10 py-5 rounded-xl font-bold text-lg hover:bg-white/10 transition-all">
                   Nous contacter
                 </Link>
               </div>
-              <p className="text-emerald-200/80 text-sm flex items-center justify-center gap-2">
+              <p className="text-clay-200/80 text-sm flex items-center justify-center gap-2">
                 <Shield size={14} /> Garantie satisfait ou rembourse 30 jours - Sans engagement
               </p>
             </div>

@@ -7,19 +7,19 @@ const AboutPage = () => {
     return (
         <div className="min-h-screen bg-white">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/3 -left-40 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>
+                <div className="absolute -top-40 -right-40 w-96 h-96 bg-clay-500/5 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/3 -left-40 w-96 h-96 bg-clay-500/5 rounded-full blur-3xl"></div>
             </div>
 
             <HeaderHome />
 
             <section className="relative z-10 px-4 pt-32 pb-20 text-center">
                 <div className="max-w-4xl mx-auto">
-                    <div className="inline-block mb-4 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-full">
-                        <span className="text-emerald-700 text-sm font-medium">Notre histoire</span>
+                    <div className="inline-block mb-4 px-4 py-2 bg-clay-50 border border-clay-200 rounded-full">
+                        <span className="text-clay-700 text-sm font-medium">Notre histoire</span>
                     </div>
                     <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
-                        Une revolution dans l'<span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">investissement locatif</span>
+                        Une revolution dans l'<span className="bg-gradient-to-r from-clay-600 to-clay-500 bg-clip-text text-transparent">investissement locatif</span>
                     </h1>
                     <p className="text-xl text-gray-500 mb-8 max-w-2xl mx-auto leading-relaxed">
                         ImmoScout automatise la recherche d'opportunites immobilieres rentables. Notre mission : faire gagner du temps aux investisseurs.
@@ -34,7 +34,7 @@ const AboutPage = () => {
                             <h2 className="text-4xl font-bold text-gray-900 mb-6">Notre Mission</h2>
                             <p className="text-gray-500 text-lg mb-6 leading-relaxed">Nous avons cree ImmoScout apres avoir constate que les investisseurs passaient des heures chaque jour a chercher manuellement des opportunites.</p>
                             <p className="text-gray-500 text-lg mb-6 leading-relaxed">Notre plateforme automatise l'ensemble du processus : du scraping intelligent au calcul de rentabilite, jusqu'a l'envoi automatise d'emails.</p>
-                            <div className="flex items-center space-x-2 text-emerald-600"><Sparkles size={20} /><span className="font-semibold">Gagnez jusqu'a 2 heures par jour</span></div>
+                            <div className="flex items-center space-x-2 text-clay-600"><Sparkles size={20} /><span className="font-semibold">Gagnez jusqu'a 2 heures par jour</span></div>
                         </div>
                         <div className="grid grid-cols-2 gap-6">
                             {[
@@ -68,7 +68,7 @@ const AboutPage = () => {
                             { num: "4", title: "Contact", desc: "Envoi automatique d'emails personnalises", color: "emerald" },
                         ].map((step, i) => (
                             <div key={i} className="relative">
-                                <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-emerald-200 hover:shadow-md transition-all duration-300">
+                                <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-clay-200 hover:shadow-md transition-all duration-300">
                                     <div className={`w-12 h-12 bg-gradient-to-br from-${step.color}-500 to-${step.color}-600 rounded-lg flex items-center justify-center mb-4 shadow-lg`}>
                                         <span className="text-white font-bold text-xl">{step.num}</span>
                                     </div>
@@ -108,16 +108,16 @@ const AboutPage = () => {
 
             <section className="relative z-10 px-4 py-20">
                 <div className="max-w-6xl mx-auto">
-                    <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-3xl p-12">
+                    <div className="bg-gradient-to-br from-clay-50 to-clay-50 border border-clay-200 rounded-3xl p-12">
                         <div className="text-center mb-12">
                             <h2 className="text-4xl font-bold text-gray-900 mb-4">ImmoScout en chiffres</h2>
                             <p className="text-gray-500 text-lg">La puissance de l'automatisation au service de votre reussite</p>
                         </div>
                         <div className="grid md:grid-cols-4 gap-8">
                             {[
-                                { val: "500+", label: "Annonces scannees par jour", color: "from-emerald-600 to-teal-600" },
+                                { val: "500+", label: "Annonces scannees par jour", color: "from-clay-600 to-clay-600" },
                                 { val: "95%", label: "Taux de precision du scoring", color: "from-purple-600 to-indigo-600" },
-                                { val: "2h", label: "Economisees quotidiennement", color: "from-teal-600 to-cyan-600" },
+                                { val: "2h", label: "Economisees quotidiennement", color: "from-clay-600 to-cyan-600" },
                                 { val: "24/7", label: "Monitoring automatique", color: "from-amber-600 to-orange-600" },
                             ].map((s) => (
                                 <div key={s.val} className="text-center">
@@ -135,7 +135,7 @@ const AboutPage = () => {
                     <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Pret a revolutionner votre recherche ?</h2>
                     <p className="text-xl text-gray-500 mb-8 max-w-2xl mx-auto">Rejoignez les investisseurs qui utilisent deja ImmoScout.</p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link to="/register" className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-8 py-4 rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg flex items-center justify-center font-semibold text-lg">
+                        <Link to="/register" className="w-full sm:w-auto bg-gradient-to-r from-clay-600 to-clay-600 text-white px-8 py-4 rounded-lg hover:from-clay-700 hover:to-clay-700 transition-all shadow-lg flex items-center justify-center font-semibold text-lg">
                             Commencer gratuitement <ArrowRight className="ml-2" size={20} />
                         </Link>
                         <Link to="/tarifs" className="w-full sm:w-auto bg-gray-50 border border-gray-200 text-gray-700 px-8 py-4 rounded-lg hover:bg-gray-100 transition-all font-semibold text-lg">

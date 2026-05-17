@@ -94,7 +94,7 @@ const NotificationsPage = () => {
                 <TabsTrigger value="unread" className="px-5 data-[state=active]:bg-background data-[state=active]:shadow-sm">
                   Non lues
                   {unreadCount > 0 && (
-                    <span className="ml-2 bg-emerald-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                    <span className="ml-2 bg-clay-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
                       {unreadCount}
                     </span>
                   )}
@@ -131,18 +131,18 @@ const NotificationsPage = () => {
                     className={`
                       group relative flex items-start gap-4 p-4 rounded-xl transition-all duration-200 cursor-pointer border
                       ${!notif.is_read
-                        ? 'bg-emerald-50/50 border-emerald-200 hover:border-emerald-300 shadow-sm'
+                        ? 'bg-clay-50/50 border-clay-200 hover:border-clay-300 shadow-sm'
                         : 'bg-transparent border-transparent hover:bg-muted/50'}
                     `}
                   >
                     {!notif.is_read && (
-                      <span className="absolute left-1.5 top-1/2 -translate-y-1/2 h-1.5 w-1.5 bg-emerald-500 rounded-full" />
+                      <span className="absolute left-1.5 top-1/2 -translate-y-1/2 h-1.5 w-1.5 bg-clay-500 rounded-full" />
                     )}
 
                     <div className={`
                       flex-shrink-0 h-10 w-10 rounded-lg flex items-center justify-center border
                       ${!notif.is_read
-                        ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
+                        ? 'bg-clay-50 text-clay-600 border-clay-200'
                         : 'bg-muted/50 text-muted-foreground border-border'}
                     `}>
                       {notif.titre.toLowerCase().includes('score') ? (
@@ -165,13 +165,13 @@ const NotificationsPage = () => {
                         </span>
                       </div>
                       <p className={`text-sm line-clamp-1 transition-colors ${!notif.is_read ? 'text-gray-600' : 'text-muted-foreground'}`}>
-                        Opportunite detectee avec un score de : <span className={!notif.is_read ? 'text-emerald-600 font-bold' : 'text-muted-foreground'}>{notif.score}/10</span>
+                        Opportunite detectee avec un score de : <span className={!notif.is_read ? 'text-clay-600 font-bold' : 'text-muted-foreground'}>{notif.score}/10</span>
                       </p>
                     </div>
 
                     {!notif.is_read && (
                       <div className="self-center ml-2 hidden sm:block">
-                        <div className="bg-emerald-600 text-white text-[9px] font-black px-2 py-0.5 rounded shadow-sm uppercase">
+                        <div className="bg-clay-600 text-white text-[9px] font-black px-2 py-0.5 rounded shadow-sm uppercase">
                           New
                         </div>
                       </div>

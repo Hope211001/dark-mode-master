@@ -99,7 +99,7 @@ export function OnboardingChecklist({ user }: { user: User | null }) {
                   }`}
                 >
                   {step.done ? (
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="h-3.5 w-3.5 text-clay-500 shrink-0" />
                   ) : (
                     <Circle className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                   )}

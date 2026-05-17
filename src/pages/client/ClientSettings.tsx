@@ -103,9 +103,9 @@ const ClientSettings = () => {
     {
       to: "/client/zones",
       icon: MapPin,
-      iconColor: "text-emerald-400",
-      iconBg: "bg-emerald-500/10 border-emerald-500/20",
-      hoverBorder: "hover:border-emerald-500/30",
+      iconColor: "text-clay-400",
+      iconBg: "bg-clay-500/10 border-clay-500/20",
+      hoverBorder: "hover:border-clay-500/30",
       title: "Mes zones",
       desc: "Gérer vos zones de prospection",
     },

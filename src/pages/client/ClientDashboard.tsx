@@ -119,13 +119,13 @@ const ClientDashboard = () => {
       value: stats.totalLeads,
       subtitle: "tous statuts confondus",
       icon: BarChart3,
-      gradient: "from-emerald-50 to-white",
-      border: "border-emerald-200",
+      gradient: "from-clay-50 to-white",
+      border: "border-clay-200",
       shadow: "shadow-sm hover:shadow-md",
-      iconBg: "bg-emerald-50 border-emerald-200",
-      iconColor: "text-emerald-600",
-      glow: "bg-emerald-500/20",
-      badgeColor: "text-emerald-600 bg-emerald-50",
+      iconBg: "bg-clay-50 border-clay-200",
+      iconColor: "text-clay-600",
+      glow: "bg-clay-500/20",
+      badgeColor: "text-clay-600 bg-clay-50",
     },
     {
       label: "Nouveaux",
@@ -298,7 +298,7 @@ const ClientDashboard = () => {
                   Nos algorithmes scannent vos zones en continu. Vous serez notifié dès qu'une opportunité apparaît.
                 </p>
                 <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                  <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                  <div className="h-1.5 w-1.5 bg-clay-500 rounded-full animate-pulse" />
                   Détection active
                 </div>
               </div>
