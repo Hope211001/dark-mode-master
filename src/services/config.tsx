@@ -45,12 +45,11 @@ export const configService = {
   },
 
   // Choisir le template par defaut selon le canal de contact
-  pickTemplate(cfg: UserConfig | null | undefined, mode: "leboncoin" | "whatsapp"): string {
+  pickTemplate(cfg: UserConfig | null | undefined, _mode: "leboncoin"): string {
     if (!cfg) return "";
     const t1 = cfg.template_msg_1 || "";
     const t2 = cfg.template_msg_2 || "";
     const t3 = cfg.template_msg_3 || "";
-    if (mode === "whatsapp") return t2 || t1 || t3;
     return t1 || t2 || t3;
   },
 };

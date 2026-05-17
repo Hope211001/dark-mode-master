@@ -35,10 +35,7 @@ import {
 } from "lucide-react";
 
 const SOURCES_OPTIONS = [
-    { value: "pap.fr",          label: "PAP.fr",        hint: "Particuliers" },
     { value: "leboncoin.fr",    label: "Leboncoin",     hint: "Particuliers + pros" },
-    { value: "seloger.com",     label: "SeLoger",       hint: "Surtout agences" },
-    { value: "logic-immo.com",  label: "Logic-Immo",    hint: "Surtout agences" },
 ] as const;
 import { subscriptionService, Subscription } from '@/services/subscription';
 import ErrorAlert from "@/components/alert/error";
@@ -115,6 +112,10 @@ const ZoneSetting = () => {
             setFetching(true);
             const data = await subscriptionService.getSubscriptionByZone(zoneId!);
             console.log("✅ Données reçues :", data);
+            const sources = Array.isArray(data?.sources_allowed) ? data.sources_allowed : [];
+            if (!sources.includes("leboncoin.fr")) {
+                data.sources_allowed = ["leboncoin.fr"];
+            }
             setConfig(data);
         } catch (error: any) {
             // Affiche l'erreur réelle dans la console pour débugger

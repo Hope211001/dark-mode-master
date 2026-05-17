@@ -7,7 +7,7 @@ import HeaderHome from "@/components/partials/header/header.home";
 import FooterHome from "@/components/partials/footer/footer.home";
 
 const steps = [
-  { num: 1, title: "Recuperation (Le Chasseur)", desc: "Notre robot interroge Apify pour scanner les dernieres annonces Leboncoin, PAP.fr et SeLoger. Il filtre instantanement pour verifier si l'annonce est dans votre zone exclusive.", icon: Search, color: "emerald", tags: ["Apify", "PostgreSQL", "n8n"] },
+  { num: 1, title: "Recuperation (Le Chasseur)", desc: "Notre robot interroge Apify pour scanner les dernieres annonces Leboncoin. Il filtre instantanement pour verifier si l'annonce est dans votre zone exclusive.", icon: Search, color: "emerald", tags: ["Apify", "PostgreSQL", "n8n"] },
   { num: 2, title: "Enrichissement (Le Cerveau)", desc: "On ne regarde pas juste le prix. On interroge Beyond Pricing. Si Loyer = 800EUR mais Potentiel Airbnb = 2500EUR, l'annonce recoit un score de 9.5/10.", icon: BarChart, color: "teal", tags: ["Beyond Pricing", "Math.js", "Scoring"] },
   { num: 3, title: "Contact (Le Bras Arme)", desc: "Si le score est superieur a 7/10, le systeme attend 20 min et envoie un email personnalise depuis votre adresse. Il relance meme a J+2 si pas de reponse.", icon: Mail, color: "cyan", tags: ["Gmail API", "Outlook", "n8n"] },
 ];

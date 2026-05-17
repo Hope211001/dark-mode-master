@@ -13,8 +13,6 @@ import {
 
 const CATEGORIES = [
   { key: "leboncoin", label: "Leboncoin", color: "#f97316" },
-  { key: "pap.fr", label: "PAP.fr", color: "#38bdf8" },
-  { key: "seloger", label: "SeLoger", color: "#fb7185" },
 ];
 
 type View = "daily" | "monthly";

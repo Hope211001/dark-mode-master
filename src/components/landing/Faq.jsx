@@ -5,7 +5,7 @@ import { Plus, Minus } from "lucide-react";
 const ITEMS = [
   {
     q: "Comment vous contactez les propriétaires concrètement ?",
-    a: "Une fois votre zone sécurisée et vos critères paramétrés, le système surveille en continu les nouvelles annonces sur leboncoin, SeLoger, PAP et Bien'ici, et contacte les propriétaires correspondants. La relance est automatique en cas de non-réponse, pour maximiser le taux de retour.",
+    a: "Une fois votre zone sécurisée et vos critères paramétrés, le système surveille en continu les nouvelles annonces sur Leboncoin et contacte les propriétaires correspondants. La relance est automatique en cas de non-réponse, pour maximiser le taux de retour.",
   },
   {
     q: "Une zone, c'est quoi exactement ?",

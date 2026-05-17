@@ -3,17 +3,15 @@ import { Loader2 } from "lucide-react";
 
 const categorieCards = [
   { key: "leboncoin", label: "Leboncoin", color: "text-orange-400", border: "border-orange-500/30", bg: "bg-orange-500/10", dot: "bg-orange-400", barBg: "bg-orange-500" },
-  { key: "pap", label: "PAP.fr", color: "text-sky-400", border: "border-sky-500/30", bg: "bg-sky-500/10", dot: "bg-sky-400", barBg: "bg-sky-500" },
-  { key: "seloger", label: "SeLoger", color: "text-rose-400", border: "border-rose-500/30", bg: "bg-rose-500/10", dot: "bg-rose-400", barBg: "bg-rose-500" },
 ];
 
 interface Props {
-  counts: { leboncoin: number; pap: number; seloger: number };
+  counts: { leboncoin: number };
   loading: boolean;
 }
 
 export function StatsBySource({ counts, loading }: Props) {
-  const total = counts.leboncoin + counts.pap + counts.seloger;
+  const total = counts.leboncoin;
 
   return (
     <Card className="border-border bg-card/50 backdrop-blur-sm overflow-hidden">
@@ -42,7 +40,7 @@ export function StatsBySource({ counts, loading }: Props) {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {categorieCards.map((c) => {
             const val = counts[c.key as keyof typeof counts];
             const pct = total > 0 ? Math.round((val / total) * 100) : 0;

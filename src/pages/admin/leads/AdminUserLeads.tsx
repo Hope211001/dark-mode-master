@@ -44,8 +44,6 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 
 const sourceConfig: Record<string, { label: string; className: string; dot: string }> = {
   "leboncoin": { label: "Leboncoin", className: "bg-orange-500 text-white border-orange-600 shadow-sm shadow-orange-500/30", dot: "bg-white" },
-  "pap.fr":    { label: "PAP.fr",    className: "bg-sky-500 text-white border-sky-600 shadow-sm shadow-sky-500/30",       dot: "bg-white" },
-  "seloger":   { label: "SeLoger",   className: "bg-rose-500 text-white border-rose-600 shadow-sm shadow-rose-500/30",     dot: "bg-white" },
 };
 
 const DEBOUNCE_MS = 400;

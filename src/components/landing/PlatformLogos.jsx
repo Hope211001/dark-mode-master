@@ -7,9 +7,6 @@ import { useState } from "react";
  */
 const BRANDS = {
   leboncoin: { label: "leboncoin", file: "/logos/leboncoin.png", bg: "#EC5A13", fg: "#FFFFFF" },
-  seloger: { label: "SeLoger", file: "/logos/seloger.webp", bg: "#E2001A", fg: "#FFFFFF" },
-  pap: { label: "PAP", file: "/logos/pap.png", bg: "#0084CB", fg: "#FFFFFF" },
-  bienici: { label: "Bien'ici", file: "/logos/bienici.svg", bg: "#FF6F61", fg: "#FFFFFF" },
 };
 
 // Hauteurs en px (pour image et fallback aligné)
@@ -52,7 +49,7 @@ export function PlatformLogo({ slug, size = "md", className = "" }) {
   );
 }
 
-export const PLATFORM_SLUGS = ["leboncoin", "seloger", "pap", "bienici"];
+export const PLATFORM_SLUGS = ["leboncoin"];
 
 export default function PlatformLogos({ size = "md", gap = "gap-6", className = "" }) {
   return (

@@ -53,7 +53,7 @@ export default function Offers({ onReserve, onBook }) {
               {[
                 "Zone exclusive — un seul opérateur du réseau dessus",
                 "Paramétrage des critères : meublé, surface, loyer, typologie",
-                "Campagnes en continu sur leboncoin, SeLoger, PAP, Bien'ici",
+                "Campagnes en continu sur Leboncoin",
                 "Relance automatique des propriétaires non répondants",
                 "Notification dès qu'un propriétaire répond",
                 "Tableau de bord — campagnes, taux de réponse, taux d'intérêt",

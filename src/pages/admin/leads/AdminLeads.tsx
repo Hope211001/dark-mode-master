@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  Search, Filter, Phone, Loader2, ArrowUpDown, Eye, MapPin, RefreshCw, Tag,
+  Search, Filter, Phone, Loader2, ArrowUpDown, Eye, MapPin, RefreshCw,
   Maximize, Euro, Calendar as CalendarIcon, TrendingUp, ExternalLink,
 } from "lucide-react";
 import { Pagination } from "@/components/Pagination";
@@ -44,8 +44,6 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 
 const sourceConfig: Record<string, { label: string; className: string; dot: string }> = {
   "leboncoin": { label: "Leboncoin", className: "bg-orange-500 text-white border-orange-600 shadow-sm shadow-orange-500/30", dot: "bg-white" },
-  "pap.fr":    { label: "PAP.fr",    className: "bg-sky-500 text-white border-sky-600 shadow-sm shadow-sky-500/30",       dot: "bg-white" },
-  "seloger":   { label: "SeLoger",   className: "bg-rose-500 text-white border-rose-600 shadow-sm shadow-rose-500/30",     dot: "bg-white" },
 };
 
 const DEBOUNCE_MS = 400;
@@ -210,13 +208,10 @@ const AdminLeads = () => {
   const [totalCount, setTotalCount] = useState(0);
 
   const [villes, setVilles] = useState<string[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [categorieFilter, setCategorieFilter] = useState("all");
 
-  // Charger les villes et catégories distinctes au montage
+  // Charger les villes distinctes au montage
   useEffect(() => {
     leadsService.getDistinctVilles().then(setVilles).catch(() => {});
-    leadsService.getDistinctCategories().then(setCategories).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -226,11 +221,11 @@ const AdminLeads = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearch, statusFilter, phoneFilter, villeFilter, categorieFilter, sortOrder]);
+  }, [debouncedSearch, statusFilter, phoneFilter, villeFilter, sortOrder]);
 
   useEffect(() => {
     fetchLeads();
-  }, [currentPage, debouncedSearch, statusFilter, phoneFilter, villeFilter, categorieFilter, sortOrder]);
+  }, [currentPage, debouncedSearch, statusFilter, phoneFilter, villeFilter, sortOrder]);
 
   const fetchLeads = async () => {
     try {
@@ -242,7 +237,6 @@ const AdminLeads = () => {
         statut: statusFilter,
         phone: phoneFilter,
         ville: villeFilter,
-        categorie: categorieFilter,
         sort: sortOrder,
       };
       const res = await leadsService.getAll(filters);
@@ -262,7 +256,6 @@ const AdminLeads = () => {
     setStatusFilter("all");
     setPhoneFilter("all");
     setVilleFilter("all");
-    setCategorieFilter("all");
     setSortOrder("desc");
     setCurrentPage(1);
   };
@@ -307,26 +300,6 @@ const AdminLeads = () => {
               {villes.map((v) => (
                 <SelectItem key={v} value={v}>{v}</SelectItem>
               ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={categorieFilter} onValueChange={setCategorieFilter}>
-            <SelectTrigger className="w-[200px]">
-              <Tag className="h-4 w-4 mr-2 shrink-0" />
-              <SelectValue placeholder="Toutes les sources" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Toutes les sources</SelectItem>
-              <SelectItem value="leboncoin">LeBonCoin</SelectItem>
-              <SelectItem value="pap.fr">PAP.fr</SelectItem>
-              <SelectItem value="seloger">SeLoger</SelectItem>
-              {categories
-                .filter((c) => !["leboncoin", "pap.fr", "seloger"].includes(c))
-                .map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {sourceConfig[c]?.label || c}
-                  </SelectItem>
-                ))}
             </SelectContent>
           </Select>
 

@@ -72,9 +72,9 @@ export default function Dashboard() {
                   <span className="text-mute text-xs font-mono">3 actives</span>
                 </div>
                 <div className="space-y-2.5">
-                  <Campaign name="T2 meublés · 600€+" platforms={["leboncoin", "seloger"]} contacts={184} reply="24 %" status="live" />
-                  <Campaign name="T3-T4 non meublés · centre" platforms={["leboncoin", "pap", "seloger"]} contacts={211} reply="19 %" status="live" />
-                  <Campaign name="Studios meublés · CHU" platforms={["leboncoin", "bienici"]} contacts={92} reply="27 %" status="live" />
+                  <Campaign name="T2 meublés · 600€+" platforms={["leboncoin"]} contacts={184} reply="24 %" status="live" />
+                  <Campaign name="T3-T4 non meublés · centre" platforms={["leboncoin"]} contacts={211} reply="19 %" status="live" />
+                  <Campaign name="Studios meublés · CHU" platforms={["leboncoin"]} contacts={92} reply="27 %" status="live" />
                 </div>
               </div>
 

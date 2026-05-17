@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   MapPin, Maximize, Euro, Calendar as CalendarIcon, Mail, Phone,
   TrendingUp, Loader2, Eye, CheckCircle2, Sparkles,
-  Send, X, MessageSquare, MessageCircle, ExternalLink, Archive
+  Send, X, MessageSquare, ExternalLink, Archive
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,8 +30,6 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 
 const sourceConfig: Record<string, { label: string; className: string; dot: string }> = {
   "leboncoin": { label: "Leboncoin", className: "bg-orange-500 text-white border-orange-600 shadow-sm shadow-orange-500/30", dot: "bg-white" },
-  "pap.fr":    { label: "PAP.fr",    className: "bg-sky-500 text-white border-sky-600 shadow-sm shadow-sky-500/30",       dot: "bg-white" },
-  "seloger":   { label: "SeLoger",   className: "bg-rose-500 text-white border-rose-600 shadow-sm shadow-rose-500/30",     dot: "bg-white" },
 };
 
 const AI_GENERATE_WEBHOOK_URL = "https://n8n.srv903010.hstgr.cloud/webhook/generer-message-par-ia";
@@ -41,7 +39,6 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
   const [contacting, setContacting] = useState(false);
   const [rejecting, setRejecting] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
-  const [contactMode, setContactMode] = useState<"leboncoin" | "whatsapp">("leboncoin");
   const [contactMessage, setContactMessage] = useState("");
   const [generatingAi, setGeneratingAi] = useState(false);
   const [showSentModal, setShowSentModal] = useState(false);
@@ -81,12 +78,11 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
     setIsDescOverflow(el.scrollHeight > el.clientHeight + 1);
   }, [descText, expanded]);
 
-  const handleOpenContact = async (mode: "leboncoin" | "whatsapp" = "leboncoin") => {
-    setContactMode(mode);
+  const handleOpenContact = async () => {
     setShowContactModal(true);
     try {
       const cfg = await configService.getConfigCached();
-      setContactMessage(configService.pickTemplate(cfg, mode));
+      setContactMessage(configService.pickTemplate(cfg, "leboncoin"));
     } catch {
       setContactMessage("");
     }
@@ -179,15 +175,13 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
         <div className="fixed inset-0 z-[60] flex items-center justify-center px-4" onClick={(e) => e.stopPropagation()}>
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowContactModal(false)} />
           <div className="relative animate-in zoom-in-95 fade-in duration-200 bg-white border border-gray-200 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
-            <div className={cn("relative px-6 py-5 border-b", contactMode === "whatsapp" ? "bg-clay-50 border-clay-100" : "bg-orange-50 border-orange-100")}>
+            <div className="relative px-6 py-5 border-b bg-orange-50 border-orange-100">
               <button onClick={() => setShowContactModal(false)} className="absolute top-4 right-4 h-8 w-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all">
                 <X className="h-4 w-4" />
               </button>
               <div className="flex items-center gap-3">
-                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center", contactMode === "whatsapp" ? "bg-clay-100" : "bg-orange-100")}>
-                  {contactMode === "whatsapp"
-                    ? <MessageCircle className="h-5 w-5 text-clay-600" />
-                    : <MessageSquare className="h-5 w-5 text-orange-600" />}
+                <div className="h-10 w-10 rounded-full flex items-center justify-center bg-orange-100">
+                  <MessageSquare className="h-5 w-5 text-orange-600" />
                 </div>
                 <div>
                   <h3 className="text-gray-900 font-bold text-base">
@@ -242,10 +236,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
               </Button>
               <Button
                 onClick={handleConfirmContact}
-                className={cn(
-                  "flex-1 rounded-xl text-white font-bold h-11 gap-2",
-                  contactMode === "whatsapp" ? "bg-clay-600 hover:bg-clay-700" : "bg-orange-500 hover:bg-orange-600"
-                )}
+                className="flex-1 rounded-xl text-white font-bold h-11 gap-2 bg-orange-500 hover:bg-orange-600"
                 disabled={contacting || !contactMessage.trim()}
               >
                 {contacting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
@@ -271,7 +262,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-base leading-tight">Message envoy&eacute;</h3>
-                  <p className="text-[11px] text-clay-100/90 mt-0.5">Contact via WhatsApp</p>
+                  <p className="text-[11px] text-emerald-100/90 mt-0.5">Contact via Leboncoin</p>
                 </div>
               </div>
             </div>
@@ -389,7 +380,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                 <button
                   type="button"
                   onClick={() => navigate(`/client/showLead/${id}`)}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-clay-600 hover:bg-clay-700 px-3 py-1.5 text-xs font-semibold text-white border border-clay-600 hover:border-clay-700 shadow-sm shadow-clay-600/30 hover:shadow-clay-600/50 transition-all"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white hover:bg-clay-50 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:text-clay-700 border border-gray-300 hover:border-clay-400 shadow-sm transition-all"
                 >
                   <Eye className="h-3.5 w-3.5" />
                   Voir détail
@@ -403,7 +394,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                 <button
                   type="button"
                   className="group/btn flex items-center gap-2.5 h-12 px-3 rounded-xl bg-white border-2 border-orange-200 hover:border-orange-500 hover:bg-orange-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
-                  onClick={() => handleOpenContact("leboncoin")}
+                  onClick={handleOpenContact}
                 >
                   <span className="h-8 w-8 rounded-lg bg-orange-500 flex items-center justify-center shrink-0 shadow-sm shadow-orange-500/40">
                     <Mail className="h-4 w-4 text-white" />
@@ -414,38 +405,22 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                   </span>
                 </button>
               )}
-              {phone && (
-                currentStatus === "contacted" ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowSentModal(true)}
-                    aria-label="Voir le message envoy&eacute;"
-                    className="group/sent relative flex items-center gap-2.5 h-12 px-3 rounded-xl bg-gradient-to-r from-clay-600 to-clay-700 shadow-md shadow-clay-600/30 hover:shadow-lg hover:shadow-clay-600/40 hover:-translate-y-0.5 transition-all text-left w-full"
-                  >
-                    <span className="h-8 w-8 rounded-lg bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0 ring-1 ring-white/30">
-                      <CheckCircle2 className="h-4 w-4 text-white" />
-                    </span>
-                    <span className="flex flex-col items-start min-w-0 leading-tight flex-1">
-                      <span className="text-[10px] font-bold text-clay-100/90 uppercase tracking-wider">Contact&eacute;</span>
-                      <span className="text-sm font-extrabold text-white">Sur WhatsApp</span>
-                    </span>
-                    <Eye className="h-4 w-4 text-white/80 group-hover/sent:text-white shrink-0" />
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className="group/btn flex items-center gap-2.5 h-12 px-3 rounded-xl bg-white border-2 border-clay-200 hover:border-[#25D366] hover:bg-clay-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
-                    onClick={() => handleOpenContact("whatsapp")}
-                  >
-                    <span className="h-8 w-8 rounded-lg bg-[#25D366] flex items-center justify-center shrink-0 shadow-sm shadow-[#25D366]/40">
-                      <MessageCircle className="h-4 w-4 text-white" />
-                    </span>
-                    <span className="flex flex-col items-start min-w-0 leading-tight">
-                      <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Envoyer message</span>
-                      <span className="text-sm font-bold text-gray-800 group-hover/btn:text-clay-700 transition-colors">Via WhatsApp</span>
-                    </span>
-                  </button>
-                )
+              {categorie_scraping === "leboncoin" && currentStatus === "contacted" && (
+                <button
+                  type="button"
+                  onClick={() => setShowSentModal(true)}
+                  aria-label="Voir le message envoy&eacute;"
+                  className="group/sent relative flex items-center gap-2.5 h-12 px-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 shadow-md shadow-orange-500/30 hover:shadow-lg hover:shadow-orange-500/40 hover:-translate-y-0.5 transition-all text-left w-full"
+                >
+                  <span className="h-8 w-8 rounded-lg bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0 ring-1 ring-white/30">
+                    <CheckCircle2 className="h-4 w-4 text-white" />
+                  </span>
+                  <span className="flex flex-col items-start min-w-0 leading-tight flex-1">
+                    <span className="text-[10px] font-bold text-orange-100/90 uppercase tracking-wider">Contact&eacute;</span>
+                    <span className="text-sm font-extrabold text-white">Sur Leboncoin</span>
+                  </span>
+                  <Eye className="h-4 w-4 text-white/80 group-hover/sent:text-white shrink-0" />
+                </button>
               )}
               <button
                 type="button"

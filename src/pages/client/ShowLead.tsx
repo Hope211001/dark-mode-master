@@ -5,15 +5,12 @@ import { ClientHeader } from "@/components/client/ClientHeader";
 import {
     Loader2, ArrowLeft, MapPin, Calendar, Maximize, Euro,
     TrendingUp, ExternalLink, Hash, Phone, Map as MapIcon,
-    FileText, User, Mail, Archive, Send, X, MessageSquare, MessageCircle, CheckCircle2, Eye, Sparkles,
+    FileText, User, Mail, Archive, Send, X, MessageSquare, CheckCircle2, Eye, Sparkles,
 } from "lucide-react";
 
-const WHATSAPP_WEBHOOK_URL = "https://n8n.srv903010.hstgr.cloud/webhook/envoyer-message-whatsap";
 const AI_GENERATE_WEBHOOK_URL = "https://n8n.srv903010.hstgr.cloud/webhook/generer-message-par-ia";
-type ContactMode = "leboncoin" | "whatsapp";
 import { leadsService } from "@/services/leads.service";
 import { configService } from "@/services/config";
-import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -101,14 +98,12 @@ function DetailRow({ icon: Icon, label, value, highlight = false, href }: {
 const ShowLead = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user } = useAuth();
     const [lead, setLead] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
     const [contacting, setContacting] = useState(false);
     const [rejecting, setRejecting] = useState(false);
     const [showContactModal, setShowContactModal] = useState(false);
     const [contactMessage, setContactMessage] = useState("");
-    const [contactMode, setContactMode] = useState<ContactMode>("leboncoin");
     const [generatingAi, setGeneratingAi] = useState(false);
     const [showSentModal, setShowSentModal] = useState(false);
     const [errorAlert, setErrorAlert] = useState({ visible: false, message: "" });
@@ -127,12 +122,11 @@ const ShowLead = () => {
             .finally(() => setLoading(false));
     }, [id]);
 
-    const handleOpenContact = async (mode: ContactMode) => {
-        setContactMode(mode);
+    const handleOpenContact = async () => {
         setShowContactModal(true);
         try {
             const cfg = await configService.getConfigCached();
-            setContactMessage(configService.pickTemplate(cfg, mode));
+            setContactMessage(configService.pickTemplate(cfg, "leboncoin"));
         } catch {
             setContactMessage("");
         }
@@ -145,38 +139,10 @@ const ShowLead = () => {
         }
         try {
             setContacting(true);
-            if (contactMode === "whatsapp") {
-                const fullName = (user?.name || "").trim();
-                const parts = fullName.split(/\s+/).filter(Boolean);
-                const userFirstName = parts[0] || "";
-                const userLastName = parts.slice(1).join(" ") || "";
-                const res = await fetch(WHATSAPP_WEBHOOK_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        lead_id: lead.id,
-                        phone: lead.phone,
-                        message: contactMessage,
-                        titre: lead.titre,
-                        ville: lead.ville,
-                        prix: lead.prix,
-                        url: lead.url,
-                        source: lead.categorie_scraping,
-                        user_id: user?.id,
-                        user_name: fullName,
-                        user_first_name: userFirstName,
-                        user_last_name: userLastName,
-                        user_email: user?.email,
-                    }),
-                });
-                if (!res.ok) throw new Error("Webhook failed");
-                await leadsService.updateStatus(lead.id, "contacted");
-            } else {
-                await leadsService.contactLead(lead.id, contactMessage);
-            }
+            await leadsService.contactLead(lead.id, contactMessage);
             setShowContactModal(false);
             setContactMessage("");
-            setSuccessAlert({ visible: true, message: contactMode === "whatsapp" ? "Message WhatsApp envoyé !" : "Message envoyé avec succès !" });
+            setSuccessAlert({ visible: true, message: "Message envoyé avec succès !" });
             const updated = await leadsService.getById(lead.id);
             setLead(updated);
         } catch {
@@ -288,10 +254,7 @@ const ShowLead = () => {
                 <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowContactModal(false)} />
                     <div className="relative animate-in zoom-in-95 fade-in duration-200 bg-[#0f172a] border border-primary/20 rounded-2xl shadow-2xl shadow-primary/5 w-full max-w-lg overflow-hidden">
-                        <div className={cn(
-                            "relative px-6 py-5 border-b border-white/5",
-                            contactMode === "whatsapp" ? "bg-gradient-to-r from-clay-500/15 to-transparent" : "bg-gradient-to-r from-orange-500/15 to-transparent"
-                        )}>
+                        <div className="relative px-6 py-5 border-b border-white/5 bg-gradient-to-r from-orange-500/15 to-transparent">
                             <button
                                 onClick={() => setShowContactModal(false)}
                                 className="absolute top-4 right-4 h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all"
@@ -299,22 +262,15 @@ const ShowLead = () => {
                                 <X className="h-4 w-4" />
                             </button>
                             <div className="flex items-center gap-3">
-                                <div className={cn(
-                                    "h-10 w-10 rounded-full flex items-center justify-center",
-                                    contactMode === "whatsapp" ? "bg-clay-500/20" : "bg-orange-500/20"
-                                )}>
-                                    {contactMode === "whatsapp"
-                                        ? <MessageCircle className="h-5 w-5 text-clay-400" />
-                                        : <MessageSquare className="h-5 w-5 text-orange-400" />}
+                                <div className="h-10 w-10 rounded-full flex items-center justify-center bg-orange-500/20">
+                                    <MessageSquare className="h-5 w-5 text-orange-400" />
                                 </div>
                                 <div>
                                     <h3 className="text-white font-bold text-base">
-                                        {contactMode === "whatsapp" ? "Contacter via WhatsApp" : "Contacter sur Leboncoin"}
+                                        Contacter sur Leboncoin
                                     </h3>
                                     <p className="text-xs text-slate-400 mt-0.5">
-                                        {contactMode === "whatsapp"
-                                            ? `Message envoyé au ${lead.phone || "numéro"} via WhatsApp`
-                                            : "Rédigez votre message pour ce lead"}
+                                        Rédigez votre message pour ce lead
                                     </p>
                                 </div>
                             </div>
@@ -354,12 +310,7 @@ const ShowLead = () => {
                             </Button>
                             <Button
                                 onClick={handleContact}
-                                className={cn(
-                                    "flex-1 rounded-xl text-white font-bold h-11 gap-2",
-                                    contactMode === "whatsapp"
-                                        ? "bg-[#25D366] hover:bg-[#1ebe57]"
-                                        : "bg-orange-500 hover:bg-orange-600"
-                                )}
+                                className="flex-1 rounded-xl text-white font-bold h-11 gap-2 bg-orange-500 hover:bg-orange-600"
                                 disabled={contacting || !contactMessage.trim()}
                             >
                                 {contacting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
@@ -388,7 +339,7 @@ const ShowLead = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-white font-bold text-base leading-tight">Message envoy&eacute;</h3>
-                                    <p className="text-[11px] text-clay-100/90 mt-0.5">Contact via WhatsApp</p>
+                                    <p className="text-[11px] text-clay-100/90 mt-0.5">Contact via Leboncoin</p>
                                 </div>
                             </div>
                         </div>
@@ -448,8 +399,6 @@ const ShowLead = () => {
                                     {lead.categorie_scraping && (() => {
                                         const catConfig: Record<string, { label: string; className: string; dot: string }> = {
                                             "leboncoin": { label: "Leboncoin", className: "border-orange-500/30 bg-orange-500/10 text-orange-400", dot: "bg-orange-400" },
-                                            "pap.fr": { label: "PAP.fr", className: "border-sky-500/30 bg-sky-500/10 text-sky-400", dot: "bg-sky-400" },
-                                            "seloger": { label: "SeLoger", className: "border-rose-500/30 bg-rose-500/10 text-rose-400", dot: "bg-rose-400" },
                                         };
                                         const cat = catConfig[lead.categorie_scraping] || { label: lead.categorie_scraping, className: "border-violet-500/30 bg-violet-500/10 text-violet-400", dot: "bg-violet-400" };
                                         return (
@@ -589,33 +538,22 @@ const ShowLead = () => {
                                         <Button
                                             size="lg"
                                             className="w-full bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-bold text-sm h-11 shadow-sm shadow-orange-500/30 hover:shadow-orange-500/50 transition-all"
-                                            onClick={() => handleOpenContact("leboncoin")}
+                                            onClick={handleOpenContact}
                                         >
                                             <Mail className="h-4 w-4 mr-2" />
                                             Contacter sur Leboncoin
                                         </Button>
                                     )}
-                                    {lead.phone && (
-                                        currentStatus === "contacted" ? (
-                                            <Button
-                                                size="lg"
-                                                onClick={() => setShowSentModal(true)}
-                                                className="w-full bg-gradient-to-r from-clay-600 to-clay-700 hover:from-clay-500 hover:to-clay-600 text-white font-bold text-sm h-11 shadow-md shadow-clay-600/30 hover:shadow-lg gap-2"
-                                            >
-                                                <CheckCircle2 className="h-4 w-4" />
-                                                D&eacute;j&agrave; contact&eacute; sur WhatsApp
-                                                <Eye className="h-4 w-4 ml-auto" />
-                                            </Button>
-                                        ) : (
-                                            <Button
-                                                size="lg"
-                                                className="w-full bg-[#25D366] hover:bg-[#1ebe57] active:bg-[#1aa84d] text-white font-bold text-sm h-11 shadow-sm shadow-[#25D366]/30 hover:shadow-[#25D366]/50 transition-all"
-                                                onClick={() => handleOpenContact("whatsapp")}
-                                            >
-                                                <MessageCircle className="h-4 w-4 mr-2" />
-                                                Contacter par WhatsApp
-                                            </Button>
-                                        )
+                                    {lead.categorie_scraping === "leboncoin" && currentStatus === "contacted" && (
+                                        <Button
+                                            size="lg"
+                                            onClick={() => setShowSentModal(true)}
+                                            className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-sm h-11 shadow-md shadow-orange-500/30 hover:shadow-lg gap-2"
+                                        >
+                                            <CheckCircle2 className="h-4 w-4" />
+                                            D&eacute;j&agrave; contact&eacute; sur Leboncoin
+                                            <Eye className="h-4 w-4 ml-auto" />
+                                        </Button>
                                     )}
                                     <Button
                                         size="lg"

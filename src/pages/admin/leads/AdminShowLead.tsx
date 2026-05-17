@@ -24,8 +24,6 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 
 const categorieConfig: Record<string, { label: string; className: string; dot: string }> = {
     "leboncoin": { label: "Leboncoin", className: "bg-orange-500/15 text-orange-400 border-orange-500/30", dot: "bg-orange-400" },
-    "pap.fr":    { label: "PAP.fr",    className: "bg-sky-500/15 text-sky-400 border-sky-500/30",        dot: "bg-sky-400" },
-    "seloger":   { label: "SeLoger",   className: "bg-rose-500/15 text-rose-400 border-rose-500/30",     dot: "bg-rose-400" },
 };
 
 const defaultCatStyle = { label: "", className: "bg-violet-500/15 text-violet-400 border-violet-500/30", dot: "bg-violet-400" };

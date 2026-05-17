@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, Phone, Download, Loader2, RefreshCw, ArrowUpDown, MapPin, Tag } from "lucide-react";
+import { Search, Filter, Phone, Download, Loader2, RefreshCw, ArrowUpDown, MapPin } from "lucide-react";
 import { Pagination } from "@/components/Pagination";
 import { leadsService, Lead, LeadsFilters } from "@/services/leads.service";
 import { zoneService, Zone } from "@/services/zones.services";
@@ -26,13 +26,6 @@ const phoneFilters = [
   { value: "without_phone", label: "Sans téléphone" },
 ];
 
-const categorieFilters = [
-  { value: "all", label: "Toutes les catégories" },
-  { value: "leboncoin", label: "Leboncoin" },
-  { value: "pap.fr", label: "PAP.fr" },
-  { value: "seloger", label: "SeLoger" },
-];
-
 const sortOptions = [
   { value: "desc", label: "Plus récents d'abord" },
   { value: "asc", label: "Plus anciens d'abord" },
@@ -49,7 +42,6 @@ const ClientLeads = () => {
   const [exporting, setExporting] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
   const [phoneFilter, setPhoneFilter] = useState("all");
-  const [categorieFilter, setCategorieFilter] = useState("all");
   const [zoneFilter, setZoneFilter] = useState(zoneFromUrl);
   const [sortOrder, setSortOrder] = useState("desc");
   const [searchTerm, setSearchTerm] = useState("");
@@ -78,11 +70,11 @@ const ClientLeads = () => {
   // Retour à la page 1 quand les filtres changent
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearch, statusFilter, phoneFilter, zoneFilter, sortOrder, categorieFilter]);
+  }, [debouncedSearch, statusFilter, phoneFilter, zoneFilter, sortOrder]);
 
   useEffect(() => {
     fetchLeads();
-  }, [currentPage, debouncedSearch, statusFilter, phoneFilter, zoneFilter, sortOrder, categorieFilter]);
+  }, [currentPage, debouncedSearch, statusFilter, phoneFilter, zoneFilter, sortOrder]);
 
   const fetchLeads = async () => {
     try {
@@ -95,7 +87,6 @@ const ClientLeads = () => {
         phone: phoneFilter,
         sort: sortOrder,
         zone_id: zoneFilter,
-        categorie: categorieFilter,
         exclude_statut: 'rejected,unreachable',
       };
       const res = await leadsService.getMyLeads(filters);
@@ -120,7 +111,6 @@ const ClientLeads = () => {
         phone: phoneFilter,
         sort: sortOrder,
         zone_id: zoneFilter,
-        categorie: categorieFilter,
         exclude_statut: 'rejected,unreachable',
       });
       setSuccessAlert({ visible: true, message: "Export CSV téléchargé !" });
@@ -218,18 +208,6 @@ const ClientLeads = () => {
               </SelectContent>
             </Select>
 
-            <Select value={categorieFilter} onValueChange={setCategorieFilter}>
-              <SelectTrigger className="w-60 bg-secondary/30">
-                <Tag className="h-4 w-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {categorieFilters.map((f) => (
-                  <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
             <Button variant="outline" className="gap-2" onClick={handleExport} disabled={exporting}>
               {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
               Exporter
@@ -244,7 +222,6 @@ const ClientLeads = () => {
                 setStatusFilter("all");
                 setZoneFilter("all");
                 setPhoneFilter("all");
-                setCategorieFilter("all");
                 setSortOrder("desc");
                 setCurrentPage(1);
               }}

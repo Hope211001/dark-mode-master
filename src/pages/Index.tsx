@@ -38,7 +38,7 @@ const LandingPage = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-clay-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-clay-500" />
             </span>
-            <span className="text-xs md:text-sm font-semibold text-clay-700 uppercase tracking-wider">Scraping Leboncoin + PAP + SeLoger</span>
+            <span className="text-xs md:text-sm font-semibold text-clay-700 uppercase tracking-wider">Scraping Leboncoin</span>
           </div>
 
           <h1 className="text-5xl md:text-8xl font-black text-gray-900 mb-8 leading-[1.05] tracking-tight">
@@ -99,7 +99,7 @@ const LandingPage = () => {
 
           <div className="grid md:grid-cols-3 gap-6 md:gap-8 mb-12">
             {[
-              { num: "01", icon: Search, title: "Detection", desc: "Scan automatique de Leboncoin, PAP.fr et SeLoger toutes les 15 minutes. Les nouvelles annonces sont captees instantanement.", gradient: "from-clay-600 to-clay-700", bg: "bg-clay-50", border: "hover:border-clay-200" },
+              { num: "01", icon: Search, title: "Detection", desc: "Scan automatique de Leboncoin toutes les 15 minutes. Les nouvelles annonces sont captees instantanement.", gradient: "from-clay-600 to-clay-700", bg: "bg-clay-50", border: "hover:border-clay-200" },
               { num: "02", icon: BarChart, title: "Scoring IA", desc: "Analyse de rentabilite basee sur les donnees Airbnb reelles. Chaque lead recoit un score de 0 a 10 base sur le ratio loyer/revenu.", gradient: "from-clay-600 to-clay-700", bg: "bg-clay-50", border: "hover:border-clay-200" },
               { num: "03", icon: Mail, title: "Contact auto", desc: "Email personnalise envoye depuis VOTRE adresse. Relance automatique a J+2 si pas de reponse. Le proprietaire vous repond directement.", gradient: "from-cyan-600 to-cyan-700", bg: "bg-cyan-50", border: "hover:border-cyan-200" },
             ].map((step) => (
@@ -300,7 +300,7 @@ const LandingPage = () => {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {[
-              { icon: Search, title: "3 plateformes", desc: "Leboncoin, PAP.fr, SeLoger scannes en continu", bg: "bg-blue-50", iconColor: "text-blue-600" },
+              { icon: Search, title: "Leboncoin", desc: "Leboncoin scanne en continu", bg: "bg-blue-50", iconColor: "text-blue-600" },
               { icon: Zap, title: "Scan / 15 min", desc: "Les nouvelles annonces detectees instantanement", bg: "bg-amber-50", iconColor: "text-amber-600" },
               { icon: Phone, title: "Telephone inclus", desc: "Numeros des proprietaires recuperes automatiquement", bg: "bg-clay-50", iconColor: "text-clay-600" },
               { icon: TrendingUp, title: "Scoring precis", desc: "Basee sur les donnees Airbnb reelles", bg: "bg-purple-50", iconColor: "text-purple-600" },

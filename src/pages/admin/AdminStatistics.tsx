@@ -20,7 +20,7 @@ const AdminStatistics = () => {
   const [overview, setOverview] = useState({ totalLeads: 0, newLeads: 0, contactedLeads: 0, totalZones: 0, zonesLibres: 0, zonesVendues: 0 });
 
   // Source
-  const [sourceCounts, setSourceCounts] = useState({ leboncoin: 0, pap: 0, seloger: 0 });
+  const [sourceCounts, setSourceCounts] = useState({ leboncoin: 0 });
 
   // General (jour/mois)
   const [generalDaily, setGeneralDaily] = useState<any[]>([]);
@@ -49,7 +49,7 @@ const AdminStatistics = () => {
       const [
         allLeads, newLeads, contactedLeads,
         countAll, countLibre, countVendu,
-        lbc, pap, seloger,
+        lbc,
         villes, users, timeStats,
         phoneYes, phoneNo, phoneTimeStats,
       ] = await Promise.all([
@@ -60,8 +60,6 @@ const AdminStatistics = () => {
         zoneService.getCountZoneLibre(),
         zoneService.getCountZoneVendu(),
         leadsService.getAll({ page: 1, limit: 1, categorie: "leboncoin" }),
-        leadsService.getAll({ page: 1, limit: 1, categorie: "pap.fr" }),
-        leadsService.getAll({ page: 1, limit: 1, categorie: "seloger" }),
         leadsService.getStatsByVille(),
         leadsService.getStatsByUser(),
         leadsService.getStats(),
@@ -81,17 +79,15 @@ const AdminStatistics = () => {
 
       setSourceCounts({
         leboncoin: lbc.totalCount,
-        pap: pap.totalCount,
-        seloger: seloger.totalCount,
       });
 
       const dailyTotals = timeStats.daily.map((d: any) => ({
         date: d.date,
-        total: (d["leboncoin"] || 0) + (d["pap.fr"] || 0) + (d["seloger"] || 0),
+        total: d["leboncoin"] || 0,
       }));
       const monthlyTotals = timeStats.monthly.map((m: any) => ({
         month: m.month,
-        total: (m["leboncoin"] || 0) + (m["pap.fr"] || 0) + (m["seloger"] || 0),
+        total: m["leboncoin"] || 0,
       }));
       setGeneralDaily(dailyTotals);
       setGeneralMonthly(monthlyTotals);

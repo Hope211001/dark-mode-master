@@ -8,8 +8,6 @@ import { useToast } from "@/components/ui/use-toast";
 
 const categorieConfig: Record<string, { label: string; className: string }> = {
   "leboncoin": { label: "Leboncoin", className: "bg-orange-500/20 text-orange-400" },
-  "pap.fr": { label: "PAP.fr", className: "bg-sky-500/20 text-sky-400" },
-  "seloger": { label: "SeLoger", className: "bg-rose-500/20 text-rose-400" },
 };
 
 const defaultCategorieStyle = "bg-violet-500/20 text-violet-400";
