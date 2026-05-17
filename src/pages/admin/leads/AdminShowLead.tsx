@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 const statusConfig: Record<string, { label: string; className: string }> = {
     new:         { label: "Nouveau",     className: "bg-primary/20 text-primary border-primary/30" },
     contacted:   { label: "Contacté",    className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-    replied:     { label: "Répondu",     className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
+    replied:     { label: "Répondu",     className: "bg-clay-500/20 text-clay-400 border-clay-500/30" },
     rejected:    { label: "Rejeté",      className: "bg-destructive/20 text-destructive border-destructive/30" },
     unreachable: { label: "Injoignable", className: "bg-gray-500/20 text-gray-400 border-gray-500/30" },
 };
@@ -34,12 +34,12 @@ const defaultCatStyle = { label: "", className: "bg-violet-500/15 text-violet-40
 function ScoreGauge({ score }: { score: number }) {
     const display = score <= 10 ? score * 10 : score;
     const color = display >= 80
-        ? "text-emerald-400 stroke-emerald-400"
+        ? "text-clay-400 stroke-clay-400"
         : display >= 60
         ? "text-yellow-400 stroke-yellow-400"
         : "text-destructive stroke-destructive";
     const bgColor = display >= 80
-        ? "bg-emerald-500/10 border-emerald-500/20"
+        ? "bg-clay-500/10 border-clay-500/20"
         : display >= 60
         ? "bg-yellow-500/10 border-yellow-500/20"
         : "bg-destructive/10 border-destructive/20";
@@ -82,11 +82,11 @@ function DetailRow({ icon: Icon, label, value, highlight = false, href }: {
                 <span className="truncate">{label}</span>
             </div>
             {href ? (
-                <a href={href} className={cn("font-semibold text-sm text-right truncate max-w-[55%] text-primary hover:underline", highlight && "text-emerald-400")}>
+                <a href={href} className={cn("font-semibold text-sm text-right truncate max-w-[55%] text-primary hover:underline", highlight && "text-clay-400")}>
                     {value}
                 </a>
             ) : (
-                <span className={cn("font-semibold text-sm text-right truncate max-w-[55%]", highlight ? "text-emerald-400" : "text-foreground")}>
+                <span className={cn("font-semibold text-sm text-right truncate max-w-[55%]", highlight ? "text-clay-400" : "text-foreground")}>
                     {value}
                 </span>
             )}
@@ -213,10 +213,10 @@ const AdminShowLead = () => {
                                     </p>
                                 </div>
                                 <div className="p-4 bg-card rounded-xl border border-border text-center">
-                                    <TrendingUp className="h-4 w-4 text-emerald-400 mx-auto mb-1.5" />
+                                    <TrendingUp className="h-4 w-4 text-clay-400 mx-auto mb-1.5" />
                                     <p className="text-[10px] text-muted-foreground uppercase font-bold">Score</p>
                                     <p className={cn("text-lg md:text-xl font-black mt-0.5",
-                                        (lead.score <= 10 ? lead.score * 10 : lead.score) >= 80 ? "text-emerald-400" :
+                                        (lead.score <= 10 ? lead.score * 10 : lead.score) >= 80 ? "text-clay-400" :
                                         (lead.score <= 10 ? lead.score * 10 : lead.score) >= 60 ? "text-yellow-400" : "text-destructive"
                                     )}>
                                         {lead.score <= 10 ? lead.score * 10 : lead.score}<span className="text-muted-foreground text-sm font-normal">/100</span>
@@ -317,7 +317,7 @@ const AdminShowLead = () => {
                             <Card className="border-border bg-card">
                                 <CardHeader className="pb-3 border-b border-border/50">
                                     <CardTitle className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-2">
-                                        <TrendingUp className="h-4 w-4 text-emerald-400" />
+                                        <TrendingUp className="h-4 w-4 text-clay-400" />
                                         Score de rentabilité
                                     </CardTitle>
                                 </CardHeader>
@@ -335,17 +335,17 @@ const AdminShowLead = () => {
 
                             {/* Revenu potentiel */}
                             {lead.potentiel_revenu && (
-                                <Card className="border-emerald-500/20 bg-emerald-500/5">
+                                <Card className="border-clay-500/20 bg-clay-500/5">
                                     <CardContent className="pt-5 pb-5">
                                         <div className="flex items-center justify-between">
                                             <div>
                                                 <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Revenu potentiel</p>
-                                                <p className="text-2xl font-black text-emerald-400">
+                                                <p className="text-2xl font-black text-clay-400">
                                                     {lead.potentiel_revenu.toLocaleString()} <span className="text-sm font-semibold">€ / mois</span>
                                                 </p>
                                             </div>
-                                            <div className="h-12 w-12 rounded-full bg-emerald-500/15 flex items-center justify-center">
-                                                <Euro className="h-6 w-6 text-emerald-400" />
+                                            <div className="h-12 w-12 rounded-full bg-clay-500/15 flex items-center justify-center">
+                                                <Euro className="h-6 w-6 text-clay-400" />
                                             </div>
                                         </div>
                                     </CardContent>

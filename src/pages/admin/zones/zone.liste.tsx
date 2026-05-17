@@ -278,7 +278,7 @@ function ZoneFormFields({ data, onChange, geocoding, onAutoGeocode, departments,
           )}
 
           {data.codes_postaux_raw && (
-            <p className="text-xs text-emerald-600 font-medium">
+            <p className="text-xs text-clay-600 font-medium">
               ✓ Sélectionné : {data.nom} (CP {data.codes_postaux_raw})
             </p>
           )}
@@ -319,7 +319,7 @@ function ZoneFormFields({ data, onChange, geocoding, onAutoGeocode, departments,
             )}
           </div>
           {data.departement_code && (
-            <p className="text-xs text-emerald-600 font-medium">
+            <p className="text-xs text-clay-600 font-medium">
               ✓ Sélectionné : {data.nom}
             </p>
           )}
@@ -763,7 +763,7 @@ const ZonesManagement = () => {
                         <Badge variant="outline" className={
                           zone.statut_market === 'VENDU'
                             ? "bg-amber-50 text-amber-700 border-amber-200"
-                            : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : "bg-clay-50 text-clay-700 border-clay-200"
                         }>
                           {zone.statut_market || 'LIBRE'}
                         </Badge>
@@ -771,7 +771,7 @@ const ZonesManagement = () => {
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           {zone.statut_market !== 'VENDU' && (
-                            <Button size="sm" variant="ghost" className="gap-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 h-7 text-xs" onClick={() => handleBuy(zone.id)}>
+                            <Button size="sm" variant="ghost" className="gap-1.5 bg-clay-50 text-clay-700 hover:bg-clay-100 border border-clay-200 h-7 text-xs" onClick={() => handleBuy(zone.id)}>
                               <MapPin className="h-3.5 w-3.5" />
                               Acheter
                             </Button>

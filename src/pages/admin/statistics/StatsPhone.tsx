@@ -62,15 +62,15 @@ export function StatsPhone({ withPhone, withoutPhone, daily, monthly, loading }:
           </div>
           {!loading && total > 0 && (
             <div className="h-3 rounded-full overflow-hidden flex bg-muted/50 mb-6">
-              <div className="bg-emerald-500 transition-all duration-1000 rounded-l-full" style={{ width: `${(withPhone / total) * 100}%` }} />
+              <div className="bg-clay-500 transition-all duration-1000 rounded-l-full" style={{ width: `${(withPhone / total) * 100}%` }} />
               <div className="bg-slate-500 transition-all duration-1000 rounded-r-full" style={{ width: `${(withoutPhone / total) * 100}%` }} />
             </div>
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="relative flex items-center gap-4 p-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 transition-all duration-300 hover:scale-[1.02]">
-              <div className="h-12 w-12 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0"><MapPin className="h-5 w-5 text-emerald-400" /></div>
-              <div className="flex-1 min-w-0"><p className="text-sm font-bold text-emerald-400">Avec téléphone</p><p className="text-[10px] text-muted-foreground uppercase font-semibold mt-0.5">{total > 0 ? Math.round((withPhone / total) * 100) : 0}% du total</p></div>
-              <div className="text-right"><p className="text-3xl font-black text-emerald-400">{loading ? <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /> : withPhone}</p><p className="text-[10px] text-muted-foreground">leads</p></div>
+            <div className="relative flex items-center gap-4 p-5 rounded-xl border border-clay-500/30 bg-clay-500/10 transition-all duration-300 hover:scale-[1.02]">
+              <div className="h-12 w-12 rounded-xl bg-clay-500/15 border border-clay-500/30 flex items-center justify-center shrink-0"><MapPin className="h-5 w-5 text-clay-400" /></div>
+              <div className="flex-1 min-w-0"><p className="text-sm font-bold text-clay-400">Avec téléphone</p><p className="text-[10px] text-muted-foreground uppercase font-semibold mt-0.5">{total > 0 ? Math.round((withPhone / total) * 100) : 0}% du total</p></div>
+              <div className="text-right"><p className="text-3xl font-black text-clay-400">{loading ? <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /> : withPhone}</p><p className="text-[10px] text-muted-foreground">leads</p></div>
             </div>
             <div className="relative flex items-center gap-4 p-5 rounded-xl border border-slate-500/30 bg-slate-500/10 transition-all duration-300 hover:scale-[1.02]">
               <div className="h-12 w-12 rounded-xl bg-slate-500/15 border border-slate-500/30 flex items-center justify-center shrink-0"><MapPinOff className="h-5 w-5 text-slate-400" /></div>

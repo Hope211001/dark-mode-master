@@ -8,7 +8,7 @@ const FooterHome = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+              <div className="w-10 h-10 bg-gradient-to-br from-clay-600 to-clay-600 rounded-xl flex items-center justify-center shadow-lg shadow-clay-500/20">
                 <MapPin className="text-white" size={20} />
               </div>
               <span className="text-xl font-bold text-gray-900">ImmoScout</span>
@@ -42,7 +42,7 @@ const FooterHome = () => {
             <p className="text-gray-400 text-sm mb-4">Reservez votre zone exclusive des maintenant.</p>
             <Link
               to="/register"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg shadow-emerald-600/25"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-clay-600 to-clay-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:from-clay-700 hover:to-clay-700 transition-all shadow-lg shadow-clay-600/25"
             >
               Essai Gratuit <ArrowRight size={14} />
             </Link>

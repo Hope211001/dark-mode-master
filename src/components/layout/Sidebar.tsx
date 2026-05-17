@@ -93,11 +93,11 @@ export function Sidebar() {
           <div className="p-6 border-b border-sidebar-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-clay-600 to-clay-600 flex items-center justify-center shadow-lg shadow-clay-500/20">
                   <MapPin className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h1 className="font-semibold text-foreground">Immo<span className="text-emerald-600">Scout</span></h1>
+                  <h1 className="font-semibold text-foreground">Immo<span className="text-clay-600">Scout</span></h1>
                   <p className="text-xs text-muted-foreground">Admin</p>
                 </div>
               </div>

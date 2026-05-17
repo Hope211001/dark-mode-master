@@ -1,0 +1,187 @@
+/* ============================================================
+ * Landing — MÉRIDIEN palette
+ * Scopé sous .landing-page pour ne pas affecter les pages portail.
+ * Source : landingpagesous-loc/frontend/src/index.css
+ * ============================================================ */
+
+.landing-page {
+  /* MÉRIDIEN v2 — friendly warm palette */
+  --m-cream: #FAF7F2;
+  --m-cream-2: #F4EFE5;
+  --m-paper: #FFFFFF;
+  --m-ink: #0F0E0C;
+  --m-ink-2: #2D2C2A;
+  --m-text: #4A4944;
+  --m-mute: #8A8780;
+  --m-line: #E5DFD2;
+  --m-line-2: #EFEADF;
+
+  --m-clay: #D45F2A;
+  --m-clay-dark: #B34B1F;
+  --m-clay-soft: #FAE6D8;
+  --m-clay-bg: #FCF1E8;
+
+  --m-green: #1F8A5B;
+  --m-green-soft: #DAF2E5;
+  --m-amber: #D97706;
+  --m-amber-soft: #FCEAD2;
+  --m-slate: #5B6470;
+  --m-charcoal: #2A2D33;
+
+  background-color: var(--m-cream);
+  color: var(--m-ink);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-feature-settings: "ss01", "ss02";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.55;
+  min-height: 100vh;
+}
+
+.landing-page ::selection { background: var(--m-clay); color: #fff; }
+
+.landing-page h1,
+.landing-page h2,
+.landing-page h3,
+.landing-page h4,
+.landing-page h5,
+.landing-page h6 {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  letter-spacing: -0.025em;
+  color: var(--m-ink);
+  font-weight: 700;
+}
+
+/* ============================================================
+ * Utilities (scopées)
+ * ============================================================ */
+
+.landing-page .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+.landing-page .bg-cream { background-color: var(--m-cream); }
+.landing-page .bg-cream-2 { background-color: var(--m-cream-2); }
+.landing-page .bg-paper { background-color: var(--m-paper); }
+.landing-page .bg-ink { background-color: var(--m-ink); }
+.landing-page .bg-clay { background-color: var(--m-clay); }
+.landing-page .bg-clay-soft { background-color: var(--m-clay-soft); }
+.landing-page .bg-clay-bg { background-color: var(--m-clay-bg); }
+.landing-page .text-clay { color: var(--m-clay); }
+.landing-page .text-clay-dark { color: var(--m-clay-dark); }
+.landing-page .text-ink { color: var(--m-ink); }
+.landing-page .text-mute { color: var(--m-mute); }
+.landing-page .text-body { color: var(--m-text); }
+.landing-page .border-line { border-color: var(--m-line); }
+.landing-page .ring-clay { --tw-ring-color: var(--m-clay); }
+
+.landing-page .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  background: var(--m-clay-bg);
+  color: var(--m-clay-dark);
+  border: 1px solid #F4D9C4;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.landing-page .pill-dot {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--m-clay);
+  display: inline-block;
+}
+
+.landing-page .btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.55rem;
+  padding: 0.95rem 1.5rem;
+  background: var(--m-clay);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 999px;
+  transition: transform 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
+  box-shadow: 0 4px 14px -6px rgba(212,95,42,0.45);
+}
+.landing-page .btn-primary:hover { background: var(--m-clay-dark); transform: translateY(-1px); box-shadow: 0 8px 20px -8px rgba(212,95,42,0.55); }
+
+.landing-page .btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  padding: 0.9rem 1.4rem;
+  background: var(--m-paper);
+  color: var(--m-ink);
+  border: 1px solid var(--m-line);
+  border-radius: 999px;
+  font-weight: 600;
+  transition: all 200ms ease;
+}
+.landing-page .btn-secondary:hover { background: var(--m-cream-2); border-color: #D9D0BD; }
+
+.landing-page .btn-ghost {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  color: var(--m-ink);
+  font-weight: 500;
+  transition: color 200ms ease;
+}
+.landing-page .btn-ghost:hover { color: var(--m-clay); }
+
+.landing-page .card-soft {
+  background: var(--m-paper);
+  border: 1px solid var(--m-line);
+  border-radius: 18px;
+  transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease;
+}
+.landing-page .card-soft:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px -16px rgba(15,14,12,0.12);
+  border-color: #D9D0BD;
+}
+
+.landing-page .soft-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--m-line) 30%, var(--m-line) 70%, transparent);
+}
+
+.landing-page .paper-texture::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  opacity: 0.4;
+  background-image: radial-gradient(rgba(80,60,30,0.025) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+.landing-page .status-available { color: var(--m-green); }
+.landing-page .status-limited { color: var(--m-amber); }
+.landing-page .status-reserved { color: var(--m-slate); }
+.landing-page .status-closed { color: var(--m-charcoal); }
+
+.landing-page .bg-status-available { background-color: var(--m-green); }
+.landing-page .bg-status-limited { background-color: var(--m-amber); }
+.landing-page .bg-status-reserved { background-color: var(--m-slate); }
+.landing-page .bg-status-closed { background-color: var(--m-charcoal); }
+
+.landing-page .pulse-ring {
+  box-shadow: 0 0 0 0 rgba(31,138,91,0.5);
+  animation: landing-pulse-ring 2s cubic-bezier(.66,0,0,1) infinite;
+}
+@keyframes landing-pulse-ring {
+  100% { box-shadow: 0 0 0 12px rgba(31,138,91,0); }
+}
+
+.landing-page .blink { animation: landing-blink 1.5s ease-in-out infinite; }
+@keyframes landing-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+.landing-page .pulse-limited-stroke {
+  animation: landing-pulse-lim 2.4s ease-in-out infinite;
+}
+@keyframes landing-pulse-lim {
+  0%, 100% { stroke-opacity: 0.55; }
+  50% { stroke-opacity: 1; }
+}
+
+.landing-page .map-shell svg { width: 100%; height: 100%; display: block; }
+.landing-page .map-shell path {
+  transition: fill 200ms ease, stroke 200ms ease;
+  cursor: pointer;
+}
+.landing-page .map-shell path:hover { filter: brightness(0.96); }
+
+.landing-page [data-debug-wrapper="true"] { display: contents !important; }

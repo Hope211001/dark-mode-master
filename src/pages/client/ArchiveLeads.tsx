@@ -133,7 +133,7 @@ function ArchivedLeadCard({ lead, onRestore, onAlert }: {
                 {(isDescOverflow || expanded) && (
                   <button
                     type="button"
-                    className="mt-1.5 text-sm text-emerald-600 hover:text-emerald-700 hover:underline font-semibold"
+                    className="mt-1.5 text-sm text-clay-600 hover:text-clay-700 hover:underline font-semibold"
                     onClick={() => setExpanded((v) => !v)}
                   >
                     {expanded ? "lire moins" : "lire plus"}
@@ -150,7 +150,7 @@ function ArchivedLeadCard({ lead, onRestore, onAlert }: {
           <div className="flex flex-col gap-2 w-44 shrink-0">
             <Button
               size="sm"
-              className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-[11px] h-9 rounded-lg shadow-sm shadow-emerald-600/30 hover:shadow-emerald-600/50 transition-all"
+              className="bg-clay-600 hover:bg-clay-700 active:bg-clay-800 text-white font-semibold text-[11px] h-9 rounded-lg shadow-sm shadow-clay-600/30 hover:shadow-clay-600/50 transition-all"
               onClick={handleRestore}
               disabled={restoring}
             >

@@ -13,7 +13,7 @@ interface Stats {
 }
 
 const statCards = [
-  { key: "totalLeads" as keyof Stats, label: "Total Leads", subtitle: "tous les leads detectes", icon: TrendingUp, bg: "bg-emerald-50", border: "border-emerald-200", iconBg: "bg-emerald-100", iconColor: "text-emerald-600" },
+  { key: "totalLeads" as keyof Stats, label: "Total Leads", subtitle: "tous les leads detectes", icon: TrendingUp, bg: "bg-clay-50", border: "border-clay-200", iconBg: "bg-clay-100", iconColor: "text-clay-600" },
   { key: "newLeads" as keyof Stats, label: "Nouveaux", subtitle: "en attente de contact", icon: Sparkles, bg: "bg-amber-50", border: "border-amber-200", iconBg: "bg-amber-100", iconColor: "text-amber-600" },
   { key: "contactedLeads" as keyof Stats, label: "Contactes", subtitle: "messages envoyes", icon: Mail, bg: "bg-violet-50", border: "border-violet-200", iconBg: "bg-violet-100", iconColor: "text-violet-600" },
   { key: "totalZones" as keyof Stats, label: "Total Zones", subtitle: "villes couvertes", icon: Map, bg: "bg-cyan-50", border: "border-cyan-200", iconBg: "bg-cyan-100", iconColor: "text-cyan-600" },

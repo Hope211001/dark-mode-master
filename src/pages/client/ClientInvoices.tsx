@@ -41,7 +41,7 @@ function formatDay(d: string) {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    SUCCEEDED: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+    SUCCEEDED: 'bg-clay-500/10 text-clay-400 border-clay-500/30',
     FAILED: 'bg-destructive/10 text-destructive border-destructive/30',
     RUNNING: 'bg-primary/10 text-primary border-primary/30',
   };

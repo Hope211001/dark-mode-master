@@ -21,7 +21,7 @@ const HeaderHome = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 bg-gradient-to-br from-clay-600 to-clay-600 rounded-xl flex items-center justify-center shadow-lg shadow-clay-500/20 group-hover:scale-105 transition-transform">
               <MapPin className="text-white" size={20} />
             </div>
             <span className="text-xl font-bold text-gray-900 tracking-tight">ImmoScout</span>
@@ -34,7 +34,7 @@ const HeaderHome = () => {
                 to={link.href}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   location.pathname === link.href
-                    ? "text-emerald-700 bg-emerald-50"
+                    ? "text-clay-700 bg-clay-50"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
@@ -47,7 +47,7 @@ const HeaderHome = () => {
             {isAuthenticated ? (
               <Link
                 to={dashboardLink}
-                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg hover:-translate-y-0.5"
+                className="flex items-center gap-2 bg-clay-600 hover:bg-clay-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg hover:-translate-y-0.5"
               >
                 <LayoutDashboard size={16} />
                 Mon Espace {user?.role === 'admin' ? '(Admin)' : ''}
@@ -55,7 +55,7 @@ const HeaderHome = () => {
             ) : (
               <>
                 <Link to="/login" className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Connexion</Link>
-                <Link to="/register" className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 px-5 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg shadow-emerald-600/25 hover:-translate-y-0.5">
+                <Link to="/register" className="bg-gradient-to-r from-clay-600 to-clay-600 text-white hover:from-clay-700 hover:to-clay-700 px-5 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg shadow-clay-600/25 hover:-translate-y-0.5">
                   Essai Gratuit
                 </Link>
               </>
@@ -76,7 +76,7 @@ const HeaderHome = () => {
               to={link.href}
               onClick={() => setIsMobileMenuOpen(false)}
               className={`text-lg py-3 px-4 rounded-lg transition-colors ${
-                location.pathname === link.href ? "text-emerald-700 bg-emerald-50" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                location.pathname === link.href ? "text-clay-700 bg-clay-50" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               }`}
             >
               {link.label}
@@ -84,13 +84,13 @@ const HeaderHome = () => {
           ))}
           <div className="h-px bg-gray-100 my-2" />
           {isAuthenticated ? (
-            <Link to={dashboardLink} onClick={() => setIsMobileMenuOpen(false)} className="bg-emerald-600 text-white py-4 rounded-xl text-center font-bold text-lg mt-2 flex items-center justify-center gap-2">
+            <Link to={dashboardLink} onClick={() => setIsMobileMenuOpen(false)} className="bg-clay-600 text-white py-4 rounded-xl text-center font-bold text-lg mt-2 flex items-center justify-center gap-2">
               <LayoutDashboard size={20} /> Mon Espace
             </Link>
           ) : (
             <>
               <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-lg text-gray-600 hover:text-gray-900 py-3 px-4">Connexion</Link>
-              <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 rounded-xl text-center font-bold text-lg mt-2">Commencer</Link>
+              <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="bg-gradient-to-r from-clay-600 to-clay-600 text-white py-4 rounded-xl text-center font-bold text-lg mt-2">Commencer</Link>
             </>
           )}
         </div>

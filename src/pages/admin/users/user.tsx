@@ -229,7 +229,7 @@ const ListUser = () => {
                                                 variant={u.statut === 'ACTIF' ? "default" : "secondary"}
                                                 className={
                                                     u.statut === 'ACTIF'
-                                                        ? "bg-emerald-500/15 text-emerald-500 hover:bg-emerald-500/25 border-emerald-500/20"
+                                                        ? "bg-clay-500/15 text-clay-500 hover:bg-clay-500/25 border-clay-500/20"
                                                         : u.statut === 'BLOQUE'
                                                             ? "bg-orange-500/15 text-orange-500 hover:bg-orange-500/25 border-orange-500/20"
                                                             : ""
@@ -259,7 +259,7 @@ const ListUser = () => {
                                                     size="sm"
                                                     variant="ghost"
                                                     className={`gap-1.5 h-7 text-xs border-0 ${u.statut === 'BLOQUE'
-                                                        ? "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
+                                                        ? "bg-clay-500/10 text-clay-500 hover:bg-clay-500/20"
                                                         : "bg-orange-500/10 text-orange-500 hover:bg-orange-500/20"
                                                     }`}
                                                     onClick={() => handleBlock(u.id, u.statut)}
