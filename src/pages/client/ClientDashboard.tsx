@@ -31,8 +31,6 @@ const ClientDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [lbcLoading, setLbcLoading] = useState(false);
-  const [papLoading, setPapLoading] = useState(false);
-  const [selogerLoading, setSelogerLoading] = useState(false);
   const [contactLoading, setContactLoading] = useState(false);
   const [errorAlert, setErrorAlert] = useState({ visible: false, message: "" });
   const [successAlert, setSuccessAlert] = useState({ visible: false, message: "" });
@@ -71,33 +69,15 @@ const ClientDashboard = () => {
     else setErrorAlert({ visible: true, message });
   };
 
-  const handleWebhook = async (
-    platform: "leboncoin" | "pap" | "seloger",
-    setLoading: (v: boolean) => void
-  ) => {
-    const webhooks: Record<string, { url: string; label: string }> = {
-      leboncoin: {
-        url: "https://n8n.srv903010.hstgr.cloud/webhook/8970a0ee-11ff-4cb5-8ee1-1b05b5f69d47",
-        label: "LeBonCoin",
-      },
-      pap: {
-        url: "https://n8n.srv903010.hstgr.cloud/webhook/7d39302f-1d64-4ae4-a1eb-a822abf99524",
-        label: "PAP.fr",
-      },
-      seloger: {
-        url: "https://n8n.srv903010.hstgr.cloud/webhook/61714510-feec-46fa-8dd8-dde02b14e216",
-        label: "SeLoger",
-      },
-    };
-    const { url, label } = webhooks[platform];
+  const handleLeboncoinScraping = async () => {
     try {
-      setLoading(true);
-      await fetch(url, { method: "POST" });
-      setSuccessAlert({ visible: true, message: `Scraping ${label} lancé avec succès !` });
+      setLbcLoading(true);
+      await fetch("https://n8n.srv903010.hstgr.cloud/webhook/8970a0ee-11ff-4cb5-8ee1-1b05b5f69d47", { method: "POST" });
+      setSuccessAlert({ visible: true, message: "Scraping LeBonCoin lancé avec succès !" });
     } catch {
-      setErrorAlert({ visible: true, message: `Erreur lors du lancement du scraping ${label}.` });
+      setErrorAlert({ visible: true, message: "Erreur lors du lancement du scraping LeBonCoin." });
     } finally {
-      setLoading(false);
+      setLbcLoading(false);
     }
   };
 
@@ -221,33 +201,17 @@ const ClientDashboard = () => {
           {/* Action Buttons */}
           <div>
             <p className="text-sm text-muted-foreground mb-3">
-              Lancez le scraping sur la plateforme de votre choix pour détecter de nouvelles annonces immobilières.
+              Lancez le scraping LeBonCoin pour détecter de nouvelles annonces immobilières.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button
-              onClick={() => handleWebhook("leboncoin", setLbcLoading)}
+              onClick={handleLeboncoinScraping}
               disabled={lbcLoading}
               className="gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-semibold shadow-lg shadow-orange-500/20"
             >
               {lbcLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
               Lancer LeBonCoin
-            </Button>
-            <Button
-              onClick={() => handleWebhook("pap", setPapLoading)}
-              disabled={papLoading}
-              className="gap-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-white font-semibold shadow-lg shadow-sky-500/20"
-            >
-              {papLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
-              Lancer PAP.fr
-            </Button>
-            <Button
-              onClick={() => handleWebhook("seloger", setSelogerLoading)}
-              disabled={selogerLoading}
-              className="gap-2 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white font-semibold shadow-lg shadow-rose-500/20"
-            >
-              {selogerLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
-              Lancer SeLoger
             </Button>
             <Button
               onClick={handleContactAuto}

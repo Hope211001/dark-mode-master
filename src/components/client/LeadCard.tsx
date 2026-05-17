@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   MapPin, Maximize, Euro, Calendar as CalendarIcon, Mail, Phone,
   TrendingUp, Loader2, Eye, CheckCircle2, Sparkles,
-  Send, X, MessageSquare, MessageCircle, ExternalLink, Archive
+  Send, X, MessageSquare, ExternalLink, Archive
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { leadsService, Lead } from "@/services/leads.service";
 import { configService } from "@/services/config";
-import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
@@ -35,19 +34,14 @@ const sourceConfig: Record<string, { label: string; className: string; dot: stri
   "seloger":   { label: "SeLoger",   className: "bg-rose-500 text-white border-rose-600 shadow-sm shadow-rose-500/30",     dot: "bg-white" },
 };
 
-const WHATSAPP_WEBHOOK_URL = "https://n8n.srv903010.hstgr.cloud/webhook/envoyer-message-whatsap";
 const AI_GENERATE_WEBHOOK_URL = "https://n8n.srv903010.hstgr.cloud/webhook/generer-message-par-ia";
-
-type ContactMode = "leboncoin" | "whatsapp";
 
 export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [contacting, setContacting] = useState(false);
   const [rejecting, setRejecting] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
   const [contactMessage, setContactMessage] = useState("");
-  const [contactMode, setContactMode] = useState<ContactMode>("leboncoin");
   const [generatingAi, setGeneratingAi] = useState(false);
   const [showSentModal, setShowSentModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -86,12 +80,11 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
     setIsDescOverflow(el.scrollHeight > el.clientHeight + 1);
   }, [descText, expanded]);
 
-  const handleOpenContact = async (mode: ContactMode) => {
-    setContactMode(mode);
+  const handleOpenContact = async () => {
     setShowContactModal(true);
     try {
       const cfg = await configService.getConfigCached();
-      setContactMessage(configService.pickTemplate(cfg, mode));
+      setContactMessage(configService.pickTemplate(cfg, "leboncoin"));
     } catch {
       setContactMessage("");
     }
@@ -101,37 +94,9 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
     if (!contactMessage.trim()) { onAlert?.("error", "Veuillez rediger un message avant d'envoyer."); return; }
     try {
       setContacting(true);
-      if (contactMode === "whatsapp") {
-        const fullName = (user?.name || "").trim();
-        const parts = fullName.split(/\s+/).filter(Boolean);
-        const userFirstName = parts[0] || "";
-        const userLastName = parts.slice(1).join(" ") || "";
-        const res = await fetch(WHATSAPP_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            lead_id: id,
-            phone,
-            message: contactMessage,
-            titre,
-            ville,
-            prix,
-            url,
-            source: categorie_scraping,
-            user_id: user?.id,
-            user_name: fullName,
-            user_first_name: userFirstName,
-            user_last_name: userLastName,
-            user_email: user?.email,
-          }),
-        });
-        if (!res.ok) throw new Error("Webhook failed");
-        await leadsService.updateStatus(id, "contacted");
-      } else {
-        await leadsService.contactLead(id, contactMessage);
-      }
+      await leadsService.contactLead(id, contactMessage);
       setShowContactModal(false); setContactMessage("");
-      onAlert?.("success", contactMode === "whatsapp" ? "Message WhatsApp envoye !" : "Message envoye avec succes !");
+      onAlert?.("success", "Message envoye avec succes !");
       onStatusChange?.();
     } catch { onAlert?.("error", "Erreur lors de l'envoi du message."); }
     finally { setContacting(false); }
@@ -212,24 +177,20 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
         <div className="fixed inset-0 z-[60] flex items-center justify-center px-4" onClick={(e) => e.stopPropagation()}>
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowContactModal(false)} />
           <div className="relative animate-in zoom-in-95 fade-in duration-200 bg-white border border-gray-200 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
-            <div className={cn("relative px-6 py-5 border-b", contactMode === "whatsapp" ? "bg-emerald-50 border-emerald-100" : "bg-orange-50 border-orange-100")}>
+            <div className="relative px-6 py-5 border-b bg-orange-50 border-orange-100">
               <button onClick={() => setShowContactModal(false)} className="absolute top-4 right-4 h-8 w-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all">
                 <X className="h-4 w-4" />
               </button>
               <div className="flex items-center gap-3">
-                <div className={cn("h-10 w-10 rounded-full flex items-center justify-center", contactMode === "whatsapp" ? "bg-emerald-100" : "bg-orange-100")}>
-                  {contactMode === "whatsapp"
-                    ? <MessageCircle className="h-5 w-5 text-emerald-600" />
-                    : <MessageSquare className="h-5 w-5 text-orange-600" />}
+                <div className="h-10 w-10 rounded-full flex items-center justify-center bg-orange-100">
+                  <MessageSquare className="h-5 w-5 text-orange-600" />
                 </div>
                 <div>
                   <h3 className="text-gray-900 font-bold text-base">
-                    {contactMode === "whatsapp" ? "Contacter via WhatsApp" : "Contacter dans Leboncoin"}
+                    Contacter dans Leboncoin
                   </h3>
                   <p className="text-xs text-gray-500 mt-0.5">
-                    {contactMode === "whatsapp"
-                      ? `Message envoye au ${phone || "numero"} via WhatsApp`
-                      : "Redigez votre message pour ce lead"}
+                    Redigez votre message pour ce lead
                   </p>
                 </div>
               </div>
@@ -277,10 +238,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
               </Button>
               <Button
                 onClick={handleConfirmContact}
-                className={cn(
-                  "flex-1 rounded-xl text-white font-bold h-11 gap-2",
-                  contactMode === "whatsapp" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-orange-500 hover:bg-orange-600"
-                )}
+                className="flex-1 rounded-xl text-white font-bold h-11 gap-2 bg-orange-500 hover:bg-orange-600"
                 disabled={contacting || !contactMessage.trim()}
               >
                 {contacting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
@@ -306,7 +264,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-base leading-tight">Message envoy&eacute;</h3>
-                  <p className="text-[11px] text-emerald-100/90 mt-0.5">Contact via WhatsApp</p>
+                  <p className="text-[11px] text-emerald-100/90 mt-0.5">Contact via Leboncoin</p>
                 </div>
               </div>
             </div>
@@ -438,7 +396,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                 <button
                   type="button"
                   className="group/btn flex items-center gap-2.5 h-12 px-3 rounded-xl bg-white border-2 border-orange-200 hover:border-orange-500 hover:bg-orange-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
-                  onClick={() => handleOpenContact("leboncoin")}
+                  onClick={handleOpenContact}
                 >
                   <span className="h-8 w-8 rounded-lg bg-orange-500 flex items-center justify-center shrink-0 shadow-sm shadow-orange-500/40">
                     <Mail className="h-4 w-4 text-white" />
@@ -449,38 +407,22 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
                   </span>
                 </button>
               )}
-              {phone && (
-                currentStatus === "contacted" ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowSentModal(true)}
-                    aria-label="Voir le message envoy&eacute;"
-                    className="group/sent relative flex items-center gap-2.5 h-12 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-md shadow-emerald-600/30 hover:shadow-lg hover:shadow-emerald-600/40 hover:-translate-y-0.5 transition-all text-left w-full"
-                  >
-                    <span className="h-8 w-8 rounded-lg bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0 ring-1 ring-white/30">
-                      <CheckCircle2 className="h-4 w-4 text-white" />
-                    </span>
-                    <span className="flex flex-col items-start min-w-0 leading-tight flex-1">
-                      <span className="text-[10px] font-bold text-emerald-100/90 uppercase tracking-wider">Contact&eacute;</span>
-                      <span className="text-sm font-extrabold text-white">Sur WhatsApp</span>
-                    </span>
-                    <Eye className="h-4 w-4 text-white/80 group-hover/sent:text-white shrink-0" />
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className="group/btn flex items-center gap-2.5 h-12 px-3 rounded-xl bg-white border-2 border-emerald-200 hover:border-[#25D366] hover:bg-emerald-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
-                    onClick={() => handleOpenContact("whatsapp")}
-                  >
-                    <span className="h-8 w-8 rounded-lg bg-[#25D366] flex items-center justify-center shrink-0 shadow-sm shadow-[#25D366]/40">
-                      <MessageCircle className="h-4 w-4 text-white" />
-                    </span>
-                    <span className="flex flex-col items-start min-w-0 leading-tight">
-                      <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Envoyer message</span>
-                      <span className="text-sm font-bold text-gray-800 group-hover/btn:text-emerald-700 transition-colors">Via WhatsApp</span>
-                    </span>
-                  </button>
-                )
+              {categorie_scraping === "leboncoin" && currentStatus === "contacted" && (
+                <button
+                  type="button"
+                  onClick={() => setShowSentModal(true)}
+                  aria-label="Voir le message envoy&eacute;"
+                  className="group/sent relative flex items-center gap-2.5 h-12 px-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 shadow-md shadow-orange-500/30 hover:shadow-lg hover:shadow-orange-500/40 hover:-translate-y-0.5 transition-all text-left w-full"
+                >
+                  <span className="h-8 w-8 rounded-lg bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0 ring-1 ring-white/30">
+                    <CheckCircle2 className="h-4 w-4 text-white" />
+                  </span>
+                  <span className="flex flex-col items-start min-w-0 leading-tight flex-1">
+                    <span className="text-[10px] font-bold text-orange-100/90 uppercase tracking-wider">Contact&eacute;</span>
+                    <span className="text-sm font-extrabold text-white">Sur Leboncoin</span>
+                  </span>
+                  <Eye className="h-4 w-4 text-white/80 group-hover/sent:text-white shrink-0" />
+                </button>
               )}
               <button
                 type="button"
