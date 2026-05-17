@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Cookie, Save, Loader2, ArrowLeft, Info, Trash2, Mail, Lock } from "lucide-react";
+import { Cookie, Save, Loader2, ArrowLeft, Info, Trash2, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cookiesService } from "@/services/cookies.service";
 import ErrorAlert from "@/components/alert/error";
@@ -24,6 +24,7 @@ const FormCookies = () => {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [errorAlert, setErrorAlert] = useState({ visible: false, message: "" });
   const [successAlert, setSuccessAlert] = useState({ visible: false, message: "" });
 
@@ -182,14 +183,24 @@ const FormCookies = () => {
                           <Lock className="h-3.5 w-3.5 text-muted-foreground" />
                           Mot de passe LeBonCoin <span className="text-destructive">*</span>
                         </Label>
-                        <Input
-                          id="password_leboncoin"
-                          type="password"
-                          value={form.password_leboncoin}
-                          onChange={(e) => handleChange("password_leboncoin", e.target.value)}
-                          placeholder="Votre mot de passe LeBonCoin"
-                          className="bg-secondary/30"
-                        />
+                        <div className="relative">
+                          <Input
+                            id="password_leboncoin"
+                            type={showPassword ? "text" : "password"}
+                            value={form.password_leboncoin}
+                            onChange={(e) => handleChange("password_leboncoin", e.target.value)}
+                            placeholder="Votre mot de passe LeBonCoin"
+                            className="bg-secondary/30 pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword((v) => !v)}
+                            aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                            className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
                       </div>
                     </div>
 

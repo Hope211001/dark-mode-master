@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ClientSidebar } from "@/components/client/ClientSidebar";
 import { ClientHeader } from "@/components/client/ClientHeader";
 import { LeadCard } from "@/components/client/LeadCard";
+import { SetupChecklist } from "@/components/client/SetupChecklist";
 import {
   Mail, MapPin, Loader2, Sparkles, ChevronRight,
   Target, BarChart3, Clock, Send, Globe
@@ -72,10 +73,15 @@ const ClientDashboard = () => {
   const handleLeboncoinScraping = async () => {
     try {
       setLbcLoading(true);
-      await fetch("https://n8n.srv903010.hstgr.cloud/webhook/8970a0ee-11ff-4cb5-8ee1-1b05b5f69d47", { method: "POST" });
+      const res = await fetch("https://n8n.srv903010.hstgr.cloud/webhook/8970a0ee-11ff-4cb5-8ee1-1b05b5f69d47", { method: "POST" });
+      if (!res.ok) {
+        if (res.status === 404) throw new Error("Le workflow LeBonCoin est introuvable ou désactivé sur n8n.");
+        throw new Error(`Le workflow a répondu avec une erreur (HTTP ${res.status}).`);
+      }
       setSuccessAlert({ visible: true, message: "Scraping LeBonCoin lancé avec succès !" });
-    } catch {
-      setErrorAlert({ visible: true, message: "Erreur lors du lancement du scraping LeBonCoin." });
+    } catch (err) {
+      const msg = err instanceof Error && err.message ? err.message : "Erreur lors du lancement du scraping LeBonCoin.";
+      setErrorAlert({ visible: true, message: msg });
     } finally {
       setLbcLoading(false);
     }
@@ -84,10 +90,15 @@ const ClientDashboard = () => {
   const handleContactAuto = async () => {
     try {
       setContactLoading(true);
-      await fetch("https://n8n.srv903010.hstgr.cloud/webhook/contact-auto", { method: "POST" });
+      const res = await fetch("https://n8n.srv903010.hstgr.cloud/webhook/contact-auto", { method: "POST" });
+      if (!res.ok) {
+        if (res.status === 404) throw new Error("Le workflow de contact automatique est introuvable ou désactivé sur n8n.");
+        throw new Error(`Le workflow a répondu avec une erreur (HTTP ${res.status}).`);
+      }
       setSuccessAlert({ visible: true, message: "Contact automatique LeBonCoin lancé avec succès !" });
-    } catch {
-      setErrorAlert({ visible: true, message: "Erreur lors du lancement du contact automatique." });
+    } catch (err) {
+      const msg = err instanceof Error && err.message ? err.message : "Erreur lors du lancement du contact automatique.";
+      setErrorAlert({ visible: true, message: msg });
     } finally {
       setContactLoading(false);
     }
@@ -170,6 +181,8 @@ const ClientDashboard = () => {
         />
 
         <div className="p-4 md:p-6 lg:p-8 space-y-6">
+          <SetupChecklist />
+
           {/* Stats Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
             {statCards.map((s) => (
