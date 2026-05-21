@@ -18,6 +18,7 @@ export interface Lead {
   id: string;
   titre: string;
   ville: string;
+  city_label?: string;
   prix: number;
   surface: number;
   score: number;

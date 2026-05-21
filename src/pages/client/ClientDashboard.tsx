@@ -5,13 +5,17 @@ import { LeadCard } from "@/components/client/LeadCard";
 import { SetupChecklist } from "@/components/client/SetupChecklist";
 import {
   Mail, MapPin, Loader2, Sparkles, ChevronRight,
-  Target, BarChart3, Clock, Send, Globe
+  Target, BarChart3, Clock, Send, Globe, X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { zoneService } from "@/services/zones.services";
 import { leadsService, Lead } from "@/services/leads.service";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 import ErrorAlert from "@/components/alert/error";
 import SuccessAlert from "@/components/alert/success";
 
@@ -23,6 +27,7 @@ interface DashboardStats {
 }
 
 const ClientDashboard = () => {
+  const { user } = useAuth();
   const [recentLeads, setRecentLeads] = useState<Lead[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     totalLeads: 0,
@@ -33,12 +38,30 @@ const ClientDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [lbcLoading, setLbcLoading] = useState(false);
   const [contactLoading, setContactLoading] = useState(false);
+  const [maxAnnonces, setMaxAnnonces] = useState<string>("");
+  const [showLbcModal, setShowLbcModal] = useState(false);
   const [errorAlert, setErrorAlert] = useState({ visible: false, message: "" });
   const [successAlert, setSuccessAlert] = useState({ visible: false, message: "" });
 
   useEffect(() => {
     fetchDashboard();
   }, []);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    (async () => {
+      const { data } = await supabase
+        .from("zones")
+        .select("max_annonce_scraped")
+        .eq("owner_id", user.id)
+        .not("max_annonce_scraped", "is", null)
+        .limit(1)
+        .maybeSingle();
+      if (data?.max_annonce_scraped != null) {
+        setMaxAnnonces(String(data.max_annonce_scraped));
+      }
+    })();
+  }, [user?.id]);
 
   const fetchDashboard = async () => {
     try {
@@ -70,17 +93,40 @@ const ClientDashboard = () => {
     else setErrorAlert({ visible: true, message });
   };
 
-  const handleLeboncoinScraping = async () => {
+  const handleSaveAndScrape = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.id) {
+      setErrorAlert({ visible: true, message: "Utilisateur non identifié." });
+      return;
+    }
+    const value = parseInt(maxAnnonces, 10);
+    if (!Number.isFinite(value) || value <= 0) {
+      setErrorAlert({ visible: true, message: "Veuillez saisir un nombre valide (> 0)." });
+      return;
+    }
     try {
       setLbcLoading(true);
+
+      const { error: updateError } = await supabase
+        .from("zones")
+        .update({ max_annonce_scraped: value })
+        .eq("owner_id", user.id);
+      if (updateError) throw new Error(updateError.message);
+
       const res = await fetch("https://n8n.srv903010.hstgr.cloud/webhook/8970a0ee-11ff-4cb5-8ee1-1b05b5f69d47", { method: "POST" });
-      if (!res.ok) {
+
+      let data: { success?: boolean; message?: string; error?: string } = {};
+      try { data = await res.json(); } catch { /* corps non-JSON */ }
+
+      if (!res.ok || data.success === false) {
         if (res.status === 404) throw new Error("Le workflow LeBonCoin est introuvable ou désactivé sur n8n.");
-        throw new Error(`Le workflow a répondu avec une erreur (HTTP ${res.status}).`);
+        throw new Error(data.error || data.message || `Le workflow a répondu avec une erreur (HTTP ${res.status}).`);
       }
-      setSuccessAlert({ visible: true, message: "Scraping LeBonCoin lancé avec succès !" });
+
+      setSuccessAlert({ visible: true, message: data.message || "Scraping LeBonCoin lancé avec succès !" });
+      setShowLbcModal(false);
     } catch (err) {
-      const msg = err instanceof Error && err.message ? err.message : "Erreur lors du lancement du scraping LeBonCoin.";
+      const msg = err instanceof Error && err.message ? err.message : "Erreur lors de l'enregistrement / lancement du scraping.";
       setErrorAlert({ visible: true, message: msg });
     } finally {
       setLbcLoading(false);
@@ -219,7 +265,7 @@ const ClientDashboard = () => {
           </div>
           <div className="flex flex-wrap gap-3">
             <Button
-              onClick={handleLeboncoinScraping}
+              onClick={() => setShowLbcModal(true)}
               disabled={lbcLoading}
               className="gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-semibold shadow-lg shadow-orange-500/20"
             >
@@ -235,6 +281,79 @@ const ClientDashboard = () => {
               Contact auto LeBonCoin
             </Button>
           </div>
+
+          {/* Modal Lancer LeBonCoin */}
+          {showLbcModal && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+              <div
+                className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+                onClick={() => !lbcLoading && setShowLbcModal(false)}
+              />
+              <div className="relative animate-in zoom-in-95 fade-in duration-200 bg-white border border-gray-200 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+                <div className="relative px-6 py-5 border-b bg-orange-50 border-orange-100">
+                  <button
+                    type="button"
+                    onClick={() => setShowLbcModal(false)}
+                    disabled={lbcLoading}
+                    className="absolute top-4 right-4 h-8 w-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all disabled:opacity-50"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full flex items-center justify-center bg-orange-100">
+                      <Globe className="h-5 w-5 text-orange-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-gray-900 font-bold text-base">Lancer le scraping LeBonCoin</h3>
+                      <p className="text-xs text-gray-500 mt-0.5">Paramétrez le scraping avant de le déclencher</p>
+                    </div>
+                  </div>
+                </div>
+                <form onSubmit={handleSaveAndScrape} className="px-6 py-5 space-y-4">
+                  <div>
+                    <Label htmlFor="max_annonce_scraped" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      Nombre maximum d'annonces par ville
+                    </Label>
+                    <Input
+                      id="max_annonce_scraped"
+                      type="number"
+                      min={1}
+                      step={1}
+                      value={maxAnnonces}
+                      onChange={(e) => setMaxAnnonces(e.target.value)}
+                      placeholder="ex: 10"
+                      className="mt-1.5"
+                      disabled={lbcLoading}
+                      autoFocus
+                      required
+                    />
+                    <p className="text-[11px] text-gray-400 mt-1.5">
+                      Ex : si vous avez 2 villes et indiquez 10, 10 annonces seront scrapées par ville (20 au total).
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 pt-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowLbcModal(false)}
+                      disabled={lbcLoading}
+                      className="flex-1 rounded-xl h-11"
+                    >
+                      Annuler
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={lbcLoading}
+                      className="flex-1 rounded-xl h-11 gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold"
+                    >
+                      {lbcLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
+                      Lancer
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
 
           {/* Recent Leads */}
           <div>

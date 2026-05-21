@@ -48,7 +48,7 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
   const aiChannelRef = useRef<RealtimeChannel | null>(null);
   const aiTimeoutRef = useRef<number | null>(null);
 
-  const { id, titre, ville, surface, prix = 0, statut, date_detection, phone, url, score, description, categorie_scraping, message1, date_envoie1 } = lead;
+  const { id, titre, ville, city_label, surface, prix = 0, statut, date_detection, phone, url, score, description, categorie_scraping, message1, date_envoie1 } = lead;
 
   const formattedSentDate = date_envoie1
     ? new Date(date_envoie1).toLocaleString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
@@ -315,9 +315,14 @@ export function LeadCard({ lead, onStatusChange, onAlert }: LeadCardProps) {
 
               {/* Info pills (compact inline) */}
               <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                <span title="Localisation" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-800 font-semibold">
+                {/* <span title="Localisation" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-800 font-semibold">
                   <MapPin className="h-3 w-3 text-gray-500" />{ville}
-                </span>
+                </span> */}
+                {city_label && (
+                  <span title="Ville" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-800 font-semibold">
+                    <MapPin className="h-3 w-3 text-gray-500" />{city_label}
+                  </span>
+                )}
                 <span title="Surface" className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-800 font-semibold">
                   <Maximize className="h-3 w-3 text-gray-500" />{surface} m&sup2;
                 </span>
