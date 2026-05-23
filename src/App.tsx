@@ -66,8 +66,9 @@ const App = () => (
           <SidebarProvider>
             <Routes>
               {/* Routes publiques */}
-              <Route path="/" element={<Index />} />
-              <Route path="/landing" element={<Landing />} />
+              <Route path="/" element={<Landing />} />
+              {/* Ancienne home ImmoScout — gardée sur /old en cas de besoin */}
+              <Route path="/old" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/logout" element={<Logout />} />
