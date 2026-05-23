@@ -1,19 +1,43 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Loader2, Plus, XCircle, Clock, Layers } from "lucide-react";
+import {
+  ArrowLeft, Loader2, Plus, XCircle, Clock, Layers,
+  Power, Edit, Trash2, Mail, Filter,
+} from "lucide-react";
 import Swal from "sweetalert2";
 
 import { ClientSidebar } from "@/components/client/ClientSidebar";
 import { ClientHeader } from "@/components/client/ClientHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 import { Campaign, campaignsService } from "@/services/campaigns.service";
 import { subscriptionService, Subscription } from "@/services/subscription";
 
-import { CampaignCard } from "@/components/client/CampaignCard";
 import { CampaignForm } from "@/components/client/CampaignForm";
 import ErrorAlert from "@/components/alert/error";
+
+// Résumé compact des filtres pour affichage table (1 ligne)
+function summarizeFilters(c: Campaign): string {
+  const parts: string[] = [];
+  if (c.price_min != null || c.price_max != null) {
+    parts.push(`${c.price_min ?? "—"}–${c.price_max ?? "—"} €`);
+  }
+  if (c.surface_min != null || c.surface_max != null) {
+    parts.push(`${c.surface_min ?? "—"}–${c.surface_max ?? "—"} m²`);
+  }
+  if (c.nb_pieces_min != null || c.nb_pieces_max != null) {
+    parts.push(`${c.nb_pieces_min ?? "—"}–${c.nb_pieces_max ?? "—"} pièces`);
+  }
+  if (c.types_bien?.length) parts.push(c.types_bien.join("+"));
+  if (c.furnishing_filter) parts.push(c.furnishing_filter === "meuble" ? "Meublé" : "Non meublé");
+  if (c.seller_types?.length) parts.push(c.seller_types.join("+"));
+  if (c.sources_allowed?.length) parts.push(c.sources_allowed.join(","));
+  if (c.max_days_old != null) parts.push(`< ${c.max_days_old}j`);
+  return parts.length ? parts.join(" · ") : "Aucun filtre — tous les leads";
+}
 
 // Cette page liste les campagnes d'une zone et expose l'annulation d'abo Stripe.
 // Les anciens filtres édités directement sur la zone (price_min_filter, surface_min_filter,
@@ -31,6 +55,7 @@ const ZoneSetting = () => {
   const [formOpen, setFormOpen] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const [errorAlert, setErrorAlert] = useState({ visible: false, message: "" });
+  const [busyId, setBusyId] = useState<string | null>(null); // ligne en cours d'action (toggle/delete)
 
   const fetchAll = useCallback(async () => {
     if (!zoneId) return;
@@ -65,6 +90,44 @@ const ZoneSetting = () => {
   const openEdit = (c: Campaign) => {
     setEditingCampaign(c);
     setFormOpen(true);
+  };
+
+  const handleToggle = async (c: Campaign) => {
+    try {
+      setBusyId(c.id);
+      await campaignsService.toggle(c.id);
+      await fetchAll();
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error || "Erreur";
+      Swal.fire({ icon: "error", title: "Erreur", text: msg, confirmButtonColor: "#D45F2A" });
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleDelete = async (c: Campaign) => {
+    const result = await Swal.fire({
+      icon: "warning",
+      title: `Supprimer "${c.name}" ?`,
+      html: "<p>Les leads déjà attribués à cette campagne perdent leur lien mais restent visibles dans votre historique.</p>",
+      showCancelButton: true,
+      confirmButtonText: "Supprimer",
+      cancelButtonText: "Annuler",
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#475569",
+      reverseButtons: true,
+    });
+    if (!result.isConfirmed) return;
+    try {
+      setBusyId(c.id);
+      await campaignsService.remove(c.id);
+      await fetchAll();
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error || "Erreur";
+      Swal.fire({ icon: "error", title: "Erreur", text: msg, confirmButtonColor: "#D45F2A" });
+    } finally {
+      setBusyId(null);
+    }
   };
 
   const handleCancelSubscription = async () => {
@@ -163,11 +226,85 @@ const ZoneSetting = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-3">
-              {campaigns.map((c) => (
-                <CampaignCard key={c.id} campaign={c} onEdit={() => openEdit(c)} onChanged={fetchAll} />
-              ))}
-            </div>
+            <Card className="overflow-hidden border-border">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-secondary/30 hover:bg-secondary/30">
+                    <TableHead className="font-semibold">Nom</TableHead>
+                    <TableHead className="font-semibold">Statut</TableHead>
+                    <TableHead className="font-semibold">Auto</TableHead>
+                    <TableHead className="font-semibold">
+                      <span className="inline-flex items-center gap-1.5"><Filter className="h-3.5 w-3.5" /> Filtres</span>
+                    </TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {campaigns.map((c) => (
+                    <TableRow key={c.id} className={c.is_active ? "" : "opacity-60"}>
+                      <TableCell className="font-medium text-foreground">{c.name}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={
+                            c.is_active
+                              ? "border-clay-300 bg-clay-50 text-clay-700 text-[10px] hover:bg-clay-50"
+                              : "border-border bg-muted text-muted-foreground text-[10px] hover:bg-muted"
+                          }
+                        >
+                          {c.is_active ? "Active" : "Inactive"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {c.auto_contact_enabled ? (
+                          <Badge variant="outline" className="border-emerald-300 bg-emerald-50 text-emerald-700 text-[10px] gap-1 hover:bg-emerald-50">
+                            <Mail className="h-3 w-3" /> Auto
+                          </Badge>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground max-w-md">
+                        <div className="line-clamp-2">{summarizeFilters(c)}</div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => handleToggle(c)}
+                            disabled={busyId === c.id}
+                            title={c.is_active ? "Désactiver" : "Activer"}
+                          >
+                            {busyId === c.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Power className="h-4 w-4" />}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => openEdit(c)}
+                            title="Modifier"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                            onClick={() => handleDelete(c)}
+                            disabled={busyId === c.id}
+                            title="Supprimer"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
           )}
 
           {/* ─── Zone Stripe sub : annulation ─── */}

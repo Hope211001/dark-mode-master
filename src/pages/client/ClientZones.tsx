@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
 import { ClientSidebar } from "@/components/client/ClientSidebar";
 import { ClientHeader } from "@/components/client/ClientHeader";
-import { ZoneCard } from "@/components/client/ZoneCard";
 import MapExplorer from "@/components/Map/MapExplorer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, MapPin, Lock, Users, TrendingUp, Loader2, Globe } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Plus, MapPin, Lock, Users, TrendingUp, Loader2, Globe, ChevronRight, Eye } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { zoneService, Zone } from "@/services/zones.services.tsx";
 import { useToast } from "@/components/ui/use-toast";
 
 const ClientZones = () => {
+  const navigate = useNavigate();
   const [zones, setZones] = useState<Zone[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -210,27 +211,75 @@ const ClientZones = () => {
                           Vous n'avez pas encore de concession exclusive. Visitez la marketplace pour réserver votre première ville.
                         </p>
                       </div>
-                      <Link to="/client/marketplace">
+                      <Link to="/client/mapexplorer">
                         <Button variant="outline" className="mt-2">Ouvrir la Marketplace</Button>
                       </Link>
                     </div>
                   </Card>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {exclusiveZones.map((zone) => (
-                      <ZoneCard
-                        key={zone.id}
-                        id={zone.id.toString()}
-                        nom={zone.nom}
-                        codes_postaux={zone.codes_postaux}
-                        leadsCount={0} // À synchroniser avec votre table 'leads' plus tard
-                        leadsThisMonth={0}
-                        status="active"
-                        price = {zone.price}
-                        onCanceled={() => { fetchMyZones(); loadAllData(); }}
-                      />
-                    ))}
-                  </div>
+                  <Card className="overflow-hidden border-border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-secondary/30 hover:bg-secondary/30">
+                          <TableHead className="font-semibold">Zone</TableHead>
+                          <TableHead className="font-semibold">Codes postaux</TableHead>
+                          <TableHead className="font-semibold text-right">Prix</TableHead>
+                          <TableHead className="font-semibold">Statut</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {exclusiveZones.map((zone) => (
+                          <TableRow
+                            key={zone.id}
+                            onClick={() => navigate(`/client/zone-setting/${zone.id}`)}
+                            className="cursor-pointer group"
+                            title="Voir les campagnes"
+                          >
+                            <TableCell className="font-medium text-foreground">
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-clay-600 shrink-0" />
+                                {zone.nom}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex flex-wrap gap-1">
+                                {(zone.codes_postaux || []).slice(0, 3).map((cp) => (
+                                  <Badge key={cp} variant="outline" className="text-[10px]">
+                                    {cp}
+                                  </Badge>
+                                ))}
+                                {(zone.codes_postaux || []).length > 3 && (
+                                  <span className="text-[10px] text-muted-foreground self-center">
+                                    +{(zone.codes_postaux || []).length - 3}
+                                  </span>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right mono text-foreground">
+                              {new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(zone.price || 0)}
+                            </TableCell>
+                            <TableCell>
+                              <Badge className="bg-clay-50 text-clay-700 border border-clay-200 text-[10px] hover:bg-clay-50">
+                                Active
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center justify-end gap-1">
+                                <Link to={`/client/leads?zone=${zone.id}`}>
+                                  <Button size="sm" variant="ghost" className="h-8 gap-1" title="Voir les leads">
+                                    <Eye className="h-4 w-4" />
+                                    <span className="hidden sm:inline text-xs">Leads</span>
+                                  </Button>
+                                </Link>
+                                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-clay-600 transition-colors" />
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </Card>
                 )}
               </div>
 
