@@ -6,16 +6,56 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, MapPin, Lock, Users, TrendingUp, Loader2, Globe, ChevronRight, Eye } from "lucide-react";
+import { Plus, MapPin, Lock, Users, TrendingUp, Loader2, Globe, ChevronRight, Eye, XCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { zoneService, Zone } from "@/services/zones.services.tsx";
+import { subscriptionService } from "@/services/subscription";
 import { useToast } from "@/components/ui/use-toast";
+import Swal from "sweetalert2";
 
 const ClientZones = () => {
   const navigate = useNavigate();
   const [zones, setZones] = useState<Zone[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cancelingId, setCancelingId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const handleCancelSub = async (zoneId: string, zoneName: string) => {
+    const result = await Swal.fire({
+      icon: "warning",
+      title: `Annuler l'abonnement à ${zoneName} ?`,
+      html: `
+        <p>L'abonnement sera <strong>annulé à la fin du cycle en cours</strong>.</p>
+        <p class="mt-2 text-sm opacity-80">Vous gardez l'accès à la zone et aux leads jusqu'à la prochaine date de renouvellement.</p>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Oui, annuler",
+      cancelButtonText: "Garder",
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#475569",
+      reverseButtons: true,
+    });
+    if (!result.isConfirmed) return;
+
+    try {
+      setCancelingId(zoneId);
+      const res = await subscriptionService.cancelByZone(zoneId);
+      const cancelDate = res.cancel_at ? new Date(res.cancel_at).toLocaleDateString("fr-FR") : "fin du cycle";
+      await Swal.fire({
+        icon: "success",
+        title: "Annulation programmée",
+        text: `L'abonnement prendra fin le ${cancelDate}.`,
+        confirmButtonColor: "#059669",
+      });
+      fetchMyZones();
+      loadAllData();
+    } catch (error: unknown) {
+      const msg = (error as { response?: { data?: { error?: string } } })?.response?.data?.error || "Impossible d'annuler.";
+      Swal.fire({ icon: "error", title: "Erreur", text: msg, confirmButtonColor: "#dc2626" });
+    } finally {
+      setCancelingId(null);
+    }
+  };
 
   // États pour les compteurs (TYPES CORRIGÉS en number)
   const [totalZonesCount, setTotalZonesCount] = useState<number>(0);
@@ -272,6 +312,20 @@ const ClientZones = () => {
                                     <span className="hidden sm:inline text-xs">Leads</span>
                                   </Button>
                                 </Link>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-8 w-8 p-0 text-red-600 hover:bg-red-100 hover:text-red-700"
+                                  onClick={() => handleCancelSub(zone.id.toString(), zone.nom)}
+                                  disabled={cancelingId === zone.id.toString()}
+                                  title="Annuler l'abonnement"
+                                >
+                                  {cancelingId === zone.id.toString() ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <XCircle className="h-4 w-4" />
+                                  )}
+                                </Button>
                                 <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-clay-600 transition-colors" />
                               </div>
                             </TableCell>

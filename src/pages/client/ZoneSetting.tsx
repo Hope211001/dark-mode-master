@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
-  ArrowLeft, Loader2, Plus, XCircle, Clock, Layers,
+  ArrowLeft, Loader2, Plus, Layers,
   Power, Edit, Trash2, Mail, Filter,
 } from "lucide-react";
 import Swal from "sweetalert2";
@@ -50,7 +50,6 @@ const ZoneSetting = () => {
   const [zoneInfo, setZoneInfo] = useState<Subscription | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
-  const [canceling, setCanceling] = useState(false);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
@@ -130,52 +129,13 @@ const ZoneSetting = () => {
     }
   };
 
-  const handleCancelSubscription = async () => {
-    if (!zoneId) return;
-    const result = await Swal.fire({
-      icon: "warning",
-      title: "Annuler l'abonnement ?",
-      html: `
-        <p>L'abonnement sera <strong>annulé à la fin du cycle en cours</strong>.</p>
-        <p class="mt-2 text-sm opacity-80">Vous gardez l'accès à la zone et à ses leads jusqu'à la prochaine date de renouvellement.</p>
-      `,
-      showCancelButton: true,
-      confirmButtonText: "Oui, annuler",
-      cancelButtonText: "Garder",
-      confirmButtonColor: "#dc2626",
-      cancelButtonColor: "#475569",
-      reverseButtons: true,
-    });
-    if (!result.isConfirmed) return;
-
-    try {
-      setCanceling(true);
-      const res = await subscriptionService.cancelByZone(zoneId);
-      const cancelDate = res.cancel_at ? new Date(res.cancel_at).toLocaleDateString("fr-FR") : "fin du cycle";
-      await fetchAll();
-      await Swal.fire({
-        icon: "success",
-        title: "Annulation programmée",
-        text: `Votre abonnement prendra fin le ${cancelDate}.`,
-        confirmButtonColor: "#059669",
-      });
-    } catch (error: unknown) {
-      const msg =
-        (error as { response?: { data?: { error?: string } } })?.response?.data?.error ||
-        "Impossible d'annuler l'abonnement.";
-      Swal.fire({ icon: "error", title: "Erreur", text: msg, confirmButtonColor: "#dc2626" });
-    } finally {
-      setCanceling(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <ClientSidebar />
       <main className="md:ml-64 transition-[margin] duration-300">
         <ClientHeader title={zoneInfo?.nom || "Zone"} subtitle="Campagnes de prospection" />
 
-        <div className="p-6 max-w-4xl mx-auto space-y-6">
+        <div className="p-6 space-y-6">
           {/* Retour */}
           <Link
             to="/client/zones"
@@ -307,49 +267,6 @@ const ZoneSetting = () => {
             </Card>
           )}
 
-          {/* ─── Zone Stripe sub : annulation ─── */}
-          <div className="pt-8 mt-8 border-t border-border">
-            {zoneInfo?.cancel_at ? (
-              <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 flex items-start gap-3">
-                <Clock className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
-                <div>
-                  <h3 className="text-amber-900 font-semibold">Annulation programmée</h3>
-                  <p className="text-sm text-amber-800 mt-1">
-                    Votre abonnement à cette zone sera résilié le{" "}
-                    <span className="font-bold">
-                      {new Date(zoneInfo.cancel_at).toLocaleDateString("fr-FR", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </span>
-                    . Vos campagnes restent actives jusqu'à cette date.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="rounded-xl border border-red-200 bg-red-50/50 p-4 space-y-3">
-                <div className="flex items-start gap-3">
-                  <XCircle className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />
-                  <div>
-                    <h3 className="text-red-900 font-semibold">Annuler l'abonnement à cette zone</h3>
-                    <p className="text-sm text-red-800/80 mt-1">
-                      L'abonnement reste actif jusqu'à la fin du cycle en cours. Toutes les campagnes seront désactivées à l'échéance.
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  onClick={handleCancelSubscription}
-                  disabled={canceling}
-                  variant="outline"
-                  className="w-full border-red-300 bg-transparent text-red-700 hover:bg-red-100 hover:text-red-800"
-                >
-                  {canceling ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <XCircle className="h-4 w-4 mr-2" />}
-                  Annuler mon abonnement
-                </Button>
-              </div>
-            )}
-          </div>
         </div>
       </main>
 
